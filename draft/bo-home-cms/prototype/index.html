@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BO Home CMS — Content Block (enhanced #3)</title>
+<style>
+  :root{
+    --bg:#0b0b0c; --panel:#161616; --panel2:#1e1e1e; --line:#2b2b2b; --line2:#3a3a3a;
+    --ink:#ececec; --muted:#9a9a9a; --faint:#6a6a6a;
+    --gold:#c9a063; --gold2:#b08a4e; --goldsoft:#3a2f1c;
+    --ok:#3ddc84; --bad:#e0655a;
+    --r:12px; --rs:8px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%}
+  body{background:var(--bg);color:var(--ink);font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,"PingFang TC","Microsoft JhengHei",system-ui,sans-serif}
+  button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+  input,textarea,select{font:inherit}
+  .req{color:var(--bad)}
+  .note{background:#161300;border-bottom:1px solid #3a3300;color:#cdbf6a;font-size:12px;padding:6px 16px}
+  .note b{color:var(--gold)}
+  /* topbar */
+  .topbar{display:flex;align-items:center;gap:14px;padding:12px 22px;border-bottom:1px solid var(--line)}
+  .crumb{color:var(--muted);font-size:13px}.crumb b{color:var(--ink)}
+  .grow{flex:1}
+  .regions{display:flex;gap:18px}
+  .regions span{font-size:13px;color:var(--muted);cursor:pointer;padding-bottom:3px}
+  .regions span.on{color:var(--gold);border-bottom:2px solid var(--gold)}
+  .btn{padding:8px 16px;border-radius:var(--rs);font-size:13px;font-weight:700}
+  .btn.ghost{background:var(--panel2);border:1px solid var(--line2);color:var(--ink)}.btn.ghost:hover{border-color:var(--faint)}
+  .btn.gold{background:linear-gradient(120deg,var(--gold),var(--gold2));color:#1a1408}.btn.gold:hover{filter:brightness(1.06)}
+  /* page */
+  .page{max-width:1000px;margin:0 auto;padding:24px}
+  .h1{font-size:22px;font-weight:800;margin:6px 0 2px}
+  .seclbl{font-size:15px;font-weight:800;margin:24px 0 4px}
+  .secsub{color:var(--muted);font-size:12.5px;margin-bottom:12px}
+  .seqhead{display:flex;align-items:center;justify-content:space-between}
+  /* block rows */
+  .blocks{display:flex;flex-direction:column;gap:10px}
+  .blk{display:flex;align-items:center;gap:14px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+  .blk.off{opacity:.5}
+  .blk .ord{width:26px;height:26px;border-radius:6px;background:#000;border:1px solid var(--line2);display:grid;place-items:center;color:var(--muted);font-size:12px;flex:none}
+  .blk .ti{flex:1;min-width:0;display:flex;align-items:baseline;gap:12px}
+  .blk .ti .t{font-weight:700;white-space:nowrap;flex:none}
+  .blk .ti .dt{color:var(--faint);font-size:12.5px;font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .blk.dragging{opacity:.4;border-color:var(--gold)}
+  .blk .mv{cursor:grab}
+  #bdrop{height:3px;background:var(--gold);border-radius:2px;margin:-5px 2px;box-shadow:0 0 8px var(--gold);pointer-events:none}
+  .chip{font-size:10px;font-weight:800;padding:2px 8px;border-radius:99px;background:var(--gold);color:#1a1408;flex:none}
+  .ico{width:30px;height:30px;border-radius:7px;display:grid;place-items:center;color:var(--muted);flex:none}.ico:hover{background:var(--panel2);color:var(--ink)}
+  .empty{color:var(--faint);text-align:center;padding:30px;border:1px dashed var(--line);border-radius:10px}
+  .rotaterow{display:none;align-items:center;gap:10px;margin:0 0 12px;color:var(--muted);font-size:13px}
+  .rotaterow.show{display:flex}
+  .ctarow{display:flex;gap:8px;align-items:center;margin:8px 0}
+  .ctarow .ci{flex:1;background:#0f0f0f;border:1px solid var(--line2);border-radius:6px;color:var(--ink);padding:8px 10px}
+  .ctarow .ci:focus{outline:none;border-color:var(--gold)}
+  .ctarow .ci.nm{flex:0 0 200px}
+  /* banner carousel in FE preview */
+  .pvbanner{position:relative;border-radius:12px;overflow:hidden;min-height:300px;background:linear-gradient(120deg,#1a1500,#0b0b0c);border:1px solid #222;padding:36px 40px;display:flex;flex-direction:column;justify-content:center}
+  .pvbanner .bres{font-size:11px;font-weight:800;color:var(--gold);letter-spacing:.04em}
+  .pvbanner .bhead{font-size:13px;font-weight:700;color:#ddd;margin-top:4px}
+  .pvbanner .btitle{font-size:34px;font-weight:900;color:#fff;margin:8px 0;line-height:1.15}
+  .pvbanner .bcontent{color:#cfcfcf;font-size:14px}
+  .pvbanner .bctas{display:flex;gap:12px;margin-top:18px}
+  .pvbanner .bctas a{background:linear-gradient(120deg,var(--gold),var(--gold2));color:#1a1408;font-weight:800;font-size:13px;padding:9px 18px;border-radius:8px;text-decoration:none;cursor:pointer}
+  .pvbanner .bctas a.alt{background:#2a2a2a;color:#eee}
+  .pvdots{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);display:flex;gap:7px}
+  .pvdots i{width:8px;height:8px;border-radius:50%;background:#555;cursor:pointer}
+  .pvdots i.on{background:var(--gold);width:20px;border-radius:5px}
+  /* switch */
+  .sw{position:relative;width:38px;height:21px;border-radius:99px;background:#3a3a3a;flex:none;cursor:pointer;transition:background .14s}
+  .sw.on{background:linear-gradient(90deg,var(--gold),var(--gold2))}
+  .sw i{position:absolute;top:2px;left:2px;width:17px;height:17px;border-radius:50%;background:#fff;transition:left .14s}
+  .sw.on i{left:19px}
+  .sw.sm{width:34px;height:19px}.sw.sm i{width:15px;height:15px}.sw.sm.on i{left:17px}
+  /* ===== modal ===== */
+  .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.66);align-items:center;justify-content:center;padding:34px 24px;z-index:50}
+  .modal.show{display:flex}
+  .sheet{background:var(--panel);border:1px solid var(--line2);border-radius:14px;width:min(900px,96vw);max-height:90vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+  .mhead{flex:none;display:flex;align-items:center;justify-content:space-between;padding:16px 22px;border-bottom:1px solid var(--line)}
+  .mhead h2{margin:0;font-size:16px;letter-spacing:.08em;font-weight:800}
+  .x{width:30px;height:30px;border-radius:7px;display:grid;place-items:center;color:var(--muted);font-size:16px}.x:hover{background:var(--panel2);color:var(--ink)}
+  .mtop{padding:0 0 14px;margin-bottom:4px;border-bottom:1px solid var(--line)}
+  .ctlrow{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+  .ctl{display:flex;align-items:center;gap:9px}
+  .ctl .lab{font-size:12.5px;color:var(--muted)}.ctl .lab b{color:var(--ink);font-weight:600}
+  .mbody{overflow:auto;padding:18px 22px;flex:1 1 auto;min-height:0}
+  .langlab{font-size:13px;font-weight:700;margin:6px 0 10px}
+  .field{display:grid;grid-template-columns:104px 1fr;gap:12px;align-items:start;margin:10px 0}
+  .field>label{font-size:12.5px;color:var(--muted);padding-top:9px;display:flex;flex-direction:column;align-items:flex-start;gap:7px;text-align:left}
+  .field input[type=text],.field textarea{width:100%;background:var(--panel2);border:1px solid var(--line2);border-radius:var(--rs);color:var(--ink);padding:9px 12px}
+  .field input:focus,.field textarea:focus{outline:none;border-color:var(--gold)}
+  .field textarea{resize:vertical;min-height:38px}
+  .opt{color:var(--faint);font-weight:400;font-size:11px;border:1px solid var(--line);border-radius:5px;padding:0 5px;margin-left:2px}
+  .rt{display:grid;grid-template-columns:1fr 150px;gap:12px}
+  .rtbox{border:1px solid var(--line2);border-radius:var(--rs);background:var(--panel2);overflow:hidden}
+  .rttool{display:flex;gap:2px;padding:6px 8px;border-bottom:1px solid var(--line)}
+  .rttool span{width:26px;height:24px;display:grid;place-items:center;border-radius:5px;color:var(--muted);font-size:13px}
+  .rtarea{min-height:80px;padding:10px 12px;color:#fff;font-size:13px}
+  .rtarea *{color:#fff}
+  .rtarea:focus{outline:none}
+  .rtarea:empty:before{content:attr(data-ph);color:var(--faint)}
+  .rttool span{cursor:pointer}
+  .imgbox{border:1px dashed var(--line2);border-radius:var(--rs);background:#101010;display:grid;place-items:center;min-height:110px;color:var(--faint)}
+  .imgbox .plus{width:34px;height:34px;border-radius:50%;border:1px solid var(--line2);display:grid;place-items:center;font-size:20px}
+  .divider{height:1px;background:var(--line);margin:16px 0}
+  .sectitle{font-size:14px;font-weight:800;color:var(--gold);margin:6px 0 10px}
+  .dtgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+  .dt{padding:11px 8px;border:1px solid var(--line2);border-radius:var(--rs);background:var(--panel2);color:var(--ink);font-size:12.5px;text-align:center;cursor:pointer}
+  .dt:hover{border-color:var(--gold)}
+  .dt.on{background:linear-gradient(120deg,var(--gold),var(--gold2));color:#1a1408;border-color:transparent;font-weight:700}
+  .dslink{display:flex;align-items:center;gap:8px;margin:14px 0 0;background:var(--panel2);border:1px solid var(--line2);border-radius:var(--rs);padding:11px 12px;cursor:pointer}
+  .dslink:hover{border-color:var(--gold)}
+  .dslink.invalid{border-color:var(--bad)}
+  .dslink #dsText,.dslink #bItemText{flex:1}.dslink #dsText.ph,.dslink #bItemText.ph{color:var(--faint)}
+  .dshint{display:none;color:var(--bad);font-size:12px;margin:6px 0 10px}
+  /* SELECT ITEM picker */
+  .modal2{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);align-items:flex-start;justify-content:center;padding:60px 24px;z-index:70}
+  .modal2.show{display:flex}
+  .sheet2{background:var(--panel);border:1px solid var(--line2);border-radius:14px;width:min(960px,96vw);max-height:80vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+  .pkbody{padding:18px 22px;overflow:auto}
+  .pksearch{width:100%;background:var(--panel2);border:1px solid var(--line2);border-radius:99px;color:var(--ink);padding:10px 16px;margin-bottom:16px}
+  .pksearch:focus{outline:none;border-color:var(--gold)}
+  .pkgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .pkcard{border:1px solid var(--line2);border-radius:10px;background:var(--panel2);padding:14px}
+  .pkthumb{position:relative;height:84px;border-radius:8px;margin-bottom:10px;display:flex;align-items:flex-end;justify-content:flex-start;overflow:hidden}
+  .pkthumb .ph2{font-size:30px;font-weight:800;color:rgba(255,255,255,.85);text-shadow:0 1px 6px rgba(0,0,0,.5);padding:8px 10px;letter-spacing:.5px}
+  .crawl{display:inline-block;font-size:10px;color:var(--ok);border:1px solid #1e3d2a;background:#0e1c14;border-radius:5px;padding:1px 7px;margin-bottom:10px}
+  .pkthumb .crawl{position:absolute;top:6px;right:6px;margin:0}
+  .pkcard .pt{font-weight:700;font-size:14px;min-height:42px;margin-bottom:12px}
+  .pkbtns{display:flex;gap:8px}
+  .pkbtns .btn{flex:1;padding:8px 0;text-align:center}
+  .styletag{font-size:12px;color:var(--muted);margin:6px 0 8px}
+  .styles{display:flex;gap:12px;flex-wrap:wrap}
+  .style{width:150px;border:1px solid var(--line2);border-radius:10px;background:var(--panel2);overflow:hidden;cursor:pointer}
+  .style.fixed{cursor:default}
+  .style.on{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset}
+  .style .thumb{height:64px;background:linear-gradient(135deg,#222,#141414);display:flex;align-items:center;justify-content:center;gap:4px}
+  .style .thumb .c{width:20px;height:28px;background:#333;border-radius:3px}
+  .style .nm{padding:7px 9px;font-size:12px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+  .style .pick{font-size:10px;color:var(--gold)}
+  .badge-fixed{font-size:10px;color:var(--faint);border:1px solid var(--line2);border-radius:99px;padding:1px 7px}
+  .stylenote{width:100%;color:var(--muted);font-size:12px;background:var(--panel2);border:1px solid var(--line);border-radius:var(--rs);padding:9px 12px;margin-top:4px}
+  .invalid{border-color:var(--bad)!important}
+  .rtbox.invalid{border-color:var(--bad)}
+  .valmsg{flex:none;display:none;color:var(--bad);font-size:12.5px;text-align:center;padding:8px 22px 0;background:var(--panel)}
+  .mfoot{flex:none;display:flex;justify-content:center;gap:14px;padding:14px 22px;border-top:1px solid var(--line);background:var(--panel)}
+  .mfoot .btn{padding:10px 30px;font-size:14px}
+  .enh{display:inline-block;font-size:9.5px;font-weight:800;color:var(--gold);border:1px solid var(--goldsoft);background:#1a1509;border-radius:99px;padding:1px 7px;margin-left:6px;vertical-align:middle}
+  /* ===== FE preview overlay ===== */
+  .pv{display:none;position:fixed;inset:0;background:#000;z-index:60;overflow:auto}
+  .pv.show{display:block}
+  .pvbar{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:#0e0e0e;border-bottom:1px solid #1c1c1c}
+  .pvbar .t{font-size:13px;color:var(--muted);letter-spacing:.08em}
+  .pvwrap{max-width:1100px;margin:0 auto;padding:24px}
+  .pvsec{padding:20px 0;border-bottom:1px solid #141414}
+  .pvsec .ptag{display:inline-block;font-size:10px;font-weight:800;background:var(--gold);color:#1a1408;border-radius:99px;padding:2px 8px;margin-bottom:8px}
+  .pvsec h3{margin:2px 0;font-size:20px}
+  .pvsec .sub{color:var(--gold);font-size:13px;font-weight:600}
+  .pvrow{display:flex;gap:12px;margin-top:12px;overflow:hidden}
+  .pvrow .card{flex:1;min-width:0;height:120px;background:linear-gradient(160deg,#262626,#141414);border:1px solid #222;border-radius:8px;position:relative}
+  .pvrow.poster .card{height:150px}
+  .pvrow.rank .card{display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:900;color:var(--gold)}
+  .pvrow .uihint{position:absolute;bottom:6px;left:8px;font-size:10px;color:var(--faint)}
+  .pv-tabs{display:flex;gap:8px;margin:10px 0;flex-wrap:wrap}
+  .pv-tabs .pv-tab{font-size:12px;color:#bbb;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:99px;padding:5px 12px}
+  .pv-tabs .pv-tab.on{background:#fff;color:#000;border-color:transparent}
+  /* platform list in ranking modal */
+  .pfgrid{display:flex;flex-direction:column;gap:8px}
+  .pfcard{display:flex;align-items:center;gap:12px;background:var(--panel2);border:1px solid var(--line2);border-radius:var(--rs);padding:10px 12px}
+  .pfcard.dragging{opacity:.4;border-color:var(--gold)}
+  .pfcard .pfdrag{cursor:grab;color:var(--faint)}
+  .pfcard .pfav{width:30px;height:30px;border-radius:6px;background:#000;border:1px solid var(--line2);display:grid;place-items:center;font-size:13px;color:var(--muted);flex:none}
+  .pfcard .pfinfo{flex:1;min-width:0}
+  .pfcard .pfname{font-weight:600;font-size:13px}
+  .pfcard .pfsub{color:var(--faint);font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pfcard .pfsub.unset{color:var(--bad)}
+  #pfdrop{height:3px;background:var(--gold);border-radius:2px;box-shadow:0 0 8px var(--gold);pointer-events:none}
+</style>
+</head>
+<body>
+
+<div class="note">PROTOTYPE — BO Home CMS · Content Block enhanced (#3). Real ztor admin style. <b>illustrative; spec is authoritative.</b></div>
+
+<div class="topbar">
+  <span class="crumb">Home / Page Config / <b>Home Page</b></span>
+  <span class="grow"></span>
+  <div class="regions"><span>香港(中国)</span><span class="on">台灣</span><span>全世界</span></div>
+  <button class="btn ghost" id="btnPreview">👁 Preview</button>
+</div>
+
+<div class="page">
+  <div class="h1">Home Page Config</div>
+
+  <!-- ===== Banner section (#1) ===== -->
+  <div class="seqhead">
+    <div>
+      <div class="seclbl">Home Page Banner</div>
+      <div class="secsub">Fixed at the very top. One banner, or add multiple (carousel).</div>
+    </div>
+    <button class="btn gold" id="btnAddBanner">+ Add Banner</button>
+  </div>
+  <div class="rotaterow" id="rotateRow"><span class="sw" id="swRotate"><i></i></span><span>Rotate — auto every 3s <span style="color:var(--faint)">(shown when more than 1 banner)</span></span></div>
+  <div class="blocks" id="banners"></div>
+
+  <!-- ===== Ranking widget (fixed — enable/disable only) ===== -->
+  <div class="seqhead" style="margin-top:30px">
+    <div>
+      <div class="seclbl">Home Page Ranking</div>
+      <div class="secsub">One fixed ranking widget — enable/disable, and ⚙ edit its title & platforms. (Cannot be added / removed / reordered.)</div>
+    </div>
+  </div>
+  <div class="blocks">
+    <div class="blk" id="rankRow">
+      <span class="ord">★</span>
+      <div class="ti"><span class="t" id="rankTitle">臺灣排行 Top 10</span><span class="dt" id="rankSub">Ranking widget</span></div>
+      <span class="sw on" id="swRanking"><i></i></span>
+      <button class="ico" id="rankEdit" title="edit">⚙</button>
+    </div>
+  </div>
+
+  <div class="seqhead" style="margin-top:30px">
+    <div>
+      <div class="seclbl">Home Page Layout Sequence</div>
+      <div class="secsub">Arrange and configure the content blocks. (Banner &amp; Ranking widget are separate sections above.)</div>
+    </div>
+    <button class="btn gold" id="btnAdd">+ Add Content Block</button>
+  </div>
+
+  <div class="blocks" id="blocks"></div>
+</div>
+
+<!-- ===== ADD / EDIT CONTENT BLOCK MODAL ===== -->
+<div class="modal" id="modal">
+  <div class="sheet">
+    <div class="mhead"><h2 id="mtitle">ADD CONTENT BLOCK</h2><button class="x" id="mClose">✕</button></div>
+
+    <div class="mbody">
+      <!-- enable (scrolls with content, not frozen) -->
+      <div class="mtop"><div class="ctlrow"><div class="ctl"><span class="sw on" id="swEnable"><i></i></span><span class="lab"><b>啟用狀態</b></span></div></div></div>
+      <!-- 繁中 -->
+      <div class="langlab"><span class="req">*</span> 繁體中文(香港)</div>
+      <div class="field"><label><span class="nm"><span class="req">*</span> 標題</span></label><input id="zhTitle" type="text" placeholder="標題"></div>
+      <div class="field"><label><span class="nm">Tag <span class="opt">選填</span></span></label><div class="f-input"><input id="zhTag" type="text" placeholder="輸入標籤名稱 (e.g. NEW)" maxlength="16"></div></div>
+      <div class="field"><label><span class="nm">副標題 <span class="opt">選填</span></span></label><div class="f-input"><textarea id="zhSub" rows="2" placeholder="副標題"></textarea></div></div>
+      <div class="field"><label><span class="nm">內頁描述 / 背景圖 <span class="opt">選填</span></span></label>
+        <div class="f-input"><div class="rt"><div class="rtbox"><div class="rttool"><span data-cmd="bold">B</span><span data-cmd="italic"><i>I</i></span><span data-cmd="formatBlock|h3">H</span><span data-cmd="strikeThrough">S</span><span data-cmd="insertOrderedList">≣</span><span data-cmd="insertUnorderedList">☰</span></div><div class="rtarea" id="zhDesc" contenteditable="true" data-ph="開始編輯…"></div></div><div class="imgbox"><div class="plus">＋</div></div></div></div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- 英語 -->
+      <div class="langlab"><span class="req">*</span> 英語 (English)</div>
+      <div class="field"><label><span class="nm"><span class="req">*</span> Title</span></label><input id="enTitle" type="text" placeholder="Title"></div>
+      <div class="field"><label><span class="nm">Tag <span class="opt">optional</span></span></label><div class="f-input"><input id="enTag" type="text" placeholder="Tag name (e.g. NEW)" maxlength="16"></div></div>
+      <div class="field"><label><span class="nm">Subtitle <span class="opt">optional</span></span></label><div class="f-input"><textarea id="enSub" rows="2" placeholder="Subtitle"></textarea></div></div>
+      <div class="field"><label><span class="nm">Description / Image <span class="opt">optional</span></span></label>
+        <div class="f-input"><div class="rt"><div class="rtbox"><div class="rttool"><span data-cmd="bold">B</span><span data-cmd="italic"><i>I</i></span><span data-cmd="formatBlock|h3">H</span><span data-cmd="strikeThrough">S</span><span data-cmd="insertOrderedList">≣</span><span data-cmd="insertUnorderedList">☰</span></div><div class="rtarea" id="enDesc" contenteditable="true" data-ph="Start editing…"></div></div><div class="imgbox"><div class="plus">＋</div></div></div></div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="sectitle">Data Type <span style="color:var(--faint);font-weight:400;font-size:12px">— 選項來自 BO 其他模組</span></div>
+      <div class="dtgrid" id="dtgrid"></div>
+      <div class="dslink" id="dsField"><span class="ph" id="dsText">點擊選擇數據源…</span><span style="color:var(--faint)">🔗</span></div>
+      <div class="dshint" id="dshint">請選擇數據鏈接</div>
+      <div class="styletag" id="styletag">前端 UI 樣式</div>
+      <div class="styles" id="styles"></div>
+    </div>
+
+    <div class="valmsg" id="valmsg">請填寫所有「已啟用」欄位(繁體中文 + 英語)。</div>
+    <div class="mfoot"><button class="btn ghost" id="mCancel">取消</button><button class="btn gold" id="mSave">確定</button></div>
+  </div>
+</div>
+
+<!-- ===== ADD / EDIT BANNER MODAL (#1) ===== -->
+<div class="modal" id="bmodal">
+  <div class="sheet">
+    <div class="mhead"><h2 id="bmtitle">ADD BANNER</h2><button class="x" id="bmClose">✕</button></div>
+    <div class="mbody">
+      <div class="mtop"><div class="ctlrow"><div class="ctl"><span class="sw on" id="bEnable"><i></i></span><span class="lab"><b>啟用狀態</b></span></div></div></div>
+      <div class="sectitle">Banner Resource <span style="color:var(--faint);font-weight:400;font-size:12px">— group · 於其他模組建立</span></div>
+      <div class="dtgrid" id="bresgrid"></div>
+      <div class="styletag" style="margin-top:14px">選擇此群組底下的 Item / Event <span class="req">*</span> <span style="color:var(--faint)">— 來自 BO</span></div>
+      <div class="dslink" id="bItemField" style="margin-top:6px"><span class="ph" id="bItemText">點擊選擇此群組下的 event / item…</span><span style="color:var(--faint)">🔗</span></div>
+      <div class="dshint" id="bItemHint">請選擇此群組下的 event / item</div>
+
+      <div class="divider"></div>
+      <div class="langlab">繁體中文(香港) <span style="color:var(--faint);font-weight:400;font-size:12px">— 選填(填一種語言則中英都需填)</span></div>
+      <div class="field"><label><span class="nm">Header</span></label><input id="bzhHeader" type="text" placeholder="Header(小標)"></div>
+      <div class="field"><label><span class="nm">標題</span></label><input id="bzhTitle" type="text" placeholder="標題"></div>
+      <div class="field"><label><span class="nm">Content</span></label><textarea id="bzhContent" rows="2" placeholder="Content"></textarea></div>
+
+      <div class="divider"></div>
+      <div class="langlab">英語 (English) <span style="color:var(--faint);font-weight:400;font-size:12px">— optional (fill one language → both required)</span></div>
+      <div class="field"><label><span class="nm">Header</span></label><input id="benHeader" type="text" placeholder="Header"></div>
+      <div class="field"><label><span class="nm">Title</span></label><input id="benTitle" type="text" placeholder="Title"></div>
+      <div class="field"><label><span class="nm">Content</span></label><textarea id="benContent" rows="2" placeholder="Content"></textarea></div>
+
+      <div class="divider"></div>
+      <div class="sectitle">CTA(s) <span style="color:var(--faint);font-weight:400;font-size:12px">— add one or more</span></div>
+      <div id="bctas"></div>
+      <button class="btn ghost" id="bAddCta" style="margin-top:4px">+ Add CTA</button>
+    </div>
+    <div class="valmsg" id="bvalmsg">請選擇此群組底下的 Item;文字欄位選填,但填了一種語言則中英都需填;每個已新增的 CTA 需有名稱與 http(s) 連結。</div>
+    <div class="mfoot"><button class="btn ghost" id="bmCancel">取消</button><button class="btn gold" id="bmSave">確定</button></div>
+  </div>
+</div>
+
+<!-- ===== EDIT RANKING MODAL ===== -->
+<div class="modal" id="rmodal">
+  <div class="sheet">
+    <div class="mhead"><h2>EDIT RANKING</h2><button class="x" id="rmClose">✕</button></div>
+    <div class="mbody">
+      <div class="mtop"><div class="ctlrow"><div class="ctl"><span class="sw on" id="rEnable"><i></i></span><span class="lab"><b>啟用狀態</b></span></div></div></div>
+      <div class="langlab"><span class="req">*</span> 繁體中文(香港)</div>
+      <div class="field"><label><span class="nm"><span class="req">*</span> 標題</span></label><input id="rzhTitle" type="text" placeholder="標題"></div>
+      <div class="field"><label><span class="nm">副標題 <span class="opt">選填</span></span></label><textarea id="rzhSub" rows="2" placeholder="副標題"></textarea></div>
+      <div class="langlab"><span class="req">*</span> 英語 (English)</div>
+      <div class="field"><label><span class="nm"><span class="req">*</span> Title</span></label><input id="renTitle" type="text" placeholder="Title"></div>
+      <div class="field"><label><span class="nm">Subtitle <span class="opt">optional</span></span></label><textarea id="renSub" rows="2" placeholder="Subtitle"></textarea></div>
+      <div class="divider"></div>
+      <div class="sectitle">Platform <span style="color:var(--faint);font-weight:400;font-size:12px">— drag ⠿ to reorder · toggle on/off</span></div>
+      <div class="pfgrid" id="pfgrid"></div>
+      <button class="btn ghost" id="rAddPf" style="margin-top:8px">+ Add Platform</button>
+    </div>
+    <div class="valmsg" id="rvalmsg">請填寫標題(繁體中文 + 英語);副標題選填,但填了一種語言則中英都需填。</div>
+    <div class="mfoot"><button class="btn ghost" id="rmCancel">取消</button><button class="btn gold" id="rmSave">確定</button></div>
+  </div>
+</div>
+
+<!-- ===== SELECT ITEM picker (over the content modal) ===== -->
+<div class="modal2" id="picker">
+  <div class="sheet2">
+    <div class="mhead"><h2 id="pkTitle">SELECT ITEM</h2><button class="x" id="pkClose">✕</button></div>
+    <div class="pkbody">
+      <input class="pksearch" id="pkSearch" placeholder="輸入關鍵字搜索…">
+      <div class="pkgrid" id="pkgrid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== FE PREVIEW ===== -->
+<div class="pv" id="pv">
+  <div class="pvbar"><span class="t">FE PREVIEW · 台灣 · how the layout renders</span><button class="btn ghost" id="pvClose">✕ Close</button></div>
+  <div class="pvwrap" id="pvwrap"></div>
+</div>
+
+<script>
+/* ---------- Data Type → FE UI styles (some fixed, some selectable) ---------- */
+const DT = {
+  'Ztor Library':  {styles:['Video List','Rank List','片單','片單排行榜'], def:'Video List'},
+  'Movie/Tv List': {styles:['Video List','Rank List','片單','片單排行榜'], def:'片單'},
+  'Movie Review':  {styles:['Feature Review','Thematic Post'], selectable:false, note:'此類型不可修改 UI 樣式;將使用對應主檔的數據源與預設樣式。'},
+  'Tastemaker':    {styles:['User List','User Review'], def:'User List'},
+  'Ranking':       {styles:['Video List','Rank List','片單','片單排行榜'], def:'片單排行榜'},
+  'Events Data':   {styles:['活動'], note:'此類型不可修改 UI 樣式;將使用對應主檔的數據源與預設樣式。'},
+  'Movie New':     {styles:['影展消息'], note:'此類型不可修改 UI 樣式;將使用對應主檔的數據源與預設樣式。'},
+  'Award':         {styles:['Video List','Rank List','片單','片單排行榜'], def:'片單排行榜'},
+  'Box Office':    {styles:['票房排行']},
+  'Co-creation':   {styles:['影視共創計畫'], note:'此類型不可修改 UI 樣式(固定 影視共創計畫);但仍需選擇數據源。'},
+};
+function dtDef(k){return DT[k].def||DT[k].styles[0];}
+function dtSelectable(k){return DT[k].selectable!==false && DT[k].styles.length>1;}
+/* data source picker — required for all types except Events Data / Movie New (they use the master default).
+   Co-creation has a fixed UI style but DOES require a data source. */
+const SOURCES=['Golden Horse Awards 電影獎項','綜合 其他排行榜','全部 綜合 年排行榜']; // 3 defaults; real data comes from another BO module
+const NO_SOURCE=['Events Data','Movie New'];
+function needsSource(dt){return !NO_SOURCE.includes(dt);}
+function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+/* ---------- state ---------- */
+/* Tag / Subtitle / Description are all OPTIONAL & bilingual-coupled: fill one language → both required;
+   leave both empty → FE omits the field with no reserved space. Title is the only always-required field. */
+let blocks=[
+  {id:1,enabled:true, dataType:'Events Data', uiStyle:'活動', source:'', zh:{title:'熱門活動',tag:'',sub:'精選活動與專題',desc:''}, en:{title:'Popular Events',tag:'',sub:'Featured events',desc:''}},
+  {id:2,enabled:true, dataType:'Movie/Tv List', uiStyle:'片單', source:'綜合 其他排行榜', zh:{title:'現正熱映',tag:'HOT',sub:'本週話題作',desc:''}, en:{title:'Now Showing',tag:'HOT',sub:'Trending this week',desc:''}},
+];
+let uid=3, editingId=null, curDT='Ztor Library', curStyle=dtDef('Ztor Library'), curSource='', dragId=null;
+
+/* ---------- list ---------- */
+function renderList(){
+  const box=document.getElementById('blocks');
+  if(!blocks.length){box.innerHTML='<div class="empty">No content block yet — click “+ Add Content Block”.</div>';return;}
+  box.innerHTML='';
+  blocks.forEach((b,i)=>{
+    const row=document.createElement('div');row.className='blk'+(b.enabled?'':' off');
+    row.innerHTML=`<span class="ord">${i+1}</span>
+      <div class="ti"><span class="t">${esc(b.zh.title||b.en.title||'(untitled)')}</span><span class="dt">${esc(b.dataType)} · ${esc(b.uiStyle)}</span></div>
+      ${(b.zh.tag||b.en.tag)?`<span class="chip">${esc(b.zh.tag||b.en.tag)}</span>`:''}
+      <span class="sw ${b.enabled?'on':''}" data-en="${b.id}"><i></i></span>
+      <button class="ico" data-edit="${b.id}" title="edit">⚙</button>
+      <button class="ico mv" title="drag to reorder">✥</button>
+      <button class="ico" data-del="${b.id}" title="delete">🗑</button>`;
+    box.appendChild(row);
+    const mv=row.querySelector('.mv');                       // drag starts ONLY from this handle
+    mv.addEventListener('mousedown',()=>{row.draggable=true;});
+    row.addEventListener('dragstart',()=>{dragId=b.id;row.classList.add('dragging');});
+    row.addEventListener('dragend',()=>{row.draggable=false;clearDrop();dragId=null;});
+  });
+  box.querySelectorAll('[data-en]').forEach(el=>el.addEventListener('click',()=>{const b=byId(+el.dataset.en);b.enabled=!b.enabled;renderList();}));
+  box.querySelectorAll('[data-edit]').forEach(el=>el.addEventListener('click',()=>openModal(+el.dataset.edit)));
+  box.querySelectorAll('[data-del]').forEach(el=>el.addEventListener('click',()=>{blocks=blocks.filter(x=>x.id!==+el.dataset.del);renderList();}));
+}
+function byId(id){return blocks.find(b=>b.id===id);}
+/* ---------- drag-to-reorder (via the ✥ handle) ---------- */
+function dropIndex(y){const rows=[...document.querySelectorAll('#blocks .blk')];for(let i=0;i<rows.length;i++){const r=rows[i].getBoundingClientRect();if(y<r.top+r.height/2)return i;}return rows.length;}
+function showDrop(y){const L=document.getElementById('blocks');let d=document.getElementById('bdrop');if(!d){d=document.createElement('div');d.id='bdrop';}const rows=[...L.querySelectorAll('.blk')];const idx=dropIndex(y);if(idx>=rows.length)L.appendChild(d);else L.insertBefore(d,rows[idx]);}
+function clearDrop(){const d=document.getElementById('bdrop');if(d)d.remove();document.querySelectorAll('#blocks .blk.dragging').forEach(r=>r.classList.remove('dragging'));}
+(function(){const L=document.getElementById('blocks');
+  L.addEventListener('dragover',e=>{if(!dragId)return;e.preventDefault();showDrop(e.clientY);});
+  L.addEventListener('drop',e=>{if(!dragId)return;e.preventDefault();const idx=dropIndex(e.clientY);const from=blocks.findIndex(b=>b.id===dragId);if(from<0){clearDrop();return;}const[m]=blocks.splice(from,1);blocks.splice(from<idx?idx-1:idx,0,m);dragId=null;clearDrop();renderList();});
+})();
+
+/* ---------- enable switch in modal ---------- */
+/* show/hide switches removed — Tag / Subtitle / Description are always-visible optional fields */
+function setSw(el,on){el.classList.toggle('on',on);}
+document.getElementById('swEnable').addEventListener('click',e=>e.currentTarget.classList.toggle('on'));
+
+/* ---------- Data Type / styles ---------- */
+function renderDT(){
+  const g=document.getElementById('dtgrid');g.innerHTML='';
+  Object.keys(DT).forEach(k=>{
+    const b=document.createElement('div');b.className='dt'+(k===curDT?' on':'');b.textContent=k;
+    b.addEventListener('click',()=>{curDT=k;curStyle=dtDef(k);curSource='';renderDT();renderStyles();});
+    g.appendChild(b);
+  });
+}
+function renderStyles(){
+  const cfg=DT[curDT], styles=cfg.styles, wrap=document.getElementById('styles'), tag=document.getElementById('styletag');
+  const selectable=dtSelectable(curDT);
+  if(!styles.includes(curStyle)) curStyle=dtDef(curDT);
+  tag.innerHTML='前端 UI 樣式 '+(selectable?'<span style="color:var(--gold)">· 可選一種</span>':'<span style="color:var(--faint)">· 不可修改(固定)</span>');
+  wrap.innerHTML='';
+  styles.forEach(s=>{
+    const on=selectable && s===curStyle;
+    const d=document.createElement('div');d.className='style'+(selectable?'':' fixed')+(on?' on':'');
+    d.innerHTML=`<div class="thumb"><span class="c"></span><span class="c"></span><span class="c"></span></div><div class="nm"><span>${s}</span>${selectable?`<span class="pick">${on?'✓ selected':''}</span>`:'<span class="badge-fixed">固定</span>'}</div>`;
+    if(selectable)d.addEventListener('click',()=>{curStyle=s;renderStyles();});
+    wrap.appendChild(d);
+  });
+  if(cfg.note){const n=document.createElement('div');n.className='stylenote';n.textContent='ⓘ '+cfg.note;wrap.appendChild(n);}
+  renderSource();
+}
+/* ---------- data source field + picker ---------- */
+function renderSource(){
+  const need=needsSource(curDT);
+  document.getElementById('dsField').style.display=need?'flex':'none';
+  const t=document.getElementById('dsText');
+  if(curSource){t.textContent=curSource;t.classList.remove('ph');}
+  else{t.textContent='點擊選擇數據源…';t.classList.add('ph');}
+  document.getElementById('dshint').style.display=(need&&!curSource)?'block':'none';
+  if(!need)document.getElementById('dsField').classList.remove('invalid');
+}
+let pkList=SOURCES, pkOnPick=s=>{curSource=s;renderSource();}, pkBadge='爬蟲';
+/* deterministic pseudo-image: hue from the item name → gradient thumbnail (stands in for the image uploaded in BO) */
+function thumbFor(s){let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))%360;const h2=(h+40)%360;return `background:linear-gradient(135deg,hsl(${h},55%,32%),hsl(${h2},60%,22%))`;}
+function renderPk(q){
+  q=(q||'').trim();const list=pkList.filter(s=>!q||s.includes(q));
+  const g=document.getElementById('pkgrid');
+  g.innerHTML=list.length?list.map(s=>`<div class="pkcard"><div class="pkthumb" style="${thumbFor(s)}"><span class="crawl">${esc(pkBadge)}</span><span class="ph2">${esc(s.trim().charAt(0).toUpperCase())}</span></div><div class="pt">${esc(s)}</div><div class="pkbtns"><button class="btn ghost">查看</button><button class="btn gold" data-pick="${esc(s)}">選擇</button></div></div>`).join(''):'<div style="color:var(--faint)">無結果(請先在 BO 建立項目)</div>';
+  g.querySelectorAll('[data-pick]').forEach(b=>b.addEventListener('click',()=>{pkOnPick(b.dataset.pick);closePicker();}));
+}
+function openPicker(opts){
+  opts=opts||{};
+  pkList=opts.list||SOURCES;
+  pkOnPick=opts.onPick||(s=>{curSource=s;renderSource();});
+  pkBadge=opts.badge||'爬蟲';
+  document.getElementById('pkTitle').textContent=opts.title||'SELECT ITEM';
+  document.getElementById('pkSearch').value='';renderPk('');document.getElementById('picker').classList.add('show');
+}
+function closePicker(){document.getElementById('picker').classList.remove('show');}
+document.getElementById('dsField').addEventListener('click',()=>{if(needsSource(curDT))openPicker();});
+document.getElementById('pkClose').addEventListener('click',closePicker);
+document.getElementById('pkSearch').addEventListener('input',e=>renderPk(e.target.value));
+
+/* ---------- modal open/save ---------- */
+function openModal(id){
+  editingId=id||null;
+  const b=id?byId(id):null;
+  document.getElementById('mtitle').textContent=id?'EDIT CONTENT BLOCK':'ADD CONTENT BLOCK';
+  setSw(document.getElementById('swEnable'), b?b.enabled:true);
+  document.getElementById('zhTitle').value=b?b.zh.title:''; document.getElementById('enTitle').value=b?b.en.title:'';
+  document.getElementById('zhSub').value=b?(b.zh.sub||''):''; document.getElementById('enSub').value=b?(b.en.sub||''):'';
+  document.getElementById('zhTag').value=b?(b.zh.tag||''):''; document.getElementById('enTag').value=b?(b.en.tag||''):'';
+  document.getElementById('zhDesc').innerHTML=b&&b.zh.desc?b.zh.desc:''; document.getElementById('enDesc').innerHTML=b&&b.en.desc?b.en.desc:'';
+  curDT=b?b.dataType:'Ztor Library'; curStyle=b?b.uiStyle:dtDef(curDT); curSource=b?(b.source||''):'';
+  renderDT();renderStyles();
+  document.getElementById('valmsg').style.display='none';
+  document.querySelectorAll('#modal .invalid').forEach(e=>e.classList.remove('invalid'));
+  document.getElementById('modal').classList.add('show');
+}
+// typing clears the red highlight on that field
+document.getElementById('modal').addEventListener('input',e=>{
+  e.target.classList.remove('invalid');
+  const box=e.target.closest&&e.target.closest('.rtbox'); if(box)box.classList.remove('invalid');
+});
+function closeModal(){document.getElementById('modal').classList.remove('show');}
+function fieldVal(el){return (el.value!==undefined?el.value:el.textContent).trim();}
+function saveModal(){
+  document.querySelectorAll('#modal .invalid').forEach(e=>e.classList.remove('invalid'));
+  let bad=false;
+  const mark=el=>{ (el.classList.contains('rtarea')?el.closest('.rtbox'):el).classList.add('invalid'); bad=true; };
+  const req=id=>{ const el=document.getElementById(id); if(!fieldVal(el)) mark(el); };
+  req('zhTitle'); req('enTitle');                  // title always required (both languages)
+  // Tag / Subtitle / Description: optional, but bilingual-coupled — fill one language → the other becomes required
+  const couple=(zhId,enId)=>{ const z=document.getElementById(zhId), e=document.getElementById(enId);
+    const zf=fieldVal(z), ef=fieldVal(e);
+    if(zf&&!ef) mark(e);
+    if(ef&&!zf) mark(z);
+  };
+  couple('zhTag','enTag'); couple('zhSub','enSub'); couple('zhDesc','enDesc');
+  if(needsSource(curDT) && !curSource){ document.getElementById('dsField').classList.add('invalid'); document.getElementById('dshint').style.display='block'; bad=true; } // data source required
+  document.getElementById('valmsg').style.display=bad?'block':'none';
+  if(bad)return;
+  const zhDescV=fieldVal(document.getElementById('zhDesc'))?document.getElementById('zhDesc').innerHTML:'';
+  const enDescV=fieldVal(document.getElementById('enDesc'))?document.getElementById('enDesc').innerHTML:'';
+  const data={
+    enabled:document.getElementById('swEnable').classList.contains('on'),
+    dataType:curDT, uiStyle:curStyle, source:needsSource(curDT)?curSource:'',
+    zh:{title:document.getElementById('zhTitle').value, tag:document.getElementById('zhTag').value, sub:document.getElementById('zhSub').value, desc:zhDescV},
+    en:{title:document.getElementById('enTitle').value, tag:document.getElementById('enTag').value, sub:document.getElementById('enSub').value, desc:enDescV},
+  };
+  if(editingId){Object.assign(byId(editingId),data);}
+  else{blocks.push(Object.assign({id:uid++},data));}
+  closeModal();renderList();
+}
+document.getElementById('btnAdd').addEventListener('click',()=>openModal());
+document.getElementById('mClose').addEventListener('click',closeModal);
+document.getElementById('mCancel').addEventListener('click',closeModal);
+document.getElementById('mSave').addEventListener('click',saveModal);
+
+/* ===================== BANNER (#1) ===================== */
+const BANNER_RES=['AI Competition','Blind Box','Movie','Customize','Crowdfund'];
+/* Resource = a GROUP (created in another module). Each group — Customize included — has events/items
+   under it (also created there). The Home CMS only selects; every group requires picking one item. */
+const BANNER_ITEMS={
+  'AI Competition':['Z-ORIGIN: AI原力創作計畫','2026 AI 短片大賽','AI 角色設計挑戰賽'],
+  'Blind Box':['名導盲盒 第一彈','影展限定盲盒','週年慶神秘盲盒'],
+  'Movie':['奧本海默 Oppenheimer','可憐的東西 Poor Things','墜惡真相 Anatomy of a Fall'],
+  'Customize':['春節主視覺 banner','會員專屬活動 banner','限時快閃公告 banner'],
+  'Crowdfund':['《海邊的卡夫卡》紀錄片','獨立動畫《光年》','劇場版《晝夜》募資'],
+};
+let banners=[
+  {id:1,enabled:true,resource:'AI Competition',item:'Z-ORIGIN: AI原力創作計畫',
+   header:{zh:'Z-ORIGIN: AI原力創作計畫',en:'Z-ORIGIN: AI Program'},
+   title:{zh:'職場「非」人腦動節',en:'The non-human brain festival'},
+   content:{zh:'參賽截止還有 30 天',en:'30 days left to enter'},
+   ctas:[{name:'立即參賽',url:'https://ztor.lx7.com/join'},{name:'查看參賽作品',url:'https://ztor.lx7.com/works'}]},
+];
+let bannerRotate=false, bUid=2, editingBId=null, dragBId=null, curBRes='AI Competition', curBItem='', bCtas=[], bActive=0, rotTimer=null;
+function bById(id){return banners.find(b=>b.id===id);}
+
+function renderBanners(){
+  document.getElementById('rotateRow').classList.toggle('show', banners.length>1);
+  document.getElementById('swRotate').classList.toggle('on', bannerRotate);
+  const box=document.getElementById('banners');
+  if(!banners.length){box.innerHTML='<div class="empty">No banner yet — click “+ Add Banner”.</div>';return;}
+  box.innerHTML='';
+  banners.forEach((b,i)=>{
+    const row=document.createElement('div');row.className='blk'+(b.enabled?'':' off');
+    row.innerHTML=`<span class="ord">${i+1}</span>
+      <div class="ti"><span class="t">${esc(b.title.zh||b.title.en||'(untitled)')}</span><span class="dt">${esc(b.resource)}${b.item?' · '+esc(b.item):''} · ${b.ctas.length} CTA</span></div>
+      <span class="sw ${b.enabled?'on':''}" data-ben="${b.id}"><i></i></span>
+      <button class="ico" data-bedit="${b.id}" title="edit">⚙</button>
+      <button class="ico bmv" title="drag to reorder">✥</button>
+      <button class="ico" data-bdel="${b.id}" title="delete">🗑</button>`;
+    box.appendChild(row);
+    const mv=row.querySelector('.bmv');
+    mv.addEventListener('mousedown',()=>{row.draggable=true;});
+    row.addEventListener('dragstart',()=>{dragBId=b.id;row.classList.add('dragging');});
+    row.addEventListener('dragend',()=>{row.draggable=false;clearBDrop();dragBId=null;});
+  });
+  box.querySelectorAll('[data-ben]').forEach(el=>el.addEventListener('click',()=>{const b=bById(+el.dataset.ben);b.enabled=!b.enabled;renderBanners();}));
+  box.querySelectorAll('[data-bedit]').forEach(el=>el.addEventListener('click',()=>openBanner(+el.dataset.bedit)));
+  box.querySelectorAll('[data-bdel]').forEach(el=>el.addEventListener('click',()=>{banners=banners.filter(x=>x.id!==+el.dataset.bdel);renderBanners();}));
+}
+function bDropIndex(y){const rows=[...document.querySelectorAll('#banners .blk')];for(let i=0;i<rows.length;i++){const r=rows[i].getBoundingClientRect();if(y<r.top+r.height/2)return i;}return rows.length;}
+function showBDrop(y){const L=document.getElementById('banners');let d=document.getElementById('bdrop2');if(!d){d=document.createElement('div');d.id='bdrop2';d.style.cssText='height:3px;background:var(--gold);border-radius:2px;margin:-5px 2px;box-shadow:0 0 8px var(--gold);pointer-events:none';}const rows=[...L.querySelectorAll('.blk')];const idx=bDropIndex(y);if(idx>=rows.length)L.appendChild(d);else L.insertBefore(d,rows[idx]);}
+function clearBDrop(){const d=document.getElementById('bdrop2');if(d)d.remove();document.querySelectorAll('#banners .blk.dragging').forEach(r=>r.classList.remove('dragging'));}
+(function(){const L=document.getElementById('banners');
+  L.addEventListener('dragover',e=>{if(!dragBId)return;e.preventDefault();showBDrop(e.clientY);});
+  L.addEventListener('drop',e=>{if(!dragBId)return;e.preventDefault();const idx=bDropIndex(e.clientY);const from=banners.findIndex(b=>b.id===dragBId);const[m]=banners.splice(from,1);banners.splice(from<idx?idx-1:idx,0,m);dragBId=null;clearBDrop();renderBanners();});
+})();
+document.getElementById('swRotate').addEventListener('click',()=>{bannerRotate=!bannerRotate;renderBanners();});
+
+/* ===================== RANKING widget (single fixed widget — editable) ===================== */
+let ranking={enabled:true, title:{zh:'臺灣排行 Top 10',en:"Taiwan's Top 10"}, subtitle:{zh:'',en:''},
+  platforms:[
+    {key:'W',name:'WORLD',sub:'全部 綜合 天排行榜',on:true,configured:true},
+    {key:'T',name:'Theatrical box office',sub:'friDay 影音 動漫 天排行榜',on:false,configured:true},
+    {key:'Z',name:'Ztor',sub:'Ztor . 綜合排行榜1',on:true,configured:true},
+    {key:'N',name:'Netflix',sub:'Netflix 電影 天排行榜',on:true,configured:true},
+    {key:'D',name:'Disney+',sub:'Disney+ TW Daily Ranking',on:true,configured:true},
+    {key:'i',name:'iQIYI',sub:'iQIYI TW Daily Ranking',on:true,configured:true},
+    {key:'H',name:'HBO GO',sub:'HBO Max 電影 天排行榜',on:true,configured:true},
+    {key:'m',name:'myVideo',sub:'MyVideo TW Daily Ranking',on:true,configured:true},
+    {key:'f',name:'friDay Video',sub:'friDay Video TW Daily Ranking',on:true,configured:true},
+    {key:'L',name:'LiTV',sub:'LiTV 電視劇 日排行榜',on:true,configured:true},
+    {key:'H',name:'Hami Video',sub:'Hami Video 電視劇 天排行榜',on:true,configured:true},
+    {key:'C',name:'CATCHPLAY+',sub:'CATCHPLAY+ 電影 天排行榜',on:true,configured:true},
+    {key:'K',name:'KKTV',sub:'Netflix 綜合 天排行榜',on:false,configured:true},
+    {key:'V',name:'Viu',sub:'',on:false,configured:false},
+  ]};
+let rPlatforms=[], dragPf=null;
+function renderRanking(){
+  document.getElementById('rankTitle').textContent=ranking.title.zh||ranking.title.en;
+  const onN=ranking.platforms.filter(p=>p.on).length;
+  document.getElementById('rankSub').textContent=`Ranking widget · ${onN}/${ranking.platforms.length} platforms on`;
+  document.getElementById('swRanking').classList.toggle('on',ranking.enabled);
+  document.getElementById('rankRow').classList.toggle('off',!ranking.enabled);
+}
+document.getElementById('swRanking').addEventListener('click',()=>{ranking.enabled=!ranking.enabled;renderRanking();});
+document.getElementById('rankEdit').addEventListener('click',openRanking);
+
+/* ranking modal */
+function renderPf(){
+  const g=document.getElementById('pfgrid');
+  g.innerHTML=rPlatforms.map((p,i)=>`<div class="pfcard" data-pfi="${i}">
+    <span class="pfdrag">⠿</span>
+    <span class="pfav">${esc(p.key||'?')}</span>
+    <div class="pfinfo"><div class="pfname">${esc(p.name)}</div><div class="pfsub ${p.configured?'':'unset'}">${p.configured?esc(p.sub):'未配置'}</div></div>
+    <span class="sw ${p.on?'on':''}" data-pft="${i}"><i></i></span>
+  </div>`).join('');
+  g.querySelectorAll('[data-pft]').forEach(el=>el.addEventListener('click',()=>{rPlatforms[+el.dataset.pft].on=!rPlatforms[+el.dataset.pft].on;renderPf();}));
+  g.querySelectorAll('.pfcard').forEach(card=>{
+    card.querySelector('.pfdrag').addEventListener('mousedown',()=>{card.draggable=true;});
+    card.addEventListener('dragstart',()=>{dragPf=+card.dataset.pfi;card.classList.add('dragging');});
+    card.addEventListener('dragend',()=>{card.draggable=false;clearPfDrop();dragPf=null;});
+  });
+}
+function pfDropIndex(y){const rows=[...document.querySelectorAll('#pfgrid .pfcard')];for(let i=0;i<rows.length;i++){const r=rows[i].getBoundingClientRect();if(y<r.top+r.height/2)return i;}return rows.length;}
+function clearPfDrop(){const d=document.getElementById('pfdrop');if(d)d.remove();document.querySelectorAll('#pfgrid .pfcard.dragging').forEach(c=>c.classList.remove('dragging'));}
+(function(){const g=document.getElementById('pfgrid');
+  g.addEventListener('dragover',e=>{if(dragPf==null)return;e.preventDefault();let d=document.getElementById('pfdrop');if(!d){d=document.createElement('div');d.id='pfdrop';}const rows=[...g.querySelectorAll('.pfcard')];const idx=pfDropIndex(e.clientY);if(idx>=rows.length)g.appendChild(d);else g.insertBefore(d,rows[idx]);});
+  g.addEventListener('drop',e=>{if(dragPf==null)return;e.preventDefault();const idx=pfDropIndex(e.clientY);const[m]=rPlatforms.splice(dragPf,1);rPlatforms.splice(dragPf<idx?idx-1:idx,0,m);dragPf=null;clearPfDrop();renderPf();});
+})();
+function openRanking(){
+  document.getElementById('rEnable').classList.toggle('on',ranking.enabled);
+  document.getElementById('rzhTitle').value=ranking.title.zh; document.getElementById('renTitle').value=ranking.title.en;
+  document.getElementById('rzhSub').value=ranking.subtitle.zh; document.getElementById('renSub').value=ranking.subtitle.en;
+  rPlatforms=ranking.platforms.map(p=>({...p}));
+  renderPf();
+  document.getElementById('rvalmsg').style.display='none';
+  document.querySelectorAll('#rmodal .invalid').forEach(e=>e.classList.remove('invalid'));
+  document.getElementById('rmodal').classList.add('show');
+}
+function closeRanking(){document.getElementById('rmodal').classList.remove('show');}
+function saveRanking(){
+  document.querySelectorAll('#rmodal .invalid').forEach(e=>e.classList.remove('invalid'));
+  let bad=false;const req=id=>{const el=document.getElementById(id);if(!el.value.trim()){el.classList.add('invalid');bad=true;}};
+  req('rzhTitle');req('renTitle');                          // title required (both languages)
+  // subtitle: optional but bilingual-coupled — fill one language → both required
+  (()=>{const z=document.getElementById('rzhSub'),e=document.getElementById('renSub');
+    if(z.value.trim()&&!e.value.trim()){e.classList.add('invalid');bad=true;}
+    if(e.value.trim()&&!z.value.trim()){z.classList.add('invalid');bad=true;}})();
+  document.getElementById('rvalmsg').style.display=bad?'block':'none';
+  if(bad)return;
+  ranking.enabled=document.getElementById('rEnable').classList.contains('on');
+  ranking.title={zh:document.getElementById('rzhTitle').value,en:document.getElementById('renTitle').value};
+  ranking.subtitle={zh:document.getElementById('rzhSub').value,en:document.getElementById('renSub').value};
+  ranking.platforms=rPlatforms.map(p=>({...p}));
+  closeRanking();renderRanking();
+}
+document.getElementById('rmClose').addEventListener('click',closeRanking);
+document.getElementById('rmCancel').addEventListener('click',closeRanking);
+document.getElementById('rmSave').addEventListener('click',saveRanking);
+document.getElementById('rEnable').addEventListener('click',e=>e.currentTarget.classList.toggle('on'));
+document.getElementById('rAddPf').addEventListener('click',()=>{rPlatforms.push({key:'+',name:'New Platform',sub:'',on:false,configured:false});renderPf();});
+
+function rankingPreview(){
+  const on=ranking.platforms.filter(p=>p.on);
+  const tabs=['全部',...on.map(p=>p.name)].slice(0,8);
+  return `<div class="pvsec"><h3>${esc(ranking.title.zh||ranking.title.en)}</h3>
+    ${ranking.subtitle.zh?`<div class="sub">${esc(ranking.subtitle.zh)}</div>`:''}
+    <div class="pv-tabs">${tabs.map((t,i)=>`<span class="pv-tab${i===0?' on':''}">${esc(t)}</span>`).join('')}</div>
+    <div class="pvrow rank"><div class="card">1</div><div class="card">2</div><div class="card">3</div><div class="card">4</div></div></div>`;
+}
+
+/* banner modal */
+function renderBRes(){
+  const g=document.getElementById('bresgrid');g.innerHTML='';
+  BANNER_RES.forEach(k=>{const d=document.createElement('div');d.className='dt'+(k===curBRes?' on':'');d.textContent=k;d.addEventListener('click',()=>{if(k!==curBRes){curBRes=k;curBItem='';}renderBRes();renderBItem();});g.appendChild(d);});
+}
+function renderBItem(){
+  document.getElementById('bItemField').style.display='flex';   // every group has selectable items
+  const t=document.getElementById('bItemText');
+  if(curBItem){t.textContent=curBItem;t.classList.remove('ph');}
+  else{t.textContent='點擊選擇此群組下的 event / item…';t.classList.add('ph');}
+  document.getElementById('bItemHint').style.display=curBItem?'none':'block';
+}
+document.getElementById('bItemField').addEventListener('click',()=>{
+  openPicker({list:BANNER_ITEMS[curBRes]||[],title:'SELECT '+curBRes.toUpperCase()+' (from BO)',badge:'BO',
+    onPick:s=>{curBItem=s;renderBItem();document.getElementById('bItemField').classList.remove('invalid');}});
+});
+function renderBCtas(){
+  const box=document.getElementById('bctas');
+  box.innerHTML=bCtas.length?bCtas.map((c,i)=>`<div class="ctarow"><input class="ci nm" data-cname="${i}" placeholder="CTA 名稱 (e.g. 立即參賽)" value="${esc(c.name)}"><input class="ci" data-curl="${i}" placeholder="URL http:// 或 https://…" value="${esc(c.url)}"><button class="ico" data-crm="${i}" title="remove">🗑</button></div>`).join(''):'<div style="color:var(--faint);font-size:12px;padding:4px 0">No CTA — add one if needed.</div>';
+  box.querySelectorAll('[data-cname]').forEach(el=>el.addEventListener('input',()=>{bCtas[+el.dataset.cname].name=el.value;el.classList.remove('invalid');}));
+  box.querySelectorAll('[data-curl]').forEach(el=>el.addEventListener('input',()=>{bCtas[+el.dataset.curl].url=el.value;el.classList.remove('invalid');}));
+  box.querySelectorAll('[data-crm]').forEach(el=>el.addEventListener('click',()=>{bCtas.splice(+el.dataset.crm,1);renderBCtas();}));
+}
+function openBanner(id){
+  editingBId=id||null;const b=id?bById(id):null;
+  document.getElementById('bmtitle').textContent=id?'EDIT BANNER':'ADD BANNER';
+  document.getElementById('bEnable').classList.toggle('on', b?b.enabled:true);
+  curBRes=b?b.resource:BANNER_RES[0];
+  curBItem=b?(b.item||''):'';
+  document.getElementById('bzhHeader').value=b?b.header.zh:''; document.getElementById('benHeader').value=b?b.header.en:'';
+  document.getElementById('bzhTitle').value=b?b.title.zh:''; document.getElementById('benTitle').value=b?b.title.en:'';
+  document.getElementById('bzhContent').value=b?b.content.zh:''; document.getElementById('benContent').value=b?b.content.en:'';
+  bCtas=b?b.ctas.map(c=>({...c})):[];
+  renderBRes();renderBItem();renderBCtas();
+  document.getElementById('bvalmsg').style.display='none';
+  document.querySelectorAll('#bmodal .invalid').forEach(e=>e.classList.remove('invalid'));
+  document.getElementById('bmodal').classList.add('show');
+}
+function closeBanner(){document.getElementById('bmodal').classList.remove('show');}
+function saveBanner(){
+  document.querySelectorAll('#bmodal .invalid').forEach(e=>e.classList.remove('invalid'));
+  let bad=false;
+  // banner text fields (Header/Title/Content) are optional but bilingual-coupled — fill one language → both required
+  const coupleB=(zhId,enId)=>{const z=document.getElementById(zhId),e=document.getElementById(enId);
+    const zf=z.value.trim(), ef=e.value.trim();
+    if(zf&&!ef){e.classList.add('invalid');bad=true;}
+    if(ef&&!zf){z.classList.add('invalid');bad=true;}
+  };
+  coupleB('bzhHeader','benHeader'); coupleB('bzhTitle','benTitle'); coupleB('bzhContent','benContent');
+  if(!curBItem){                                            // every group requires a specific item
+    document.getElementById('bItemField').classList.add('invalid');
+    document.getElementById('bItemHint').style.display='block';bad=true;
+  }
+  document.querySelectorAll('#bctas .ctarow').forEach(row=>{ // each CTA needs name + http(s) url
+    const nm=row.querySelector('[data-cname]'),url=row.querySelector('[data-curl]');
+    if(!nm.value.trim()){nm.classList.add('invalid');bad=true;}
+    if(!/^https?:\/\//i.test(url.value.trim())){url.classList.add('invalid');bad=true;}
+  });
+  document.getElementById('bvalmsg').style.display=bad?'block':'none';
+  if(bad)return;
+  const data={enabled:document.getElementById('bEnable').classList.contains('on'),resource:curBRes,item:curBItem,
+    header:{zh:document.getElementById('bzhHeader').value,en:document.getElementById('benHeader').value},
+    title:{zh:document.getElementById('bzhTitle').value,en:document.getElementById('benTitle').value},
+    content:{zh:document.getElementById('bzhContent').value,en:document.getElementById('benContent').value},
+    ctas:bCtas.map(c=>({name:c.name,url:c.url}))};
+  if(editingBId)Object.assign(bById(editingBId),data);else banners.push(Object.assign({id:bUid++},data));
+  closeBanner();renderBanners();
+}
+document.getElementById('btnAddBanner').addEventListener('click',()=>openBanner());
+document.getElementById('bmClose').addEventListener('click',closeBanner);
+document.getElementById('bmCancel').addEventListener('click',closeBanner);
+document.getElementById('bmSave').addEventListener('click',saveBanner);
+document.getElementById('bAddCta').addEventListener('click',()=>{bCtas.push({name:'',url:''});renderBCtas();});
+document.getElementById('bEnable').addEventListener('click',e=>e.currentTarget.classList.toggle('on'));
+
+/* banner carousel for FE preview */
+function bannerCarousel(vb){
+  if(bActive>=vb.length)bActive=0;
+  const b=vb[bActive];
+  const ctas=b.ctas.map((c,i)=>`<a class="${i>0?'alt':''}" href="${/^https?:\/\//i.test(c.url)?esc(c.url):'#'}" target="_blank" rel="noopener">${esc(c.name)} →</a>`).join('');
+  const dots=vb.length>1?`<div class="pvdots">${vb.map((_,i)=>`<i class="${i===bActive?'on':''}" data-dot="${i}"></i>`).join('')}</div>`:'';
+  return `<div class="pvbanner">
+    <div class="bres">${esc(b.resource)}</div>
+    ${b.header.zh?`<div class="bhead">${esc(b.header.zh)}</div>`:''}
+    ${(b.title.zh||b.title.en)?`<div class="btitle">${esc(b.title.zh||b.title.en)}</div>`:''}
+    ${b.content.zh?`<div class="bcontent">${esc(b.content.zh)}</div>`:''}
+    ${ctas?`<div class="bctas">${ctas}</div>`:''}
+    ${dots}
+  </div>`;
+}
+
+/* ---------- FE preview ---------- */
+function pvBody(b){
+  const st=b.uiStyle;
+  if(b.dataType==='Co-creation') return `<div class="pvrow">${'<div class="card" style="position:relative"><span style="position:absolute;left:12px;right:12px;bottom:12px;height:5px;border-radius:3px;background:#333;overflow:hidden"><span style="position:absolute;inset:0;width:60%;background:var(--gold)"></span></span></div>'.repeat(3)}</div>`;
+  if(st==='片單排行榜'||st==='Rank List') return `<div class="pvrow rank"><div class="card">1</div><div class="card">2</div><div class="card">3</div><div class="card">4</div></div>`;
+  if(st==='片單'||st==='Video List') return `<div class="pvrow poster"><div class="card"></div><div class="card"></div><div class="card"></div><div class="card"></div><div class="card"></div></div>`;
+  return `<div class="pvrow"><div class="card"></div><div class="card"></div><div class="card"></div></div>`;
+}
+function renderPreview(){
+  const w=document.getElementById('pvwrap');
+  const vb=banners.filter(b=>b.enabled);
+  const vis=blocks.filter(b=>b.enabled);
+  let html=vb.length?bannerCarousel(vb):'';
+  if(ranking.enabled) html+=rankingPreview();      // ranking sits between banner and the content blocks
+  html+=vis.map(b=>`<div class="pvsec">
+    ${b.zh.tag?`<span class="ptag">${esc(b.zh.tag)}</span><br>`:''}
+    <h3>${esc(b.zh.title||b.en.title)}</h3>
+    ${b.zh.sub?`<div class="sub">${esc(b.zh.sub)}</div>`:''}
+    ${pvBody(b)}
+    <div style="color:var(--faint);font-size:11px;margin-top:6px">${b.dataType} · 樣式：${b.uiStyle}</div>
+  </div>`).join('');
+  w.innerHTML=html||'<div class="empty">Nothing to preview.</div>';
+  // dots + auto-rotate
+  document.querySelectorAll('.pvdots [data-dot]').forEach(d=>d.addEventListener('click',()=>{bActive=+d.dataset.dot;renderPreview();}));
+  if(rotTimer){clearInterval(rotTimer);rotTimer=null;}
+  if(bannerRotate && vb.length>1 && document.getElementById('pv').classList.contains('show')){
+    rotTimer=setInterval(()=>{bActive=(bActive+1)%vb.length;renderPreview();},3000);
+  }
+}
+document.getElementById('btnPreview').addEventListener('click',()=>{bActive=0;document.getElementById('pv').classList.add('show');renderPreview();});
+document.getElementById('pvClose').addEventListener('click',()=>{document.getElementById('pv').classList.remove('show');if(rotTimer){clearInterval(rotTimer);rotTimer=null;}});
+
+/* ---------- rich-text toolbar ---------- */
+document.querySelectorAll('.rttool span[data-cmd]').forEach(s=>s.addEventListener('mousedown',e=>{
+  e.preventDefault(); // keep the editor's text selection
+  const [cmd,val]=s.dataset.cmd.split('|');
+  document.execCommand(cmd,false,val||null);
+}));
+
+/* ---------- init ---------- */
+renderBanners();
+renderRanking();
+renderList();
+</script>
+</body>
+</html>
