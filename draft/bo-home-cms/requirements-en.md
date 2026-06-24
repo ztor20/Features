@@ -63,8 +63,8 @@ The internal ops surface to configure the public ztor homepage **per region**, w
 ### 4.4 Data
 - `Banner { id, enabled, resource: BannerResource, item: BannerItem, header: Bilingual, title: Bilingual, content: Bilingual, ctas: Cta[] }`
 - `BannerSection { banners: Banner[], rotate: boolean }`
-- `BannerResource` = a **group**: a content group **created & managed in another BO module** (`AI Competition | Blind Box | Movie | Customize | Crowdfund` — **`Customize` is a group too**, not a manual mode). The Home CMS does **not** create groups — it only selects from existing ones; the group list is supplied by that module (the set here is illustrative).
-- `BannerItem`: a specific **event / item under the selected group**, also created in that other module. The picker lists the group's items as **image + name** cards, scoped to the selected group; empty if the group has none ("create it in that module first"). **Required for every group** (no group is exempt — including `Customize`).
+- `BannerResource` = a **group**, mapped to an existing **BO data module**: `Movie/TV List | Events Data | Movie News | Crowdfund`. **`Events Data` includes Blind Box + AI Competition items.** The Home CMS does **not** create groups or items — it only selects from what those BO modules provide (the group list is supplied by BO; the set here is illustrative).
+- `BannerItem`: a specific **event / item under the selected group**, created in that BO module first (**out of this scope** — e.g. Crowdfund items are created in BO, then appear under the `Crowdfund` group). The picker lists the group's items as **image + name** cards, scoped to the selected group; empty if the group has none ("create it in that module first"). **Required for every group** (no group is exempt).
 - `Bilingual { zh: string, en: string }` — **all banner text (Header/Title/Content) is optional but bilingual-coupled**: per field, `zh` & `en` are both filled or both empty; an empty field is **omitted on FE with no reserved space**. · `Cta { name: string, url: Url }` (if a CTA is added, both `name` + `http`/`https` `url` are required)
 
 ---
@@ -82,7 +82,8 @@ The internal ops surface to configure the public ztor homepage **per region**, w
 |--------|--------|
 | Toggle (row) | Enable / disable the widget. |
 | ⚙ (row) | Opens the ranking editor. |
-| _In the editor:_ edit Title/Subtitle · platform toggle · drag ⠿ · + Add Platform | Updates the widget & its platform list. |
+| _In the editor:_ edit Title/Subtitle · platform toggle · drag ⠿ | Updates the widget & its platform list. |
+| _In the editor:_ **+ Add Platform** | Opens a picker to **select a platform from the BO Rankings module** (image+name cards; not free-typed); the chosen platform is added to the list. |
 | Save (editor) | Validates Title (both langs) + Subtitle bilingual coupling (fill one language → both required) → saves. |
 | _(No delete)_ | The ranking widget is a single fixed widget — it cannot be deleted / added / reordered as a section. |
 
@@ -98,7 +99,7 @@ The internal ops surface to configure the public ztor homepage **per region**, w
 
 ### 5.4 Data
 - `Ranking { enabled, title: Bilingual, subtitle: Bilingual, platforms: Platform[] }` — `title` required (both langs); `subtitle` optional but **bilingual-coupled** (`zh` & `en` both filled or both empty; empty → omitted on FE with no reserved space).
-- `Platform { key, name, sub: string, on: boolean, configured: boolean }` — `sub` = ranking source; `configured=false` → “未配置”.
+- `Platform { key, name, sub: string, on: boolean, configured: boolean }` — `sub` = ranking source; `configured=false` → “未配置”. The platform catalog is **supplied by the BO Rankings module** — operators select from it via **+ Add Platform**, they do not free-type platforms.
 
 ---
 
@@ -150,7 +151,7 @@ The internal ops surface to configure the public ztor homepage **per region**, w
 | Box Office | 票房排行 | single (fixed) |
 | Co-creation | 影視共創計畫 | **no (fixed)** — fixed UI like Events Data, but **data source required** |
 
-> **The Data Type options come from another BO module** — the catalog of Data Types (and the content each one resolves to) is defined & maintained elsewhere; the Home CMS only *selects* a Data Type, it does not create or edit the catalog. The list above is illustrative.
+> **The Data Type options map to the existing BO data-management modules — NOT hardcoded.** The 10 Data Types correspond to the BO `data-management` modules (Ztor Library · Movie/TV Lists · Movie Reviews · Tastemakers · Rankings · Events Data · Movie News · Awards · Box Office Data) plus Co-creation. The catalog (and the content each Data Type resolves to) is supplied by those modules; the Home CMS only *selects* a Data Type — it must read the list dynamically, not hardcode it. The table above is illustrative.
 
 ### 6.4 Data
 - `ContentBlock { id, enabled, dataType: DataType, uiStyle: string, source: string, title: Bilingual, tag: Bilingual, subtitle: Bilingual, description: Bilingual }`
@@ -169,7 +170,7 @@ The internal ops surface to configure the public ztor homepage **per region**, w
 - [ ] Regardless of count, FE shows **one banner slot** (carousel), one banner at a time; banners never stack into separate sections.
 - [ ] **Rotate** toggle appears only when **> 1** banner; ON → auto-advance every **3s**; OFF → manual dot switching.
 - [ ] All banner text fields (Header/Title/Content) are **optional but bilingual-coupled** (fill one language → both required; both empty → omitted on FE with no reserved space); if a CTA is added it needs `name` + absolute `http`/`https` `url`; invalid blocked.
-- [ ] **Banner Resource = a group** (created in another module; `Customize` is a group too); after picking a group, an **Item** (an event/item *under that group*) must be selected from existing BO items (image + name cards; select-only) — **required for every group**; changing the group clears the previously chosen Item; empty picker if the group has none.
+- [ ] **Banner Resource = a group** mapped to a BO data module (`Movie/TV List | Events Data | Movie News | Crowdfund`; Events Data includes Blind Box + AI Competition); after picking a group, an **Item** (an event/item *under that group*) must be selected from existing BO items (image + name cards; select-only) — **required for every group**; changing the group clears the previously chosen Item; empty picker if the group has none.
 - [ ] Banners drag-reorderable; row order = carousel order.
 - [ ] Each banner row has **Delete 🗑**; removing a banner takes it out of the section (and the carousel).
 
@@ -201,13 +202,13 @@ Given / When / Then, with an **observable Then**.
 - **BO-TC-06** — Given Data Type = `Co-creation` · When Save without a data source · Then blocked (“請選擇數據鏈接”); Given Data Type = `Events Data` or `Movie New` · Then no data-source field, Save allowed. *(catches: data-source requirement errors; Co-creation wrongly exempted)*
 - **BO-TC-07** — Given Layout Sequence `[A, B, C]` · When C is dragged above A via the handle · Then order becomes `[C, A, B]` and row numbers update. *(catches: broken reorder)*
 - **BO-TC-08** — Given a banner row and a content-block row · When **Delete 🗑** is clicked on each · Then that banner leaves the carousel and that block leaves the Layout Sequence (row counts decrement); the Ranking widget exposes **no** delete. *(catches: missing/over-broad delete)*
-- **BO-TC-09** — Given Banner Resource (group) = `Movie` · When the Item field is clicked · Then the **SELECT ITEM** picker lists the events/items under that group as **image + name cards** and choosing one fills the Item; Given a group with no items · Then the picker is empty (the CMS cannot create groups or items here); When Save without an Item · Then blocked with inline error; And Given group = `Customize` · Then it behaves like any other group — its items are listed and an Item is still required (no group is exempt); And When the group is switched from `Movie` to `Crowdfund` · Then the previously chosen movie is cleared and the picker now lists the crowdfund group's items. *(catches: missing item link; wrong/stale item list; groups/items not authored in their module; Customize wrongly exempted)*
+- **BO-TC-09** — Given Banner Resource (group) = `Movie/TV List` · When the Item field is clicked · Then the **SELECT ITEM** picker lists the events/items under that group as **image + name cards** and choosing one fills the Item; Given a group with no items · Then the picker is empty (the CMS cannot create groups or items here); When Save without an Item · Then blocked with inline error; And When the group is switched from `Movie/TV List` to `Crowdfund` · Then the previously chosen item is cleared and the picker now lists the Crowdfund group's items; And Given group = `Events Data` · Then its items include Blind Box / AI Competition entries. *(catches: missing item link; wrong/stale item list; groups/items not authored in their BO module; Events Data grouping)*
 
 ## Not Included
 - Per-region **data wiring** (config is per region, but cross-region data integration is separate).
 - The public **FE renderer** (consumes this config; pre-existing).
 - **Banner** is currently hardcoded on the FE renderer — to be replaced by this config.
-- **Authoring of Banner groups (Resources) and the events/items under them** (Movies / AI Competitions / Crowdfund campaigns / Blind Boxes) — created in their own BO modules; this surface only *selects* existing groups & items (external dependency).
-- The **Data Type catalog** (the list of Data Types and the content each resolves to) — defined & maintained in other BO modules; this surface only *selects* a Data Type (external dependency).
-- The Ranking **platform master data** (sources come from another BO module).
+- **Authoring of Banner items** — Movie/TV List, Events Data (incl. Blind Box + AI Competition), Movie News, and Crowdfund items are created in their own BO modules; this surface only *selects* existing items (external dependency).
+- The **Data Type catalog** (the list of Data Types and the content each resolves to) — supplied by the BO **data-management** modules; this surface reads the list dynamically and only *selects* a Data Type, never hardcodes it (external dependency).
+- The Ranking **platform master data** — the platform catalog + ranking sources come from the **BO Rankings module** (this surface only selects from it).
 - Platform-level **access control & change logging** (follow the existing BO admin).
