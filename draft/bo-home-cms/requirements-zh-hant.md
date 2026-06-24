@@ -63,8 +63,8 @@
 ### 4.4 資料
 - `Banner { id, enabled, resource: BannerResource, item: BannerItem, header: Bilingual, title: Bilingual, content: Bilingual, ctas: Cta[] }`
 - `BannerSection { banners: Banner[], rotate: boolean }`
-- `BannerResource` = 一個**群組(group)**:於**其他 BO 模組建立與管理**的內容群組(`AI Competition | Blind Box | Movie | Customize | Crowdfund` —— **`Customize` 同樣是一個群組**,不是手動模式)。Home CMS **不建立**群組 —— 只從既有群組選取;群組清單由該模組提供(此處列舉僅為示意)。
-- `BannerItem`:所選**群組底下的一個具體 event / item**,同樣於該其他模組建立。選擇器以 **圖片 + 名稱** 卡片列出該群組底下的 item;群組無 item 則清單為空(「請先在該模組建立」)。**每個群組皆必填**(無任何群組例外 —— 含 `Customize`)。
+- `BannerResource` = 一個**群組(group)**,對應既有 **BO data 模組**:`Movie/TV List | Events Data | Movie News | Crowdfund`。**`Events Data` 底下包含 Blind Box + AI Competition 的 item。** Home CMS **不建立**群組或 item —— 只從那些 BO 模組提供的內容選取(群組清單由 BO 提供,此處僅示意)。
+- `BannerItem`:所選**群組底下的一個具體 event / item**,須先於該 BO 模組建立(**不在本 scope** —— 例如 Crowdfund item 在 BO 建好後,才會出現在 `Crowdfund` 群組下)。選擇器以 **圖片 + 名稱** 卡片列出該群組底下的 item;群組無 item 則清單為空(「請先在該模組建立」)。**每個群組皆必填**(無任何群組例外)。
 - `Bilingual { zh: string, en: string }` —— **banner 所有文字(Header/Title/Content)皆選填但雙語耦合**:每個欄位的 `zh` 與 `en` 要嘛都填、要嘛都空;空欄位於 **FE 不顯示且不保留占位**。 · `Cta { name: string, url: Url }`(若新增 CTA,則 `name` + `http`/`https` `url` 皆必填)
 
 ---
@@ -82,7 +82,8 @@
 |--------|--------|
 | 切換(列) | 啟用 / 停用 widget。 |
 | ⚙(列) | 開啟 ranking 編輯器。 |
-| _編輯器內:_ 編輯 Title/Subtitle · 平台開關 · 拖拽 ⠿ · + Add Platform | 更新 widget 與其平台清單。 |
+| _編輯器內:_ 編輯 Title/Subtitle · 平台開關 · 拖拽 ⠿ | 更新 widget 與其平台清單。 |
+| _編輯器內:_ **+ Add Platform** | 開啟選擇器,從 **BO Rankings 模組選一個平台**(圖片+名稱卡片;非自由輸入);選定即加入清單。 |
 | 存檔(編輯器) | 驗證 Title(兩語言)+ Subtitle 雙語耦合(填一種語言→中英都需填)→ 存檔。 |
 | _(無刪除)_ | 排行榜為**單一固定 widget** —— 不能當作區段被新增 / 刪除 / 排序。 |
 
@@ -98,7 +99,7 @@
 
 ### 5.4 資料
 - `Ranking { enabled, title: Bilingual, subtitle: Bilingual, platforms: Platform[] }` —— `title` 必填(兩語言);`subtitle` 選填但**雙語耦合**(`zh` 與 `en` 要嘛都填、要嘛都空;空則 FE 不顯示且不保留占位)。
-- `Platform { key, name, sub: string, on: boolean, configured: boolean }` —— `sub` 為排行來源;`configured=false` → 「未配置」。
+- `Platform { key, name, sub: string, on: boolean, configured: boolean }` —— `sub` 為排行來源;`configured=false` → 「未配置」。平台目錄由 **BO Rankings 模組提供** —— 營運透過 **+ Add Platform** 從中選取,不自由輸入。
 
 ---
 
@@ -150,7 +151,7 @@
 | Box Office | 票房排行 | 單一(固定) |
 | Co-creation | 影視共創計畫 | **不可改(固定)** —— UI 樣式同 Events Data,但**數據源必選** |
 
-> **Data Type 選項來自 BO 其他模組** —— Data Type 的清單(以及每種類型對應的內容)於別處定義與維護;Home CMS 只能*選取* Data Type,不能新增或編輯清單。上表僅為示意。
+> **Data Type 選項對應既有的 BO data-management 模組 —— 非寫死。** 10 個 Data Type 對應 BO `data-management` 模組(Ztor Library · Movie/TV Lists · Movie Reviews · Tastemakers · Rankings · Events Data · Movie News · Awards · Box Office Data)外加 Co-creation。清單(及每種類型對應的內容)由那些模組提供;Home CMS 只能*選取* Data Type —— 須**動態讀取清單、不可寫死**。上表僅為示意。
 
 ### 6.4 資料
 - `ContentBlock { id, enabled, dataType: DataType, uiStyle: string, source: string, title: Bilingual, tag: Bilingual, subtitle: Bilingual, description: Bilingual }`
@@ -169,7 +170,7 @@
 - [ ] 無論數量,FE 只顯示**一個 banner 槽位**(輪播),一次一個;banner 不堆疊成多段。
 - [ ] **Rotate** 開關僅在 banner **> 1** 時出現;開 → 每 **3 秒**自動切換;關 → 手動圓點切換。
 - [ ] banner 所有文字欄位(Header/Title/Content)皆**選填但雙語耦合**(填一種語言→中英都需填;兩語言皆空→FE 不顯示且不保留占位);若新增 CTA,則需 `name` + 絕對 `http`/`https` `url`;不合法擋下。
-- [ ] **Banner Resource = 一個群組**(於其他模組建立;`Customize` 也是群組);選完群組後須從既有 BO item 選一個 **Item**(該群組底下的 event/item;圖片+名稱卡片、只選不建)—— **每個群組皆必填**;切換群組會清除先前選的 Item;群組無 item 則清單為空。
+- [ ] **Banner Resource = 一個群組**,對應 BO data 模組(`Movie/TV List | Events Data | Movie News | Crowdfund`;Events Data 含 Blind Box + AI Competition);選完群組後須從既有 BO item 選一個 **Item**(該群組底下的 event/item;圖片+名稱卡片、只選不建)—— **每個群組皆必填**;切換群組會清除先前選的 Item;群組無 item 則清單為空。
 - [ ] banner 可拖拽排序;列順序即輪播順序。
 - [ ] 每列 banner 皆有 **刪除 🗑**;刪除後該 banner 移出區段(與輪播)。
 
@@ -201,13 +202,13 @@ Given / When / Then,Then 需**可觀察**。
 - **BO-TC-06** — Given Data Type = `Co-creation` · When 未選數據源就存檔 · Then 被擋(「請選擇數據鏈接」);Given Data Type = `Events Data` 或 `Movie New` · Then 不顯示數據源欄位且可存。*(catches: 數據源規則錯誤;Co-creation 被錯誤豁免)*
 - **BO-TC-07** — Given Layout Sequence `[A, B, C]` · When 用把手把 C 拖到 A 之上 · Then 順序變成 `[C, A, B]` 且序號更新。*(catches: 排序失效)*
 - **BO-TC-08** — Given 一列 banner 與一列內容區塊 · When 各自點 **刪除 🗑** · Then 該 banner 移出輪播、該區塊移出 Layout Sequence(列數遞減);Ranking widget **無**刪除。*(catches: 缺少刪除 / 刪除範圍過大)*
-- **BO-TC-09** — Given Banner Resource(群組)= `Movie` · When 點 Item 欄位 · Then **SELECT ITEM** 選擇器以**圖片 + 名稱卡片**列出該群組底下的 event/item、選一個即填入 Item;Given 某群組無任何 item · Then 清單為空(CMS 無法在此新增群組或 item);When 未選 Item 就存檔 · Then 被擋並顯示行內錯誤;Given 群組 = `Customize` · Then 與其他群組一致 —— 列出其 item 且 Item 仍必填(無任何群組例外);When 群組由 `Movie` 切到 `Crowdfund` · Then 先前選的電影被清除、選擇器改列 Crowdfund 群組的 item。*(catches: 缺少 item 鏈接;item 清單錯誤/殘留;群組/item 未在所屬模組建立;Customize 被錯誤豁免)*
+- **BO-TC-09** — Given Banner Resource(群組)= `Movie/TV List` · When 點 Item 欄位 · Then **SELECT ITEM** 選擇器以**圖片 + 名稱卡片**列出該群組底下的 event/item、選一個即填入 Item;Given 某群組無任何 item · Then 清單為空(CMS 無法在此新增群組或 item);When 未選 Item 就存檔 · Then 被擋並顯示行內錯誤;When 群組由 `Movie/TV List` 切到 `Crowdfund` · Then 先前選的 item 被清除、選擇器改列 Crowdfund 群組的 item;Given 群組 = `Events Data` · Then 其 item 含 Blind Box / AI Competition。*(catches: 缺少 item 鏈接;item 清單錯誤/殘留;群組/item 未在所屬 BO 模組建立;Events Data 分組)*
 
 ## Not Included
 - 分地區**資料串接**(配置依地區,但跨地區資料整合另計)。
 - 公開 **FE 渲染器**(消費本配置;既有)。
 - **Banner** 目前在 FE 為寫死,將由本配置取代。
-- **Banner 群組(Resource)及其底下 event/item 的建立**(Movie / AI Competition / Crowdfund 募資 / Blind Box)—— 由各自的 BO 模組建立;本介面只從既有群組與 item *選取*(外部依賴)。
-- **Data Type 清單**(Data Type 的種類,以及每種類型對應的內容)—— 於其他 BO 模組定義與維護;本介面只*選取* Data Type(外部依賴)。
-- Ranking 的**平台主檔資料**(來源來自另一個 BO 模組)。
+- **Banner item 的建立** —— Movie/TV List、Events Data(含 Blind Box + AI Competition)、Movie News、Crowdfund 的 item 由各自的 BO 模組建立;本介面只從既有 item *選取*(外部依賴)。
+- **Data Type 清單**(Data Type 的種類,以及每種類型對應的內容)—— 由 BO **data-management** 模組提供;本介面動態讀取、只*選取* Data Type,絕不寫死(外部依賴)。
+- Ranking 的**平台主檔資料** —— 平台目錄與排行來源來自 **BO Rankings 模組**(本介面只從中選取)。
 - 平台層級的**存取權限與變更記錄**(沿用既有 BO 後台)。

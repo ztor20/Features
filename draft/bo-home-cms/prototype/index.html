@@ -261,7 +261,7 @@
 
       <div class="divider"></div>
 
-      <div class="sectitle">Data Type <span style="color:var(--faint);font-weight:400;font-size:12px">— 選項來自 BO 其他模組</span></div>
+      <div class="sectitle">Data Type <span style="color:var(--faint);font-weight:400;font-size:12px">— 選項來自 BO data-management 模組(非寫死)</span></div>
       <div class="dtgrid" id="dtgrid"></div>
       <div class="dslink" id="dsField"><span class="ph" id="dsText">點擊選擇數據源…</span><span style="color:var(--faint)">🔗</span></div>
       <div class="dshint" id="dshint">請選擇數據鏈接</div>
@@ -532,24 +532,24 @@ document.getElementById('mCancel').addEventListener('click',closeModal);
 document.getElementById('mSave').addEventListener('click',saveModal);
 
 /* ===================== BANNER (#1) ===================== */
-const BANNER_RES=['AI Competition','Blind Box','Movie','Customize','Crowdfund'];
-/* Resource = a GROUP (created in another module). Each group — Customize included — has events/items
-   under it (also created there). The Home CMS only selects; every group requires picking one item. */
+/* Banner Resource = a GROUP, sourced from existing BO data modules. Each group's items are created
+   in that BO module (out of this scope); the Home CMS only selects. Every group requires one item.
+   Events Data includes Blind Box + AI Competition items. Crowdfund items are created in BO first. */
+const BANNER_RES=['Movie/TV List','Events Data','Movie News','Crowdfund'];
 const BANNER_ITEMS={
-  'AI Competition':['Z-ORIGIN: AI原力創作計畫','2026 AI 短片大賽','AI 角色設計挑戰賽'],
-  'Blind Box':['名導盲盒 第一彈','影展限定盲盒','週年慶神秘盲盒'],
-  'Movie':['奧本海默 Oppenheimer','可憐的東西 Poor Things','墜惡真相 Anatomy of a Fall'],
-  'Customize':['春節主視覺 banner','會員專屬活動 banner','限時快閃公告 banner'],
+  'Movie/TV List':['奧本海默 Oppenheimer','可憐的東西 Poor Things','墜惡真相 Anatomy of a Fall','黑暗榮耀 The Glory'],
+  'Events Data':['Z-ORIGIN: AI原力創作計畫','2026 AI 短片大賽','名導盲盒 第一彈','影展限定盲盒','金馬影展開跑'],
+  'Movie News':['第 61 屆金馬獎入圍揭曉','坎城影展得獎名單','Netflix 2026 片單前瞻'],
   'Crowdfund':['《海邊的卡夫卡》紀錄片','獨立動畫《光年》','劇場版《晝夜》募資'],
 };
 let banners=[
-  {id:1,enabled:true,resource:'AI Competition',item:'Z-ORIGIN: AI原力創作計畫',
+  {id:1,enabled:true,resource:'Events Data',item:'Z-ORIGIN: AI原力創作計畫',
    header:{zh:'Z-ORIGIN: AI原力創作計畫',en:'Z-ORIGIN: AI Program'},
    title:{zh:'職場「非」人腦動節',en:'The non-human brain festival'},
    content:{zh:'參賽截止還有 30 天',en:'30 days left to enter'},
    ctas:[{name:'立即參賽',url:'https://ztor.lx7.com/join'},{name:'查看參賽作品',url:'https://ztor.lx7.com/works'}]},
 ];
-let bannerRotate=false, bUid=2, editingBId=null, dragBId=null, curBRes='AI Competition', curBItem='', bCtas=[], bActive=0, rotTimer=null;
+let bannerRotate=false, bUid=2, editingBId=null, dragBId=null, curBRes='Movie/TV List', curBItem='', bCtas=[], bActive=0, rotTimer=null;
 function bById(id){return banners.find(b=>b.id===id);}
 
 function renderBanners(){
@@ -598,12 +598,23 @@ let ranking={enabled:true, title:{zh:'臺灣排行 Top 10',en:"Taiwan's Top 10"}
     {key:'m',name:'myVideo',sub:'MyVideo TW Daily Ranking',on:true,configured:true},
     {key:'f',name:'friDay Video',sub:'friDay Video TW Daily Ranking',on:true,configured:true},
     {key:'L',name:'LiTV',sub:'LiTV 電視劇 日排行榜',on:true,configured:true},
-    {key:'H',name:'Hami Video',sub:'Hami Video 電視劇 天排行榜',on:true,configured:true},
+    {key:'h',name:'Hami Video',sub:'Hami Video 電視劇 天排行榜',on:true,configured:true},
     {key:'C',name:'CATCHPLAY+',sub:'CATCHPLAY+ 電影 天排行榜',on:true,configured:true},
     {key:'K',name:'KKTV',sub:'Netflix 綜合 天排行榜',on:false,configured:true},
     {key:'V',name:'Viu',sub:'',on:false,configured:false},
   ]};
 let rPlatforms=[], dragPf=null;
+/* platforms available in the BO Rankings module — Add Platform picks from here (not free-typed) */
+const RANKING_PLATFORMS=[
+  {key:'Z',name:'Ztor',sub:'Ztor · 綜合排行榜'},{key:'N',name:'Netflix',sub:'Netflix 電影 天排行榜'},
+  {key:'D',name:'Disney+',sub:'Disney+ TW Daily Ranking'},{key:'i',name:'iQIYI',sub:'iQIYI TW Daily Ranking'},
+  {key:'H',name:'HBO GO',sub:'HBO Max 電影 天排行榜'},{key:'m',name:'myVideo',sub:'MyVideo TW Daily Ranking'},
+  {key:'f',name:'friDay Video',sub:'friDay Video TW Daily Ranking'},{key:'L',name:'LiTV',sub:'LiTV 電視劇 日排行榜'},
+  {key:'h',name:'Hami Video',sub:'Hami Video 電視劇 天排行榜'},{key:'C',name:'CATCHPLAY+',sub:'CATCHPLAY+ 電影 天排行榜'},
+  {key:'K',name:'KKTV',sub:'KKTV 綜合 天排行榜'},{key:'V',name:'Viu',sub:'Viu 綜合 天排行榜'},
+  {key:'A',name:'Apple TV+',sub:'Apple TV+ Daily Ranking'},{key:'P',name:'Prime Video',sub:'Prime Video TW Daily Ranking'},
+  {key:'T',name:'LINE TV',sub:'LINE TV 綜合 天排行榜'},
+];
 function renderRanking(){
   document.getElementById('rankTitle').textContent=ranking.title.zh||ranking.title.en;
   const onN=ranking.platforms.filter(p=>p.on).length;
@@ -667,7 +678,12 @@ document.getElementById('rmClose').addEventListener('click',closeRanking);
 document.getElementById('rmCancel').addEventListener('click',closeRanking);
 document.getElementById('rmSave').addEventListener('click',saveRanking);
 document.getElementById('rEnable').addEventListener('click',e=>e.currentTarget.classList.toggle('on'));
-document.getElementById('rAddPf').addEventListener('click',()=>{rPlatforms.push({key:'+',name:'New Platform',sub:'',on:false,configured:false});renderPf();});
+document.getElementById('rAddPf').addEventListener('click',()=>{
+  const taken=new Set(rPlatforms.map(p=>p.name));
+  const avail=RANKING_PLATFORMS.filter(p=>!taken.has(p.name)).map(p=>p.name);
+  openPicker({list:avail, title:'SELECT PLATFORM (from BO Rankings)', badge:'BO',
+    onPick:name=>{const d=RANKING_PLATFORMS.find(p=>p.name===name); rPlatforms.push({key:d.key,name:d.name,sub:d.sub,on:true,configured:true}); renderPf();}});
+});
 
 function rankingPreview(){
   const on=ranking.platforms.filter(p=>p.on);
