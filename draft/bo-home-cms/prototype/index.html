@@ -177,6 +177,19 @@
   .pfcard .pfsub{color:var(--faint);font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .pfcard .pfsub.unset{color:var(--bad)}
   #pfdrop{height:3px;background:var(--gold);border-radius:2px;box-shadow:0 0 8px var(--gold);pointer-events:none}
+  /* banner type uploads + custom block */
+  .bupgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px}
+  .bupbox .buplab{font-size:11px;color:var(--muted);text-align:center;margin-top:5px}
+  .srcseg{display:flex;gap:8px;margin-top:14px}
+  .srcbtn{padding:8px 14px;border:1px solid var(--line2);border-radius:var(--rs);background:var(--panel2);color:var(--ink);font-size:12.5px}
+  .srcbtn.on{background:linear-gradient(120deg,var(--gold),var(--gold2));color:#1a1408;border-color:transparent;font-weight:700}
+  .ctarow .ci.nm{flex:0 0 150px}
+  /* FE preview banner arrows + hover */
+  .pvarrow{position:absolute;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,.5);color:#fff;font-size:20px;display:grid;place-items:center;z-index:2}
+  .pvarrow.prev{left:12px}.pvarrow.next{right:12px}
+  .pvsec .bctas{display:flex;gap:12px;margin-top:12px}
+  .pvsec .bctas a{background:linear-gradient(120deg,var(--gold),var(--gold2));color:#1a1408;font-weight:800;font-size:13px;padding:9px 18px;border-radius:8px;text-decoration:none}
+  .pvsec .bctas a.alt{background:#2a2a2a;color:#eee}
 </style>
 </head>
 <body>
@@ -196,18 +209,34 @@
   <!-- ===== Banner section (#1) ===== -->
   <div class="seqhead">
     <div>
-      <div class="seclbl">Home Page Banner</div>
+      <div class="seclbl">Banner</div>
       <div class="secsub">Fixed at the very top. One banner, or add multiple (carousel).</div>
     </div>
     <button class="btn gold" id="btnAddBanner">+ Add Banner</button>
   </div>
-  <div class="rotaterow" id="rotateRow"><span class="sw" id="swRotate"><i></i></span><span>Rotate — auto every 3s <span style="color:var(--faint)">(shown when more than 1 banner)</span></span></div>
+  <div class="rotaterow" id="rotateRow"><span class="sw" id="swRotate"><i></i></span><span>Rotate — auto every 5s · hover-pause · arrows + dots (per FE spec §3.6) <span style="color:var(--faint)">(shown when more than 1 banner)</span></span></div>
   <div class="blocks" id="banners"></div>
+
+  <!-- ===== Continue Watching (fixed section — directly under Banner) ===== -->
+  <div class="seqhead" style="margin-top:30px">
+    <div>
+      <div class="seclbl">Continue Watching</div>
+      <div class="secsub">Fixed section directly under Banner · logged-in only · list auto-filled from watch history. Edit Title / Content / Tag only (no CTA). (Cannot be added / removed / reordered.)</div>
+    </div>
+  </div>
+  <div class="blocks">
+    <div class="blk" id="cwRow">
+      <span class="ord">▶</span>
+      <div class="ti"><span class="t" id="cwTitleRow">繼續觀看</span><span class="dt" id="cwSub">Continue Watching · 僅登入</span></div>
+      <span class="sw on" id="swCw"><i></i></span>
+      <button class="ico" id="cwEdit" title="edit">⚙</button>
+    </div>
+  </div>
 
   <!-- ===== Ranking widget (fixed — enable/disable only) ===== -->
   <div class="seqhead" style="margin-top:30px">
     <div>
-      <div class="seclbl">Home Page Ranking</div>
+      <div class="seclbl">Ranking</div>
       <div class="secsub">One fixed ranking widget — enable/disable, and ⚙ edit its title & platforms. (Cannot be added / removed / reordered.)</div>
     </div>
   </div>
@@ -215,6 +244,7 @@
     <div class="blk" id="rankRow">
       <span class="ord">★</span>
       <div class="ti"><span class="t" id="rankTitle">臺灣排行 Top 10</span><span class="dt" id="rankSub">Ranking widget</span></div>
+      <span class="chip" id="rankTag" style="display:none"></span>
       <span class="sw on" id="swRanking"><i></i></span>
       <button class="ico" id="rankEdit" title="edit">⚙</button>
     </div>
@@ -222,7 +252,7 @@
 
   <div class="seqhead" style="margin-top:30px">
     <div>
-      <div class="seclbl">Home Page Layout Sequence</div>
+      <div class="seclbl">Layout Sequence</div>
       <div class="secsub">Arrange and configure the content blocks. (Banner &amp; Ranking widget are separate sections above.)</div>
     </div>
     <button class="btn gold" id="btnAdd">+ Add Content Block</button>
@@ -267,6 +297,19 @@
       <div class="dshint" id="dshint">請選擇數據鏈接</div>
       <div class="styletag" id="styletag">前端 UI 樣式</div>
       <div class="styles" id="styles"></div>
+
+      <!-- Custom data-type panel (uploads + CTA; only when Data Type = Custom) -->
+      <div id="customPanel" style="display:none">
+        <div class="divider"></div>
+        <div class="sectitle">Custom 上傳 <span style="color:var(--faint);font-weight:400;font-size:12px">— 背景圖 + 圖片;FE 依上傳的圖片渲染</span></div>
+        <div class="bupgrid">
+          <div class="bupbox"><div class="imgbox"><div class="plus">＋</div></div><div class="buplab">背景圖 (image)</div></div>
+          <div class="bupbox"><div class="imgbox"><div class="plus">＋</div></div><div class="buplab">圖片 (image)</div></div>
+        </div>
+        <div class="sectitle" style="margin-top:16px">CTA <span style="color:var(--faint);font-weight:400;font-size:12px">— 最多 1 個 · 中文名稱 + 英文名稱 + 單一 URL</span></div>
+        <div id="cctas"></div>
+        <button class="btn ghost" id="cAddCta" style="margin-top:4px">+ Add CTA</button>
+      </div>
     </div>
 
     <div class="valmsg" id="valmsg">請填寫所有「已啟用」欄位(繁體中文 + 英語)。</div>
@@ -280,30 +323,51 @@
     <div class="mhead"><h2 id="bmtitle">ADD BANNER</h2><button class="x" id="bmClose">✕</button></div>
     <div class="mbody">
       <div class="mtop"><div class="ctlrow"><div class="ctl"><span class="sw on" id="bEnable"><i></i></span><span class="lab"><b>啟用狀態</b></span></div></div></div>
-      <div class="sectitle">Banner Resource <span style="color:var(--faint);font-weight:400;font-size:12px">— group · 於其他模組建立</span></div>
-      <div class="dtgrid" id="bresgrid"></div>
-      <div class="styletag" style="margin-top:14px">選擇此群組底下的 Item / Event <span class="req">*</span> <span style="color:var(--faint)">— 來自 BO</span></div>
-      <div class="dslink" id="bItemField" style="margin-top:6px"><span class="ph" id="bItemText">點擊選擇此群組下的 event / item…</span><span style="color:var(--faint)">🔗</span></div>
-      <div class="dshint" id="bItemHint">請選擇此群組下的 event / item</div>
+      <div class="sectitle">Banner Type <span style="color:var(--faint);font-weight:400;font-size:12px">— 決定 item 來源、欄位與必填(欄位內容 refer FE §3.2)</span></div>
+      <div class="dtgrid" id="btypegrid"></div>
+      <div class="stylenote" id="btypeNote" style="margin-top:10px"></div>
+
+      <!-- source: Item ⇄ Upload (mutually exclusive; shown for item-bearing types) -->
+      <div id="bSrcToggle" class="srcseg" style="display:none">
+        <button type="button" class="srcbtn" data-src="item">選擇 Item</button>
+        <button type="button" class="srcbtn" data-src="upload">上傳圖片/影片</button>
+      </div>
+
+      <!-- item (hidden for Brand Intro, or when source = upload) -->
+      <div id="bItemWrap">
+        <div class="styletag" style="margin-top:14px">選擇 Item / Event <span class="req">*</span> <span style="color:var(--faint)">— 直接來自資料庫</span></div>
+        <div class="dslink" id="bItemField" style="margin-top:6px"><span class="ph" id="bItemText">點擊選擇 event / item…</span><span style="color:var(--faint)">🔗</span></div>
+        <div class="dshint" id="bItemHint">請選擇 event / item</div>
+      </div>
+
+      <!-- uploads (type-specific; 尺寸/格式 refer FE §3.3) -->
+      <div id="bUploads" style="margin-top:14px"></div>
+
+      <!-- film-intro tags toggle (FE §3.4 例外:自動帶入標籤的顯示/隱藏開關) -->
+      <div id="bTagWrap" style="display:none;margin-top:14px">
+        <div class="ctlrow"><div class="ctl"><span class="sw on" id="bTagSw"><i></i></span><span class="lab"><b>顯示類型標籤</b> — 自片庫帶入(最多 3 個)</span></div></div>
+      </div>
 
       <div class="divider"></div>
       <div class="langlab">繁體中文(香港) <span style="color:var(--faint);font-weight:400;font-size:12px">— 選填(填一種語言則中英都需填)</span></div>
-      <div class="field"><label><span class="nm">Header</span></label><input id="bzhHeader" type="text" placeholder="Header(小標)"></div>
+      <div class="field"><label><span class="nm">小標題</span></label><input id="bzhHeader" type="text" placeholder="小標題"></div>
       <div class="field"><label><span class="nm">標題</span></label><input id="bzhTitle" type="text" placeholder="標題"></div>
-      <div class="field"><label><span class="nm">Content</span></label><textarea id="bzhContent" rows="2" placeholder="Content"></textarea></div>
+      <div class="field"><label><span class="nm">內容描述</span></label><textarea id="bzhContent" rows="2" placeholder="內容描述"></textarea></div>
 
       <div class="divider"></div>
       <div class="langlab">英語 (English) <span style="color:var(--faint);font-weight:400;font-size:12px">— optional (fill one language → both required)</span></div>
-      <div class="field"><label><span class="nm">Header</span></label><input id="benHeader" type="text" placeholder="Header"></div>
+      <div class="field"><label><span class="nm">Eyebrow</span></label><input id="benHeader" type="text" placeholder="Eyebrow"></div>
       <div class="field"><label><span class="nm">Title</span></label><input id="benTitle" type="text" placeholder="Title"></div>
       <div class="field"><label><span class="nm">Content</span></label><textarea id="benContent" rows="2" placeholder="Content"></textarea></div>
 
-      <div class="divider"></div>
-      <div class="sectitle">CTA(s) <span style="color:var(--faint);font-weight:400;font-size:12px">— add one or more</span></div>
-      <div id="bctas"></div>
-      <button class="btn ghost" id="bAddCta" style="margin-top:4px">+ Add CTA</button>
+      <div id="bCtaWrap">
+        <div class="divider"></div>
+        <div class="sectitle">CTA(s) <span style="color:var(--faint);font-weight:400;font-size:12px">— 最多 2 個 · 中文名稱 + 英文名稱 + 單一 URL</span></div>
+        <div id="bctas"></div>
+        <button class="btn ghost" id="bAddCta" style="margin-top:4px">+ Add CTA</button>
+      </div>
     </div>
-    <div class="valmsg" id="bvalmsg">請選擇此群組底下的 Item;文字欄位選填,但填了一種語言則中英都需填;每個已新增的 CTA 需有名稱與 http(s) 連結。</div>
+    <div class="valmsg" id="bvalmsg">非 Brand Intro 型需選 Item;文字選填但填一種語言則中英都需填;每個 CTA 需中英名稱 + http(s) 連結(最多 2 個)。</div>
     <div class="mfoot"><button class="btn ghost" id="bmCancel">取消</button><button class="btn gold" id="bmSave">確定</button></div>
   </div>
 </div>
@@ -316,9 +380,11 @@
       <div class="mtop"><div class="ctlrow"><div class="ctl"><span class="sw on" id="rEnable"><i></i></span><span class="lab"><b>啟用狀態</b></span></div></div></div>
       <div class="langlab"><span class="req">*</span> 繁體中文(香港)</div>
       <div class="field"><label><span class="nm"><span class="req">*</span> 標題</span></label><input id="rzhTitle" type="text" placeholder="標題"></div>
+      <div class="field"><label><span class="nm">Tag <span class="opt">選填</span></span></label><input id="rzhTag" type="text" placeholder="標籤 (e.g. HOT)" maxlength="16"></div>
       <div class="field"><label><span class="nm">副標題 <span class="opt">選填</span></span></label><textarea id="rzhSub" rows="2" placeholder="副標題"></textarea></div>
       <div class="langlab"><span class="req">*</span> 英語 (English)</div>
       <div class="field"><label><span class="nm"><span class="req">*</span> Title</span></label><input id="renTitle" type="text" placeholder="Title"></div>
+      <div class="field"><label><span class="nm">Tag <span class="opt">optional</span></span></label><input id="renTag" type="text" placeholder="Tag (e.g. HOT)" maxlength="16"></div>
       <div class="field"><label><span class="nm">Subtitle <span class="opt">optional</span></span></label><textarea id="renSub" rows="2" placeholder="Subtitle"></textarea></div>
       <div class="divider"></div>
       <div class="sectitle">Platform <span style="color:var(--faint);font-weight:400;font-size:12px">— drag ⠿ to reorder · toggle on/off</span></div>
@@ -327,6 +393,27 @@
     </div>
     <div class="valmsg" id="rvalmsg">請填寫標題(繁體中文 + 英語);副標題選填,但填了一種語言則中英都需填。</div>
     <div class="mfoot"><button class="btn ghost" id="rmCancel">取消</button><button class="btn gold" id="rmSave">確定</button></div>
+  </div>
+</div>
+
+<!-- ===== EDIT CONTINUE WATCHING MODAL ===== -->
+<div class="modal" id="cwmodal">
+  <div class="sheet">
+    <div class="mhead"><h2>EDIT CONTINUE WATCHING</h2><button class="x" id="cwmClose">✕</button></div>
+    <div class="mbody">
+      <div class="mtop"><div class="ctlrow"><div class="ctl"><span class="sw on" id="cwEnable"><i></i></span><span class="lab"><b>啟用狀態</b> — 僅登入訪客可見;片列由觀看紀錄自動帶入</span></div></div></div>
+      <div class="langlab"><span class="req">*</span> 繁體中文(香港)</div>
+      <div class="field"><label><span class="nm"><span class="req">*</span> 標題</span></label><input id="cwzhTitle" type="text" placeholder="繼續觀看"></div>
+      <div class="field"><label><span class="nm">內容 <span class="opt">選填</span></span></label><textarea id="cwzhContent" rows="2" placeholder="內容描述"></textarea></div>
+      <div class="field"><label><span class="nm">Tag <span class="opt">選填</span></span></label><input id="cwzhTag" type="text" placeholder="標籤 (e.g. 接續上次)" maxlength="16"></div>
+      <div class="divider"></div>
+      <div class="langlab"><span class="req">*</span> 英語 (English)</div>
+      <div class="field"><label><span class="nm"><span class="req">*</span> Title</span></label><input id="cwenTitle" type="text" placeholder="Continue Watching"></div>
+      <div class="field"><label><span class="nm">Content <span class="opt">optional</span></span></label><textarea id="cwenContent" rows="2" placeholder="Content"></textarea></div>
+      <div class="field"><label><span class="nm">Tag <span class="opt">optional</span></span></label><input id="cwenTag" type="text" placeholder="Tag (e.g. Resume)" maxlength="16"></div>
+    </div>
+    <div class="valmsg" id="cwvalmsg">請填寫標題(繁中 + 英語);內容/Tag 選填但雙語耦合(填一種語言則中英都需填)。</div>
+    <div class="mfoot"><button class="btn ghost" id="cwmCancel">取消</button><button class="btn gold" id="cwmSave">確定</button></div>
   </div>
 </div>
 
@@ -360,13 +447,15 @@ const DT = {
   'Award':         {styles:['Video List','Rank List','片單','片單排行榜'], def:'片單排行榜'},
   'Box Office':    {styles:['票房排行']},
   'Co-creation':   {styles:['影視共創計畫'], note:'此類型不可修改 UI 樣式(固定 影視共創計畫);但仍需選擇數據源。'},
+  'AI Competition':{styles:['AI 原力創作計畫'], note:'此類型不可修改 UI 樣式(固定);需選擇數據源(AI Competition)。'},
+  'Custom':        {styles:['Custom'], note:'自訂型:不需數據源;上傳背景圖 + 圖片,並填雙語標題/副標/內容/CTA(見下方)。'},
 };
 function dtDef(k){return DT[k].def||DT[k].styles[0];}
 function dtSelectable(k){return DT[k].selectable!==false && DT[k].styles.length>1;}
 /* data source picker — required for all types except Events Data / Movie New (they use the master default).
    Co-creation has a fixed UI style but DOES require a data source. */
 const SOURCES=['Golden Horse Awards 電影獎項','綜合 其他排行榜','全部 綜合 年排行榜']; // 3 defaults; real data comes from another BO module
-const NO_SOURCE=['Events Data','Movie New'];
+const NO_SOURCE=['Events Data','Movie New','Custom'];
 function needsSource(dt){return !NO_SOURCE.includes(dt);}
 function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 
@@ -377,7 +466,7 @@ let blocks=[
   {id:1,enabled:true, dataType:'Events Data', uiStyle:'活動', source:'', zh:{title:'熱門活動',tag:'',sub:'精選活動與專題',desc:''}, en:{title:'Popular Events',tag:'',sub:'Featured events',desc:''}},
   {id:2,enabled:true, dataType:'Movie/Tv List', uiStyle:'片單', source:'綜合 其他排行榜', zh:{title:'現正熱映',tag:'HOT',sub:'本週話題作',desc:''}, en:{title:'Now Showing',tag:'HOT',sub:'Trending this week',desc:''}},
 ];
-let uid=3, editingId=null, curDT='Ztor Library', curStyle=dtDef('Ztor Library'), curSource='', dragId=null;
+let uid=3, editingId=null, curDT='Ztor Library', curStyle=dtDef('Ztor Library'), curSource='', dragId=null, cCtas=[];
 
 /* ---------- list ---------- */
 function renderList(){
@@ -442,6 +531,12 @@ function renderStyles(){
   });
   if(cfg.note){const n=document.createElement('div');n.className='stylenote';n.textContent='ⓘ '+cfg.note;wrap.appendChild(n);}
   renderSource();
+  renderCustomPanel();
+}
+function renderCustomPanel(){
+  const show=curDT==='Custom';
+  document.getElementById('customPanel').style.display=show?'block':'none';
+  if(show)renderCtaList('cctas',cCtas,1,'cAddCta');   // renderCtaList is shared with the banner editor
 }
 /* ---------- data source field + picker ---------- */
 function renderSource(){
@@ -486,6 +581,7 @@ function openModal(id){
   document.getElementById('zhTag').value=b?(b.zh.tag||''):''; document.getElementById('enTag').value=b?(b.en.tag||''):'';
   document.getElementById('zhDesc').innerHTML=b&&b.zh.desc?b.zh.desc:''; document.getElementById('enDesc').innerHTML=b&&b.en.desc?b.en.desc:'';
   curDT=b?b.dataType:'Ztor Library'; curStyle=b?b.uiStyle:dtDef(curDT); curSource=b?(b.source||''):'';
+  cCtas=b&&b.ctas?b.ctas.map(c=>({name:{...c.name},url:c.url})):[];
   renderDT();renderStyles();
   document.getElementById('valmsg').style.display='none';
   document.querySelectorAll('#modal .invalid').forEach(e=>e.classList.remove('invalid'));
@@ -512,6 +608,7 @@ function saveModal(){
   };
   couple('zhTag','enTag'); couple('zhSub','enSub'); couple('zhDesc','enDesc');
   if(needsSource(curDT) && !curSource){ document.getElementById('dsField').classList.add('invalid'); document.getElementById('dshint').style.display='block'; bad=true; } // data source required
+  if(curDT==='Custom' && validateCtas('cctas')) bad=true;   // custom block CTAs: zh + en name + http(s)
   document.getElementById('valmsg').style.display=bad?'block':'none';
   if(bad)return;
   const zhDescV=fieldVal(document.getElementById('zhDesc'))?document.getElementById('zhDesc').innerHTML:'';
@@ -519,6 +616,7 @@ function saveModal(){
   const data={
     enabled:document.getElementById('swEnable').classList.contains('on'),
     dataType:curDT, uiStyle:curStyle, source:needsSource(curDT)?curSource:'',
+    ctas: curDT==='Custom' ? cCtas.map(c=>({name:{zh:c.name.zh,en:c.name.en},url:c.url})) : undefined,
     zh:{title:document.getElementById('zhTitle').value, tag:document.getElementById('zhTag').value, sub:document.getElementById('zhSub').value, desc:zhDescV},
     en:{title:document.getElementById('enTitle').value, tag:document.getElementById('enTag').value, sub:document.getElementById('enSub').value, desc:enDescV},
   };
@@ -527,29 +625,39 @@ function saveModal(){
   closeModal();renderList();
 }
 document.getElementById('btnAdd').addEventListener('click',()=>openModal());
+document.getElementById('cAddCta').addEventListener('click',()=>{if(cCtas.length>=1)return;cCtas.push({name:{zh:'',en:''},url:''});renderCtaList('cctas',cCtas,1,'cAddCta');});  // single CTA only
 document.getElementById('mClose').addEventListener('click',closeModal);
 document.getElementById('mCancel').addEventListener('click',closeModal);
 document.getElementById('mSave').addEventListener('click',saveModal);
 
 /* ===================== BANNER (#1) ===================== */
-/* Banner Resource = a GROUP, sourced from existing BO data modules. Each group's items are created
-   in that BO module (out of this scope); the Home CMS only selects. Every group requires one item.
+/* Banner items are sourced from existing BO data modules (created there, out of this scope); the
+   Home CMS only selects. Item-bearing types (Event / Film Intro / AI Competition) are item ⇄ upload
+   (one-of); Brand Intro has no item (upload only). Item required only in item mode.
    Events Data includes Blind Box + AI Competition items. Crowdfund items are created in BO first. */
-const BANNER_RES=['Movie/TV List','Events Data','Movie News','Crowdfund'];
+/* Banner Type (FE §3.2) drives: item source, uploads, required fields. Brand Intro has NO item.
+   Per-type fields / upload specs / masks / countdown all follow the FE spec — not re-specced here. */
+const BTYPE={
+  'Brand Intro':   {item:null,          uploads:['上傳圖片或影片'],                       note:'品牌型:上傳圖片或影片(無 item、純自訂文字)。'},
+  'AI Competition':{item:'Events Data', uploads:['背景圖','右側主圖 (圖或 mp4 ≤15MB)'],   note:'item ⇄ 上傳 二選一。選 item(來自 Events Data 賽事)時,7 段倒數讀其賽事時程(FE §3.5);走上傳則無賽事時程來源。可加 CTA(最多 2)。'},
+  'Event':         {item:'Events Data', uploads:['背景圖','右側主圖 (選填·可 mp4 ≤15MB)'], note:'item 來自 Events Data(含盲盒)。右側主圖選填。'},
+  'Film Intro':    {item:'Movie/TV List', uploads:['背景圖','右側主圖','片名圖 (選填)'],   tags:true, note:'item 來自片庫;類型標籤自片庫帶入(≤3),可顯示/隱藏(FE §3.4)。'},
+};
+const BANNER_TYPES=Object.keys(BTYPE);
+/* items are read directly from the product DB, scoped to the type's source (select-only).
+   Events Data contains both AI-competition events and other events (盲盒/影展…) per FE spec. */
 const BANNER_ITEMS={
+  'Events Data':['Z-ORIGIN: AI原力創作計畫','2026 AI 短片大賽','AI 角色設計挑戰賽','名導盲盒 第一彈','影展限定盲盒','金馬影展開跑','放映廳 限定場'],
   'Movie/TV List':['奧本海默 Oppenheimer','可憐的東西 Poor Things','墜惡真相 Anatomy of a Fall','黑暗榮耀 The Glory'],
-  'Events Data':['Z-ORIGIN: AI原力創作計畫','2026 AI 短片大賽','名導盲盒 第一彈','影展限定盲盒','金馬影展開跑'],
-  'Movie News':['第 61 屆金馬獎入圍揭曉','坎城影展得獎名單','Netflix 2026 片單前瞻'],
-  'Crowdfund':['《海邊的卡夫卡》紀錄片','獨立動畫《光年》','劇場版《晝夜》募資'],
 };
 let banners=[
-  {id:1,enabled:true,resource:'Events Data',item:'Z-ORIGIN: AI原力創作計畫',
+  {id:1,enabled:true,type:'AI Competition',srcMode:'item',item:'Z-ORIGIN: AI原力創作計畫',
    header:{zh:'Z-ORIGIN: AI原力創作計畫',en:'Z-ORIGIN: AI Program'},
    title:{zh:'職場「非」人腦動節',en:'The non-human brain festival'},
-   content:{zh:'參賽截止還有 30 天',en:'30 days left to enter'},
-   ctas:[{name:'立即參賽',url:'https://ztor.lx7.com/join'},{name:'查看參賽作品',url:'https://ztor.lx7.com/works'}]},
+   content:{zh:'參賽截止還有 30 天',en:'30 days left to enter'}, tagVisible:false,
+   ctas:[{name:{zh:'立即參賽',en:'Join now'},url:'https://ztor.lx7.com/join'},{name:{zh:'查看參賽作品',en:'View works'},url:'https://ztor.lx7.com/works'}]},
 ];
-let bannerRotate=false, bUid=2, editingBId=null, dragBId=null, curBRes='Movie/TV List', curBItem='', bCtas=[], bActive=0, rotTimer=null;
+let bannerRotate=false, bUid=2, editingBId=null, dragBId=null, curBType='Brand Intro', curBItem='', bSrcMode='item', bCtas=[], bActive=0, rotTimer=null;
 function bById(id){return banners.find(b=>b.id===id);}
 
 function renderBanners(){
@@ -561,7 +669,7 @@ function renderBanners(){
   banners.forEach((b,i)=>{
     const row=document.createElement('div');row.className='blk'+(b.enabled?'':' off');
     row.innerHTML=`<span class="ord">${i+1}</span>
-      <div class="ti"><span class="t">${esc(b.title.zh||b.title.en||'(untitled)')}</span><span class="dt">${esc(b.resource)}${b.item?' · '+esc(b.item):''} · ${b.ctas.length} CTA</span></div>
+      <div class="ti"><span class="t">${esc(b.title.zh||b.title.en||'(untitled)')}</span><span class="dt">${esc(b.type)}${b.item?' · '+esc(b.item):''} · ${b.ctas.length} CTA</span></div>
       <span class="sw ${b.enabled?'on':''}" data-ben="${b.id}"><i></i></span>
       <button class="ico" data-bedit="${b.id}" title="edit">⚙</button>
       <button class="ico bmv" title="drag to reorder">✥</button>
@@ -586,7 +694,7 @@ function clearBDrop(){const d=document.getElementById('bdrop2');if(d)d.remove();
 document.getElementById('swRotate').addEventListener('click',()=>{bannerRotate=!bannerRotate;renderBanners();});
 
 /* ===================== RANKING widget (single fixed widget — editable) ===================== */
-let ranking={enabled:true, title:{zh:'臺灣排行 Top 10',en:"Taiwan's Top 10"}, subtitle:{zh:'',en:''},
+let ranking={enabled:true, title:{zh:'臺灣排行 Top 10',en:"Taiwan's Top 10"}, subtitle:{zh:'',en:''}, tag:{zh:'',en:''},
   platforms:[
     {key:'W',name:'WORLD',sub:'全部 綜合 天排行榜',on:true,configured:true},
     {key:'T',name:'Theatrical box office',sub:'friDay 影音 動漫 天排行榜',on:false,configured:true},
@@ -619,6 +727,8 @@ function renderRanking(){
   document.getElementById('rankTitle').textContent=ranking.title.zh||ranking.title.en;
   const onN=ranking.platforms.filter(p=>p.on).length;
   document.getElementById('rankSub').textContent=`Ranking widget · ${onN}/${ranking.platforms.length} platforms on`;
+  const tg=ranking.tag.zh||ranking.tag.en, chip=document.getElementById('rankTag');
+  if(tg){chip.textContent=tg;chip.style.display='';}else{chip.style.display='none';}
   document.getElementById('swRanking').classList.toggle('on',ranking.enabled);
   document.getElementById('rankRow').classList.toggle('off',!ranking.enabled);
 }
@@ -651,6 +761,7 @@ function openRanking(){
   document.getElementById('rEnable').classList.toggle('on',ranking.enabled);
   document.getElementById('rzhTitle').value=ranking.title.zh; document.getElementById('renTitle').value=ranking.title.en;
   document.getElementById('rzhSub').value=ranking.subtitle.zh; document.getElementById('renSub').value=ranking.subtitle.en;
+  document.getElementById('rzhTag').value=ranking.tag.zh; document.getElementById('renTag').value=ranking.tag.en;
   rPlatforms=ranking.platforms.map(p=>({...p}));
   renderPf();
   document.getElementById('rvalmsg').style.display='none';
@@ -663,14 +774,16 @@ function saveRanking(){
   let bad=false;const req=id=>{const el=document.getElementById(id);if(!el.value.trim()){el.classList.add('invalid');bad=true;}};
   req('rzhTitle');req('renTitle');                          // title required (both languages)
   // subtitle: optional but bilingual-coupled — fill one language → both required
-  (()=>{const z=document.getElementById('rzhSub'),e=document.getElementById('renSub');
+  const couple=(zi,ei)=>{const z=document.getElementById(zi),e=document.getElementById(ei);
     if(z.value.trim()&&!e.value.trim()){e.classList.add('invalid');bad=true;}
-    if(e.value.trim()&&!z.value.trim()){z.classList.add('invalid');bad=true;}})();
+    if(e.value.trim()&&!z.value.trim()){z.classList.add('invalid');bad=true;}};
+  couple('rzhSub','renSub'); couple('rzhTag','renTag');     // subtitle + tag bilingual-coupled
   document.getElementById('rvalmsg').style.display=bad?'block':'none';
   if(bad)return;
   ranking.enabled=document.getElementById('rEnable').classList.contains('on');
   ranking.title={zh:document.getElementById('rzhTitle').value,en:document.getElementById('renTitle').value};
   ranking.subtitle={zh:document.getElementById('rzhSub').value,en:document.getElementById('renSub').value};
+  ranking.tag={zh:document.getElementById('rzhTag').value,en:document.getElementById('renTag').value};
   ranking.platforms=rPlatforms.map(p=>({...p}));
   closeRanking();renderRanking();
 }
@@ -688,46 +801,147 @@ document.getElementById('rAddPf').addEventListener('click',()=>{
 function rankingPreview(){
   const on=ranking.platforms.filter(p=>p.on);
   const tabs=['全部',...on.map(p=>p.name)].slice(0,8);
-  return `<div class="pvsec"><h3>${esc(ranking.title.zh||ranking.title.en)}</h3>
+  return `<div class="pvsec">${ranking.tag.zh?`<span class="ptag">${esc(ranking.tag.zh)}</span><br>`:''}<h3>${esc(ranking.title.zh||ranking.title.en)}</h3>
     ${ranking.subtitle.zh?`<div class="sub">${esc(ranking.subtitle.zh)}</div>`:''}
     <div class="pv-tabs">${tabs.map((t,i)=>`<span class="pv-tab${i===0?' on':''}">${esc(t)}</span>`).join('')}</div>
     <div class="pvrow rank"><div class="card">1</div><div class="card">2</div><div class="card">3</div><div class="card">4</div></div></div>`;
 }
 
+/* shared bilingual CTA repeater (zh name + en name + single URL). Pass max + addBtnId
+   to auto-hide the "+ Add CTA" button once the list reaches max. */
+function renderCtaList(boxId, arr, max, addBtnId){
+  const box=document.getElementById(boxId);
+  box.innerHTML=arr.length?arr.map((c,i)=>`<div class="ctarow">
+      <input class="ci nm" data-cz="${i}" placeholder="中文名稱 (e.g. 立即參賽)" value="${esc(c.name.zh||'')}">
+      <input class="ci nm" data-ce="${i}" placeholder="English name (e.g. Join now)" value="${esc(c.name.en||'')}">
+      <input class="ci" data-cu="${i}" placeholder="URL http(s)://…" value="${esc(c.url||'')}">
+      <button class="ico" data-cx="${i}" title="remove">🗑</button></div>`).join('')
+    :'<div style="color:var(--faint);font-size:12px;padding:4px 0">No CTA — add one if needed.</div>';
+  box.querySelectorAll('[data-cz]').forEach(el=>el.addEventListener('input',()=>{arr[+el.dataset.cz].name.zh=el.value;el.classList.remove('invalid');}));
+  box.querySelectorAll('[data-ce]').forEach(el=>el.addEventListener('input',()=>{arr[+el.dataset.ce].name.en=el.value;el.classList.remove('invalid');}));
+  box.querySelectorAll('[data-cu]').forEach(el=>el.addEventListener('input',()=>{arr[+el.dataset.cu].url=el.value;el.classList.remove('invalid');}));
+  box.querySelectorAll('[data-cx]').forEach(el=>el.addEventListener('click',()=>{arr.splice(+el.dataset.cx,1);renderCtaList(boxId,arr,max,addBtnId);}));
+  if(addBtnId){const b=document.getElementById(addBtnId); if(b) b.style.display=(max&&arr.length>=max)?'none':'';}  // hide + Add CTA at max
+}
+/* validate a bilingual CTA list inside a container; returns true if bad */
+function validateCtas(boxId){
+  let bad=false;
+  document.querySelectorAll('#'+boxId+' .ctarow').forEach(row=>{
+    const z=row.querySelector('[data-cz]'),e=row.querySelector('[data-ce]'),u=row.querySelector('[data-cu]');
+    if(!z.value.trim()){z.classList.add('invalid');bad=true;}     // zh name required
+    if(!e.value.trim()){e.classList.add('invalid');bad=true;}     // en name required
+    if(!/^https?:\/\//i.test(u.value.trim())){u.classList.add('invalid');bad=true;} // absolute http(s)
+  });
+  return bad;
+}
+
+/* ===================== Continue Watching (fixed section under Banner) ===================== */
+let cw={enabled:true, title:{zh:'繼續觀看',en:'Continue Watching'}, content:{zh:'',en:''}, tag:{zh:'',en:''}};
+function renderCw(){
+  document.getElementById('cwTitleRow').textContent=cw.title.zh||cw.title.en;
+  document.getElementById('swCw').classList.toggle('on',cw.enabled);
+  document.getElementById('cwRow').classList.toggle('off',!cw.enabled);
+}
+document.getElementById('swCw').addEventListener('click',()=>{cw.enabled=!cw.enabled;renderCw();});
+document.getElementById('cwEdit').addEventListener('click',openCw);
+document.getElementById('cwEnable').addEventListener('click',e=>e.currentTarget.classList.toggle('on'));
+function openCw(){
+  document.getElementById('cwEnable').classList.toggle('on',cw.enabled);
+  document.getElementById('cwzhTitle').value=cw.title.zh; document.getElementById('cwenTitle').value=cw.title.en;
+  document.getElementById('cwzhContent').value=cw.content.zh; document.getElementById('cwenContent').value=cw.content.en;
+  document.getElementById('cwzhTag').value=cw.tag.zh; document.getElementById('cwenTag').value=cw.tag.en;
+  document.getElementById('cwvalmsg').style.display='none';
+  document.querySelectorAll('#cwmodal .invalid').forEach(e=>e.classList.remove('invalid'));
+  document.getElementById('cwmodal').classList.add('show');
+}
+function closeCw(){document.getElementById('cwmodal').classList.remove('show');}
+function saveCw(){
+  document.querySelectorAll('#cwmodal .invalid').forEach(e=>e.classList.remove('invalid'));
+  let bad=false;
+  const req=id=>{const el=document.getElementById(id);if(!el.value.trim()){el.classList.add('invalid');bad=true;}};
+  req('cwzhTitle');req('cwenTitle');                          // title required (both languages)
+  const couple=(z,e)=>{const a=document.getElementById(z),b=document.getElementById(e);  // content/tag bilingual-coupled
+    if(a.value.trim()&&!b.value.trim()){b.classList.add('invalid');bad=true;}
+    if(b.value.trim()&&!a.value.trim()){a.classList.add('invalid');bad=true;}};
+  couple('cwzhContent','cwenContent');couple('cwzhTag','cwenTag');
+  document.getElementById('cwvalmsg').style.display=bad?'block':'none';
+  if(bad)return;
+  cw.enabled=document.getElementById('cwEnable').classList.contains('on');
+  cw.title={zh:document.getElementById('cwzhTitle').value,en:document.getElementById('cwenTitle').value};
+  cw.content={zh:document.getElementById('cwzhContent').value,en:document.getElementById('cwenContent').value};
+  cw.tag={zh:document.getElementById('cwzhTag').value,en:document.getElementById('cwenTag').value};
+  closeCw();renderCw();
+}
+document.getElementById('cwmClose').addEventListener('click',closeCw);
+document.getElementById('cwmCancel').addEventListener('click',closeCw);
+document.getElementById('cwmSave').addEventListener('click',saveCw);
+function cwPreview(){
+  return `<div class="pvsec">
+    ${cw.tag.zh?`<span class="ptag">${esc(cw.tag.zh)}</span><br>`:''}
+    <h3>${esc(cw.title.zh||cw.title.en)}</h3>
+    ${cw.content.zh?`<div class="sub">${esc(cw.content.zh)}</div>`:''}
+    <div class="pvrow poster"><div class="card"></div><div class="card"></div><div class="card"></div><div class="card"></div><div class="card"></div></div>
+    <div style="color:var(--faint);font-size:11px;margin-top:6px">繼續觀看 · 僅登入 · 系統自動續看</div>
+  </div>`;
+}
+
 /* banner modal */
-function renderBRes(){
-  const g=document.getElementById('bresgrid');g.innerHTML='';
-  BANNER_RES.forEach(k=>{const d=document.createElement('div');d.className='dt'+(k===curBRes?' on':'');d.textContent=k;d.addEventListener('click',()=>{if(k!==curBRes){curBRes=k;curBItem='';}renderBRes();renderBItem();});g.appendChild(d);});
+function bTypeHasItem(){return !!BTYPE[curBType].item;}
+function renderBType(){
+  const g=document.getElementById('btypegrid');g.innerHTML='';
+  BANNER_TYPES.forEach(k=>{const d=document.createElement('div');d.className='dt'+(k===curBType?' on':'');d.textContent=k;
+    d.addEventListener('click',()=>{if(k!==curBType){curBType=k;curBItem='';bSrcMode=BTYPE[k].item?'item':'upload';}renderBType();});g.appendChild(d);});
+  document.getElementById('btypeNote').textContent='ⓘ '+BTYPE[curBType].note;
+  renderBSource();
+  document.getElementById('bCtaWrap').style.display='block';   // all banner types (incl. AI Competition) can add CTA
+}
+/* Item ⇄ Upload are MUTUALLY EXCLUSIVE for item-bearing types (Event/Film Intro/AI Competition): pick an item OR upload — not both. */
+function renderBSource(){
+  const hasItem=bTypeHasItem(), seg=document.getElementById('bSrcToggle');
+  if(hasItem){seg.style.display='flex';seg.querySelectorAll('.srcbtn').forEach(b=>b.classList.toggle('on',b.dataset.src===bSrcMode));}
+  else{seg.style.display='none';bSrcMode='upload';}   // Brand Intro has no item → upload only
+  renderBItem();renderBUploads();renderBTags();
 }
 function renderBItem(){
-  document.getElementById('bItemField').style.display='flex';   // every group has selectable items
+  const show=bTypeHasItem() && bSrcMode==='item';
+  document.getElementById('bItemWrap').style.display=show?'block':'none';   // hidden for Brand Intro or when source=upload
+  if(!show)return;
   const t=document.getElementById('bItemText');
   if(curBItem){t.textContent=curBItem;t.classList.remove('ph');}
-  else{t.textContent='點擊選擇此群組下的 event / item…';t.classList.add('ph');}
+  else{t.textContent='點擊選擇 event / item…';t.classList.add('ph');}
   document.getElementById('bItemHint').style.display=curBItem?'none':'block';
 }
+function renderBUploads(){
+  const wrap=document.getElementById('bUploads'), ups=BTYPE[curBType].uploads;
+  const show=ups.length && (!bTypeHasItem() || bSrcMode==='upload');       // hidden when source=item (mutually exclusive)
+  if(!show){wrap.style.display='none';wrap.innerHTML='';return;}
+  wrap.style.display='block';
+  wrap.innerHTML='<div class="styletag">上傳圖片/影片 <span style="color:var(--faint)">— 尺寸/格式 refer FE §3.3</span></div>'+
+    '<div class="bupgrid">'+ups.map(u=>`<div class="bupbox"><div class="imgbox"><div class="plus">＋</div></div><div class="buplab">${esc(u)}</div></div>`).join('')+'</div>';
+}
+function renderBTags(){
+  document.getElementById('bTagWrap').style.display=(BTYPE[curBType].tags && bSrcMode==='item')?'block':'none';  // tags come from the film item
+}
+document.getElementById('bSrcToggle').addEventListener('click',e=>{const b=e.target.closest('.srcbtn');if(!b)return;bSrcMode=b.dataset.src;if(bSrcMode==='upload')curBItem='';renderBSource();});
 document.getElementById('bItemField').addEventListener('click',()=>{
-  openPicker({list:BANNER_ITEMS[curBRes]||[],title:'SELECT '+curBRes.toUpperCase()+' (from BO)',badge:'BO',
+  const src=BTYPE[curBType].item; if(!src||bSrcMode!=='item')return;
+  openPicker({list:BANNER_ITEMS[src]||[],title:'SELECT '+src.toUpperCase()+' (from database)',badge:'DB',
     onPick:s=>{curBItem=s;renderBItem();document.getElementById('bItemField').classList.remove('invalid');}});
 });
-function renderBCtas(){
-  const box=document.getElementById('bctas');
-  box.innerHTML=bCtas.length?bCtas.map((c,i)=>`<div class="ctarow"><input class="ci nm" data-cname="${i}" placeholder="CTA 名稱 (e.g. 立即參賽)" value="${esc(c.name)}"><input class="ci" data-curl="${i}" placeholder="URL http:// 或 https://…" value="${esc(c.url)}"><button class="ico" data-crm="${i}" title="remove">🗑</button></div>`).join(''):'<div style="color:var(--faint);font-size:12px;padding:4px 0">No CTA — add one if needed.</div>';
-  box.querySelectorAll('[data-cname]').forEach(el=>el.addEventListener('input',()=>{bCtas[+el.dataset.cname].name=el.value;el.classList.remove('invalid');}));
-  box.querySelectorAll('[data-curl]').forEach(el=>el.addEventListener('input',()=>{bCtas[+el.dataset.curl].url=el.value;el.classList.remove('invalid');}));
-  box.querySelectorAll('[data-crm]').forEach(el=>el.addEventListener('click',()=>{bCtas.splice(+el.dataset.crm,1);renderBCtas();}));
-}
+document.getElementById('bTagSw').addEventListener('click',e=>e.currentTarget.classList.toggle('on'));
 function openBanner(id){
   editingBId=id||null;const b=id?bById(id):null;
   document.getElementById('bmtitle').textContent=id?'EDIT BANNER':'ADD BANNER';
   document.getElementById('bEnable').classList.toggle('on', b?b.enabled:true);
-  curBRes=b?b.resource:BANNER_RES[0];
+  curBType=b?b.type:BANNER_TYPES[0];
   curBItem=b?(b.item||''):'';
+  bSrcMode=b?(b.srcMode||(b.item?'item':'upload')):(BTYPE[curBType].item?'item':'upload');
+  document.getElementById('bTagSw').classList.toggle('on', b?!!b.tagVisible:true);
   document.getElementById('bzhHeader').value=b?b.header.zh:''; document.getElementById('benHeader').value=b?b.header.en:'';
   document.getElementById('bzhTitle').value=b?b.title.zh:''; document.getElementById('benTitle').value=b?b.title.en:'';
   document.getElementById('bzhContent').value=b?b.content.zh:''; document.getElementById('benContent').value=b?b.content.en:'';
-  bCtas=b?b.ctas.map(c=>({...c})):[];
-  renderBRes();renderBItem();renderBCtas();
+  bCtas=b?b.ctas.map(c=>({name:{...c.name},url:c.url})):[];
+  renderBType();renderCtaList('bctas',bCtas,2,'bAddCta');
   document.getElementById('bvalmsg').style.display='none';
   document.querySelectorAll('#bmodal .invalid').forEach(e=>e.classList.remove('invalid'));
   document.getElementById('bmodal').classList.add('show');
@@ -736,29 +950,27 @@ function closeBanner(){document.getElementById('bmodal').classList.remove('show'
 function saveBanner(){
   document.querySelectorAll('#bmodal .invalid').forEach(e=>e.classList.remove('invalid'));
   let bad=false;
-  // banner text fields (Header/Title/Content) are optional but bilingual-coupled — fill one language → both required
+  // banner text fields are optional but bilingual-coupled — fill one language → both required (per-type required fields per FE §3.2)
   const coupleB=(zhId,enId)=>{const z=document.getElementById(zhId),e=document.getElementById(enId);
     const zf=z.value.trim(), ef=e.value.trim();
     if(zf&&!ef){e.classList.add('invalid');bad=true;}
     if(ef&&!zf){z.classList.add('invalid');bad=true;}
   };
   coupleB('bzhHeader','benHeader'); coupleB('bzhTitle','benTitle'); coupleB('bzhContent','benContent');
-  if(!curBItem){                                            // every group requires a specific item
+  const useItem=bTypeHasItem() && bSrcMode==='item';
+  if(useItem && !curBItem){                                 // item required only in item mode
     document.getElementById('bItemField').classList.add('invalid');
     document.getElementById('bItemHint').style.display='block';bad=true;
   }
-  document.querySelectorAll('#bctas .ctarow').forEach(row=>{ // each CTA needs name + http(s) url
-    const nm=row.querySelector('[data-cname]'),url=row.querySelector('[data-curl]');
-    if(!nm.value.trim()){nm.classList.add('invalid');bad=true;}
-    if(!/^https?:\/\//i.test(url.value.trim())){url.classList.add('invalid');bad=true;}
-  });
+  if(validateCtas('bctas'))bad=true;
   document.getElementById('bvalmsg').style.display=bad?'block':'none';
   if(bad)return;
-  const data={enabled:document.getElementById('bEnable').classList.contains('on'),resource:curBRes,item:curBItem,
+  const data={enabled:document.getElementById('bEnable').classList.contains('on'),type:curBType,srcMode:bSrcMode,item:useItem?curBItem:null,
     header:{zh:document.getElementById('bzhHeader').value,en:document.getElementById('benHeader').value},
     title:{zh:document.getElementById('bzhTitle').value,en:document.getElementById('benTitle').value},
     content:{zh:document.getElementById('bzhContent').value,en:document.getElementById('benContent').value},
-    ctas:bCtas.map(c=>({name:c.name,url:c.url}))};
+    tagVisible:(BTYPE[curBType].tags && bSrcMode==='item')?document.getElementById('bTagSw').classList.contains('on'):undefined,
+    ctas:bCtas.map(c=>({name:{zh:c.name.zh,en:c.name.en},url:c.url}))};
   if(editingBId)Object.assign(bById(editingBId),data);else banners.push(Object.assign({id:bUid++},data));
   closeBanner();renderBanners();
 }
@@ -766,22 +978,23 @@ document.getElementById('btnAddBanner').addEventListener('click',()=>openBanner(
 document.getElementById('bmClose').addEventListener('click',closeBanner);
 document.getElementById('bmCancel').addEventListener('click',closeBanner);
 document.getElementById('bmSave').addEventListener('click',saveBanner);
-document.getElementById('bAddCta').addEventListener('click',()=>{bCtas.push({name:'',url:''});renderBCtas();});
+document.getElementById('bAddCta').addEventListener('click',()=>{if(bCtas.length>=2)return;bCtas.push({name:{zh:'',en:''},url:''});renderCtaList('bctas',bCtas,2,'bAddCta');});
 document.getElementById('bEnable').addEventListener('click',e=>e.currentTarget.classList.toggle('on'));
 
 /* banner carousel for FE preview */
 function bannerCarousel(vb){
   if(bActive>=vb.length)bActive=0;
   const b=vb[bActive];
-  const ctas=b.ctas.map((c,i)=>`<a class="${i>0?'alt':''}" href="${/^https?:\/\//i.test(c.url)?esc(c.url):'#'}" target="_blank" rel="noopener">${esc(c.name)} →</a>`).join('');
+  const ctas=b.ctas.map((c,i)=>`<a class="${i>0?'alt':''}" href="${/^https?:\/\//i.test(c.url)?esc(c.url):'#'}" target="_blank" rel="noopener">${esc(c.name.zh||c.name.en)} →</a>`).join('');
   const dots=vb.length>1?`<div class="pvdots">${vb.map((_,i)=>`<i class="${i===bActive?'on':''}" data-dot="${i}"></i>`).join('')}</div>`:'';
-  return `<div class="pvbanner">
-    <div class="bres">${esc(b.resource)}</div>
+  const arrows=vb.length>1?`<button class="pvarrow prev" data-arrow="-1">‹</button><button class="pvarrow next" data-arrow="1">›</button>`:'';
+  return `<div class="pvbanner" id="pvbannerEl">
+    <div class="bres">${esc(b.type)}</div>
     ${b.header.zh?`<div class="bhead">${esc(b.header.zh)}</div>`:''}
     ${(b.title.zh||b.title.en)?`<div class="btitle">${esc(b.title.zh||b.title.en)}</div>`:''}
     ${b.content.zh?`<div class="bcontent">${esc(b.content.zh)}</div>`:''}
     ${ctas?`<div class="bctas">${ctas}</div>`:''}
-    ${dots}
+    ${arrows}${dots}
   </div>`;
 }
 
@@ -798,6 +1011,7 @@ function renderPreview(){
   const vb=banners.filter(b=>b.enabled);
   const vis=blocks.filter(b=>b.enabled);
   let html=vb.length?bannerCarousel(vb):'';
+  if(cw.enabled) html+=cwPreview();                // continue watching sits directly under the banner
   if(ranking.enabled) html+=rankingPreview();      // ranking sits between banner and the content blocks
   html+=vis.map(b=>`<div class="pvsec">
     ${b.zh.tag?`<span class="ptag">${esc(b.zh.tag)}</span><br>`:''}
@@ -809,10 +1023,12 @@ function renderPreview(){
   w.innerHTML=html||'<div class="empty">Nothing to preview.</div>';
   // dots + auto-rotate
   document.querySelectorAll('.pvdots [data-dot]').forEach(d=>d.addEventListener('click',()=>{bActive=+d.dataset.dot;renderPreview();}));
+  document.querySelectorAll('.pvbanner [data-arrow]').forEach(a=>a.addEventListener('click',()=>{const n=vb.length;bActive=((bActive+ +a.dataset.arrow)%n+n)%n;renderPreview();}));
   if(rotTimer){clearInterval(rotTimer);rotTimer=null;}
-  if(bannerRotate && vb.length>1 && document.getElementById('pv').classList.contains('show')){
-    rotTimer=setInterval(()=>{bActive=(bActive+1)%vb.length;renderPreview();},3000);
-  }
+  const startRot=()=>{ if(bannerRotate && vb.length>1 && document.getElementById('pv').classList.contains('show')){ rotTimer=setInterval(()=>{bActive=(bActive+1)%vb.length;renderPreview();},5000); } };  // FE §3.6: 5s
+  startRot();
+  const pvb=document.getElementById('pvbannerEl');                                  // hover-pause (FE §3.6)
+  if(pvb){ pvb.addEventListener('mouseenter',()=>{if(rotTimer){clearInterval(rotTimer);rotTimer=null;}}); pvb.addEventListener('mouseleave',startRot); }
 }
 document.getElementById('btnPreview').addEventListener('click',()=>{bActive=0;document.getElementById('pv').classList.add('show');renderPreview();});
 document.getElementById('pvClose').addEventListener('click',()=>{document.getElementById('pv').classList.remove('show');if(rotTimer){clearInterval(rotTimer);rotTimer=null;}});
@@ -826,6 +1042,7 @@ document.querySelectorAll('.rttool span[data-cmd]').forEach(s=>s.addEventListene
 
 /* ---------- init ---------- */
 renderBanners();
+renderCw();
 renderRanking();
 renderList();
 </script>
