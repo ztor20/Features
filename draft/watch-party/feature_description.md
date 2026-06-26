@@ -1,9 +1,11 @@
 # Watch Party
 
 > Migrated into `Features/` following the handbook convention (2026-06-26). Full hosted BRD: https://ztor-watchparty.vercel.app/brd
+> **The full clickable prototype + the complete BRD now live in [`prototype/`](./prototype/)** (Next.js source, mirrored from the personal repo). BRD markdown: [`prototype/_docs/BRD/watch-party/`](./prototype/_docs/BRD/watch-party/) — dev BRD, the lean **business overview** (`Biz.md`), bilingual **email templates**, BO + Frontend surfaces, shared contract.
 
 **Surface(s):** Frontend + Back Office (multi-surface)
-**Status:** draft — BO prototype shipped; **FE prototype pending designer**
+**Status:** draft (v3) — BO + FE + host-camera all built & deployed; FE design polish pending designer
+**Update (2026-06-26):** v3 adds **host camera** (host-only PiP broadcast on Amazon IVS; Ably unchanged). Architecture brief: https://aic-output.vercel.app/ztor/ztor-watchparty-host-camera-2026-06-26.html · business overview: https://ztor-watchparty.vercel.app/overview
 
 ## Owners
 > One Feature Owner per feature. (Replace the placeholders with real names.)
