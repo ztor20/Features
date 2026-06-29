@@ -15,10 +15,10 @@ import { getAbly, chan, type CameraStatus } from "@/lib/ably";
  *   camera on. It answers `camera-status-request` for late joiners.
  * - VIEWER: subscribes to the camera channel. While the host is live it shows a
  *   PiP placeholder (host initial + LIVE). In production this <div> is a second
- *   hls.js player pointed at the IVS playback URL — the real video pixels. The
+ *   LiveKit subscriber to the host camera track — the real video pixels. The
  *   ON/OFF flip is genuinely realtime; only the cross-network video is mocked.
  *
- * The camera rides its OWN media layer (Amazon IVS) in production — never Ably,
+ * The camera rides its OWN media layer (LiveKit) in production — never Ably,
  * never the movie's host-authoritative sync. This channel carries on/off only.
  */
 export function HostCameraTile({
@@ -213,8 +213,8 @@ export function HostCameraTile({
                 className={`w-full h-full object-cover ${mode === "camera" ? "-scale-x-100" : ""}`}
               />
             ) : (
-              // Viewer placeholder — in production this is a 2nd hls.js player on
-              // the IVS playback URL. The LIVE flip is real; the feed is mocked.
+              // Viewer placeholder — in production this is a 2nd LiveKit subscriber to
+              // the host camera track. The LIVE flip is real; the feed is mocked.
               <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-surface2 to-bg">
                 <div className="w-12 h-12 rounded-full bg-accent/20 border border-accent/40 flex items-center justify-center text-accentLight font-semibold text-lg">
                   {(remoteHost || "H").trim().charAt(0).toUpperCase()}

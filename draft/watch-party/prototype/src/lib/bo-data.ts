@@ -132,14 +132,13 @@ export type WatchParty = {
   episodeId: string | null;
   status: WatchPartyStatus;
   scheduledStartAt: string; // ISO (UTC)
-  capacity: number;
-  advertisedCapacity: number;
+  capacity: number; // single hard limit — 6-28 dropped the advertised/dual-number design
   ticketPricePopcorn: number; // 0 = free
   isFree: boolean;
   ticketsSold: number;
   occupancy: number; // live presence; 0 unless live/host_away
   hostCameraAllowed: boolean; // ops policy — may this host go on camera at all
-  hostCameraLive: boolean; // runtime — is the host's camera broadcasting now (Amazon IVS)
+  hostCameraLive: boolean; // runtime — is the host's camera broadcasting now (LiveKit)
 };
 
 export const WATCH_PARTIES: WatchParty[] = [
@@ -152,7 +151,6 @@ export const WATCH_PARTIES: WatchParty[] = [
     status: "live",
     scheduledStartAt: "2026-08-04T12:00:00Z",
     capacity: 1000,
-    advertisedCapacity: 500,
     ticketPricePopcorn: 150,
     isFree: false,
     ticketsSold: 842,
@@ -169,7 +167,6 @@ export const WATCH_PARTIES: WatchParty[] = [
     status: "host_away",
     scheduledStartAt: "2026-08-05T12:00:00Z",
     capacity: 500,
-    advertisedCapacity: 300,
     ticketPricePopcorn: 100,
     isFree: false,
     ticketsSold: 410,
@@ -186,7 +183,6 @@ export const WATCH_PARTIES: WatchParty[] = [
     status: "scheduled",
     scheduledStartAt: "2026-08-09T11:00:00Z",
     capacity: 1000,
-    advertisedCapacity: 400,
     ticketPricePopcorn: 0,
     isFree: true,
     ticketsSold: 120,
@@ -203,7 +199,6 @@ export const WATCH_PARTIES: WatchParty[] = [
     status: "scheduled",
     scheduledStartAt: "2026-08-16T12:00:00Z",
     capacity: 1000,
-    advertisedCapacity: 500,
     ticketPricePopcorn: 150,
     isFree: false,
     ticketsSold: 58,
@@ -220,7 +215,6 @@ export const WATCH_PARTIES: WatchParty[] = [
     status: "ended",
     scheduledStartAt: "2026-06-18T12:00:00Z",
     capacity: 500,
-    advertisedCapacity: 300,
     ticketPricePopcorn: 0,
     isFree: true,
     ticketsSold: 350,

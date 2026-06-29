@@ -11,26 +11,26 @@ on the Frontend — BO only reads those.
 ## Contract reference
 Shared nouns → `_docs/BRD/_shared-contract.md`. Feature-local → `_feature.md#shared-data-contract`.
 - **reads:** `WatchParty.*`, `Order` (watch_party_ticket), `RoomOccupancy`, `HostCameraState`, `User.displayName`, `Title`, `Episode`, `EmailNotification`
-- **writes:** `HostGrant.*`, `ContentGrant.*`, `WatchParty.capacity`, `WatchParty.advertisedCapacity`, `WatchParty.hostCameraAllowed`, `WatchParty.status` (end/cancel only), `Order.status` (→ `refunded`), `AuditLog.*` (system, on every write here)
+- **writes:** `HostGrant.*`, `ContentGrant.*`, `WatchParty.capacity` (single limit), `WatchParty.hostCameraAllowed`, `WatchParty.status` (end/cancel only), `Order.status` (→ `refunded`), `AuditLog.*` (system, on every write here)
 
 ## Scenarios
 - **Given** ops opens the BO, **When** they open **Hosts**, pick Gary's account and toggle **Grant host**, **Then** a `HostGrant{userId, status:active}` is written, an `AuditLog` row is added, and Gary's account can now see "host a watch party" on the Frontend.
 - **Given** Gary is a granted host, **When** ops opens **Content** for Gary and ticks F《我要衝線》 ep 1, 2, 3, **Then** a `ContentGrant{userId, titleId, episodeIds:[e1,e2,e3]}` is written; Gary may stream only those in-room.
 - **Given** a room is `live`, **When** ops opens **Watch Parties → the room**, **Then** ops sees `occupancy / capacity`, the attendee list, a **Host camera** indicator (Live / Off / Disabled), and an **End room** control; if the host disconnected the room shows a `host_away` banner.
 - **Given** a party where ops doesn't want the host on camera, **When** ops flips the **Host camera** toggle off, **Then** `WatchParty.hostCameraAllowed = false` is written + audited and the host's in-room camera toggle is unavailable; **End room** stops any live camera with the room.
-- **Given** a fan disputes a charge, **When** ops opens the room's orders and clicks **Mark refunded** on that order (confirm), **Then** `Order.status = refunded`, an `AuditLog{action:'order.refund'}` row is written — **no** automatic POPCORN reversal (CS handles the credit).
-- **Given** the Aug-4 campaign, **When** ops opens **Settings**, **Then** they set room **capacity = 1000** and **advertised = 500**; advertised is display-only and never gates admission.
+- **Given** a fan disputes a charge, **When** ops opens the room's orders and clicks **Mark refunded** on that order (confirm), **Then** `Order.status = refunded`, the ticket's **POPCORN is credited back to the buyer internally** (never cash/Stripe), and an `AuditLog{action:'order.refund'}` row is written.
+- **Given** the Aug-4 campaign, **When** ops opens **Settings**, **Then** they set a single room **capacity = 1000** that both displays and gates admission (the 6-28 sync dropped the advertised/server dual-number).
 - **Given** a non-ops user, **When** they hit a `/bo` URL, **Then** they get a permission-denied screen (no data).
 
 ## Functional requirements
 - **FR-01** The ops admin can grant/revoke the **host capability** on any account.
 - **FR-02** The ops admin can assign a host a pool of **titles + specific episodes** they may stream.
-- **FR-03** The ops admin can set a **default capacity** and a per-room capacity + advertised number.
+- **FR-03** The ops admin can set a **default capacity** and a per-room capacity — a **single limit** value (no advertised/server dual-number; 6-28).
 - **FR-04** The ops admin can **monitor** every scheduled/live/ended room: status, occupancy vs cap, host-away.
 - **FR-05** The ops admin can **end** (kill) a live room and **cancel** a scheduled one.
 - **FR-05a** The ops admin can **allow/disable the host camera per party** (`hostCameraAllowed`) and sees a **camera-live** indicator on live rooms (monitor list + detail). Ending the room stops any live camera.
 - **FR-06** The ops admin can view **analytics**: watch-party orders (counted in total orders), attendees, chat activity, avg watch time, and **export**. (No subscriber/new split — Ztor has no subscription feature.)
-- **FR-07** The ops admin can **mark an order refunded** (status + audit only; no payment reversal).
+- **FR-07** The ops admin can **mark an order refunded** via a BO refund button — sets status, **credits the ticket's POPCORN back to the buyer internally** (never cash/Stripe), and writes an audit row (6-28).
 - **FR-08** Every grant/assign/capacity/end/cancel/refund action is **written to the audit log**.
 - **FR-09** Ticket **price is read-only** in BO (host sets it on the Frontend).
 
@@ -58,19 +58,20 @@ Shared nouns → `_docs/BRD/_shared-contract.md`. Feature-local → `_feature.md
 - **TC-AB1 (Abuse)** — Given Gary's `ContentGrant` = [F ep1–3] · When Gary tries to create a party on title `imported_film` · Then create is **blocked** (`403`), not recorded as a party. *(catches: hosting un-licensed content)*
 - **TC-AU1 (Audit)** — Given ops marks order `o_1` refunded · When the action commits · Then an `AuditLog` row exists with `{actorId, action:'order.refund', targetType:'Order', targetId:'o_1', before:{status:'confirmed'}, after:{status:'refunded'}, at}` AND `Order.status == 'refunded'`. *(catches: untraceable money/permission changes — the before/after must make the trail reconstructable)*
 - **TC-S1 (Lifecycle)** — Given room `wp_001` is `live` · When the host disconnects · Then `status == 'host_away'` AND the monitor row shows the host-away banner; on reconnect `status == 'live'`. *(catches: orphaned uncontrolled rooms)*
-- **TC-CAP1 (Caps)** — Given `capacity=1000, advertised=500` · When the 501st fan buys · Then the purchase **succeeds** (advertised never gates) AND when the 1001st buys it **fails** with "room full". *(catches: advertised number wrongly blocking; oversell)*
+- **TC-CAP1 (Caps)** — Given a single `capacity=1000` · When the 1000th fan buys · Then the purchase **succeeds** AND when the 1001st buys it **fails** with "room full". *(catches: oversell past the one capacity limit)*
 
 ## Information architecture (prototype)
 Admin shell (dedicated, bypasses the consumer chrome) with left nav:
 1. **Overview** `/bo` — headline metrics (parties live now, tickets sold, watch-party orders, attendees) + a list of parties with status chips.
-2. **Watch Parties** `/bo/parties` — the monitor: filterable list (Scheduled / Live / Ended; live rows show a **🎥 cam-live** badge) → **detail** `/bo/parties/[id]` (occupancy vs cap, attendee list, orders + manual refund, **host-camera card with allow toggle + Live/Off/Disabled status**, end/cancel, host-away banner, no-replay note).
+2. **Watch Parties** `/bo/parties` — the monitor: filterable list (Scheduled / Live / Ended; live rows show a **🎥 cam-live** badge) → **detail** `/bo/parties/[id]` (occupancy vs cap, attendee list, orders + POPCORN refund, **host-camera card with allow toggle + Live/Off/Disabled status**, end/cancel, host-away banner, no-replay note).
 3. **Hosts** `/bo/hosts` — accounts with grant/revoke toggle → per-host **Content** assignment (title cards + episode-level ticks).
 4. **Analytics** `/bo/analytics` — watch-party orders, attendees, chat activity, avg watch time + **Export**.
-5. **Settings** `/bo/settings` — default + per-campaign capacity, advertised number, policy notes (no-replay, no-auto-refund), email notifications (templates in [`email-templates.md`](./email-templates.md)), and the **rev-share future-phase** banner (NEEDS-POLICY-OWNER: Susan).
+5. **Settings** `/bo/settings` — single default capacity, policy notes (no-replay, POPCORN refund), email notifications (templates in [`email-templates.md`](./email-templates.md)), and the **rev-share future-phase** banner (NEEDS-POLICY-OWNER: Susan).
 
 ## Not Included
 - Setting ticket **price** (host self-serve on Frontend; BO is read-only).
 - **Rev-share / commission** computation (deferred — Susan/Finance).
 - **Marketing tooling** (SMS blasts, paylinks, tags) — cut for v1.
-- **Automatic refund / payment reversal** — manual mark-refunded + CS only.
+- **Cash/Stripe refunds** — refunds are POPCORN-only, credited internally on mark-refunded (no payment-rail reversal).
+- **Full audit-log spec** (shared-table-with-filters vs separate log) — deferred to the following release (6-28); v1 logs every BO write inline.
 - **App (1.0) version** — Web-first; tracked separately.

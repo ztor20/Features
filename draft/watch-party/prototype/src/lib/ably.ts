@@ -23,7 +23,7 @@ export const chan = {
   comments: (code: string) => `comments-${code}`,
   presence: (code: string) => `presence-${code}`,
   // Host-camera ON/OFF signal ONLY. The camera *video* never rides Ably — in
-  // production it's a separate live stream (Amazon IVS); here it's a self-view
+  // production it's a separate live stream (LiveKit); here it's a self-view
   // on the host + a PiP placeholder on viewers. This channel just flips it.
   camera: (code: string) => `camera-${code}`,
 };

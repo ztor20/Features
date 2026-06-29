@@ -170,7 +170,7 @@ export function SyncedPlayer({
         )}
 
         {/* Host-camera PiP — host self-view / viewer placeholder. Overlays this
-            video box; in production it's a 2nd player on the IVS stream. */}
+            video box; in production it's a subscriber to the host LiveKit camera track. */}
         <HostCameraTile code={code} isHost={isHost} hostName={hostName} />
       </div>
 

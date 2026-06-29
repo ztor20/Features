@@ -38,14 +38,36 @@ export default function Lobby() {
         </p>
       </div>
 
+      {/* Front-end now lives in the designer's build — this site keeps the BO + sync-engine demo */}
+      <section className="mt-10 max-w-2xl bg-accent/10 border border-accent/30 rounded-xl p-6">
+        <h2 className="font-semibold text-lg flex items-center gap-2">
+          <span aria-hidden="true">🎨</span> User-facing front-end → designer&rsquo;s build
+        </h2>
+        <p className="text-sm text-muted mt-1.5 leading-relaxed">
+          The fan/host front-end is now owned by the design team. The current user-facing UI lives at the
+          designer&rsquo;s deploy — this prototype site keeps the{" "}
+          <Link href="/bo" className="text-accent hover:text-accentLight rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-accent">back office</Link>{" "}
+          and the realtime sync-engine demo below.
+        </p>
+        <a
+          href="https://ztor-2-0-f2e.vercel.app/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 mt-4 bg-accent text-bg font-medium rounded-md px-4 py-2.5 text-sm hover:bg-accentLight focus:outline-none focus-visible:ring-2 focus-visible:ring-accent transition-colors"
+        >
+          Open the designer&rsquo;s front-end ↗
+        </a>
+      </section>
+
       <div className="mt-10 max-w-md">
-        {/* Host — the lobby's single primary action */}
+        {/* Sync-engine demo — original prototype, kept for realtime testing */}
+        <p className="text-xs uppercase tracking-widest text-muted mb-3">Realtime sync-engine demo</p>
         <section className="bg-surface border border-line rounded-xl p-6">
           <h2 className="font-semibold text-lg flex items-center gap-2">
             <span aria-hidden="true">🎬</span> Host a watch party
           </h2>
           <p className="text-sm text-muted mt-1">
-            You control playback for everyone.
+            Original prototype — demonstrates host-authoritative sync, live comments &amp; presence. You control playback for everyone.
           </p>
 
           <label htmlFor="host-name" className="block text-xs text-muted mt-5 mb-1.5">

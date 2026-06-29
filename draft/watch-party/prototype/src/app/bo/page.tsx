@@ -63,7 +63,7 @@ export default function Overview() {
                       ) : (
                         <div className="text-xs text-muted text-right">
                           <span className="tabular-nums text-text">{p.ticketsSold.toLocaleString()}</span> tickets sold
-                          <div className="text-[11px] mt-0.5">cap {p.capacity.toLocaleString()} · adv {p.advertisedCapacity.toLocaleString()}</div>
+                          <div className="text-[11px] mt-0.5">cap {p.capacity.toLocaleString()}</div>
                         </div>
                       )}
                     </div>

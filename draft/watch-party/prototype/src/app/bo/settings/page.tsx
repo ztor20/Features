@@ -12,15 +12,12 @@ const EMAILS = [
 
 export default function Settings() {
   const [capacity, setCapacity] = useState(1000);
-  const [advertised, setAdvertised] = useState(500);
   const [toast, setToast] = useState<string | null>(null);
 
   function save() {
-    setToast(`Defaults saved — capacity ${capacity.toLocaleString()}, advertised ${advertised.toLocaleString()}.`);
+    setToast(`Default capacity saved — ${capacity.toLocaleString()}.`);
     setTimeout(() => setToast(null), 2600);
   }
-
-  const advWarn = advertised > capacity;
 
   return (
     <>
@@ -30,36 +27,20 @@ export default function Settings() {
       <Card className="p-5 mb-6">
         <h2 className="font-semibold mb-1">Room capacity</h2>
         <p className="text-sm text-muted mb-4">
-          The hard limit that gates admission (per-party override available on each room). Marketing announces the
-          lower <em>advertised</em> number; it never blocks anyone.
+          A single hard limit that gates admission (per-party override available on each room). The 6-28 dev sync
+          dropped the separate advertised/server dual-number — there is now <em>one</em> capacity value.
         </p>
-        <div className="grid sm:grid-cols-2 gap-5 max-w-xl">
-          <div>
-            <label className="block text-xs text-muted mb-1.5">Default capacity (hard limit)</label>
-            <input
-              type="number"
-              value={capacity}
-              min={1}
-              onChange={(e) => setCapacity(Math.max(1, Number(e.target.value) || 0))}
-              className="w-full bg-bg border border-line rounded-md px-3 py-2 text-sm focus:outline-none focus:border-accent tabular-nums"
-            />
-            <p className="text-[11px] text-muted mt-1">Target ~1,000 incl. buffer.</p>
-          </div>
-          <div>
-            <label className="block text-xs text-muted mb-1.5">Advertised capacity (display only)</label>
-            <input
-              type="number"
-              value={advertised}
-              min={1}
-              onChange={(e) => setAdvertised(Math.max(1, Number(e.target.value) || 0))}
-              className="w-full bg-bg border border-line rounded-md px-3 py-2 text-sm focus:outline-none focus:border-accent tabular-nums"
-            />
-            <p className="text-[11px] text-muted mt-1">Announce conservatively, e.g. 400–500.</p>
-          </div>
+        <div className="max-w-xs">
+          <label className="block text-xs text-muted mb-1.5">Default capacity (hard limit)</label>
+          <input
+            type="number"
+            value={capacity}
+            min={1}
+            onChange={(e) => setCapacity(Math.max(1, Number(e.target.value) || 0))}
+            className="w-full bg-bg border border-line rounded-md px-3 py-2 text-sm focus:outline-none focus:border-accent tabular-nums"
+          />
+          <p className="text-[11px] text-muted mt-1">One number — used for both display and admission.</p>
         </div>
-        {advWarn && (
-          <div className="mt-3 text-xs text-amber-300">⚠ Advertised exceeds the hard limit — fans could be told there&rsquo;s more room than exists.</div>
-        )}
         <div className="mt-4">
           <Btn variant="primary" onClick={save}>Save defaults</Btn>
         </div>
@@ -75,9 +56,10 @@ export default function Settings() {
           </p>
         </Card>
         <Card className="p-4">
-          <div className="font-medium text-sm">No automatic refund</div>
+          <div className="font-medium text-sm">Refund in POPCORN</div>
           <p className="text-xs text-muted mt-1 leading-relaxed">
-            Ops can mark an order refunded (logged); Customer Support re-credits POPCORN manually. No auto reversal.
+            Tickets are bought with POPCORN, so refunds return POPCORN — never cash/Stripe. The BO refund button
+            records the refund (audited) and credits the POPCORN back to the buyer internally (6-28 decision).
           </p>
         </Card>
       </div>

@@ -1,5 +1,10 @@
 # Ztor Watch Party — Frontend
 
+> ⚠️ **Front-end ownership (6-28):** the user-facing front-end is now built by the **design team** — current
+> deploy at **https://ztor-2-0-f2e.vercel.app/**. This prototype keeps the **back office** (`/bo`) and the
+> **realtime sync-engine demo** (`/`, `/room/[code]`, `/join`); the requirements below are the contract the
+> designer's build implements (sync, entitlement, host camera), not a separate UI to maintain here.
+
 > This surface's slice of the core scenario in `_feature.md`. Two actors share it: **host** (a granted
 > account, in host mode) and **fan/viewer**. Derived from **Hulu — Watch Party** (Mobbin) + the existing
 > demo (`/`, `/room/[code]`, `/join`).

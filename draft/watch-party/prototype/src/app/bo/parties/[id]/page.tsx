@@ -69,7 +69,7 @@ function PartyView({ partyId }: { partyId: string }) {
     if (!refundTarget) return;
     setOrders((os) => os.map((o) => (o.id === refundTarget.id ? { ...o, status: "refunded" } : o)));
     logAudit("order.refund", `${refundTarget.id} · ${refundTarget.amountPopcorn}🍿`);
-    flash(`Order ${refundTarget.id} marked refunded — logged. CS re-credits POPCORN manually.`);
+    flash(`Order ${refundTarget.id} refunded — ${refundTarget.amountPopcorn}🍿 credited back to the buyer. Logged.`);
     setRefundTarget(null);
   }
 
@@ -131,7 +131,7 @@ function PartyView({ partyId }: { partyId: string }) {
               <div className="text-xl font-semibold mt-1 tabular-nums">
                 {base.capacity.toLocaleString()}
               </div>
-              <div className="text-xs text-muted mt-1">advertised {base.advertisedCapacity.toLocaleString()}</div>
+              <div className="text-xs text-muted mt-1">hard limit</div>
             </>
           )}
         </Card>
@@ -143,7 +143,7 @@ function PartyView({ partyId }: { partyId: string }) {
         <Card className="p-4">
           <div className="text-[11px] uppercase tracking-widest text-muted">Refunded</div>
           <div className="text-xl font-semibold mt-1 tabular-nums">{refundedCount}</div>
-          <div className="text-xs text-muted mt-1">manual · no auto reversal</div>
+          <div className="text-xs text-muted mt-1">POPCORN credited back</div>
         </Card>
         <Card className="p-4">
           <div className="flex items-center justify-between">
@@ -174,7 +174,7 @@ function PartyView({ partyId }: { partyId: string }) {
             )}
           </div>
           <div className="text-xs text-muted mt-1">
-            {camAllowed ? "ops policy: allowed · IVS broadcast" : "ops policy: host can't go on camera"}
+            {camAllowed ? "ops policy: allowed · LiveKit broadcast" : "ops policy: host can't go on camera"}
           </div>
         </Card>
       </div>
@@ -251,8 +251,8 @@ function PartyView({ partyId }: { partyId: string }) {
       >
         <p className="text-sm text-muted leading-relaxed">
           This sets order <span className="font-mono text-text">{refundTarget?.id}</span> ({refundTarget?.amountPopcorn}🍿) to{" "}
-          <strong className="text-text">refunded</strong> and writes an audit entry. It does <strong className="text-text">not</strong>{" "}
-          reverse the POPCORN automatically — Customer Support re-credits the buyer manually (per the 6-22 decision: no auto-refund).
+          <strong className="text-text">refunded</strong>, credits the <strong className="text-text">{refundTarget?.amountPopcorn}🍿</strong> back to the buyer{" "}
+          internally, and writes an audit entry. Refunds are paid in <strong className="text-text">POPCORN only — never cash/Stripe</strong> (6-28 decision).
         </p>
       </Modal>
 
