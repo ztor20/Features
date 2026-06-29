@@ -180,6 +180,15 @@
   /* banner type uploads + custom block */
   .bupgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px}
   .bupbox .buplab{font-size:11px;color:var(--muted);text-align:center;margin-top:5px}
+  .bupbox .bupspec{font-size:10px;color:var(--faint);text-align:center;margin-top:3px;line-height:1.35}
+  .imgbox .bupspec{padding:0 6px}
+  /* custom-block background picker */
+  .cbgswatch{width:40px;height:24px;border-radius:5px;display:inline-block;vertical-align:middle;margin-right:8px;border:1px solid var(--line2);flex:none}
+  .dslink #cBgText.ph{color:var(--faint)}
+  .bggrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .bgcard{height:120px;border-radius:10px;border:1px solid var(--line2);cursor:pointer;position:relative;overflow:hidden;display:flex;align-items:flex-end}
+  .bgcard:hover{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset}
+  .bgcard .bgname{font-size:12px;font-weight:700;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.55);padding:8px 10px}
   .srcseg{display:flex;gap:8px;margin-top:14px}
   .srcbtn{padding:8px 14px;border:1px solid var(--line2);border-radius:var(--rs);background:var(--panel2);color:var(--ink);font-size:12.5px}
   .srcbtn.on{background:linear-gradient(120deg,var(--gold),var(--gold2));color:#1a1408;border-color:transparent;font-weight:700}
@@ -214,7 +223,7 @@
     </div>
     <button class="btn gold" id="btnAddBanner">+ Add Banner</button>
   </div>
-  <div class="rotaterow" id="rotateRow"><span class="sw" id="swRotate"><i></i></span><span>Rotate — auto every 5s · hover-pause · arrows + dots (per FE spec §3.6) <span style="color:var(--faint)">(shown when more than 1 banner)</span></span></div>
+  <div class="rotaterow" id="rotateRow"><span class="sw" id="swRotate"><i></i></span><span>Rotate — auto every 5s · hover-pause · arrows + dots <span style="color:var(--faint)">(shown when more than 1 banner)</span></span></div>
   <div class="blocks" id="banners"></div>
 
   <!-- ===== Continue Watching (fixed section — directly under Banner) ===== -->
@@ -275,7 +284,7 @@
       <div class="field"><label><span class="nm">Tag <span class="opt">選填</span></span></label><div class="f-input"><input id="zhTag" type="text" placeholder="輸入標籤名稱 (e.g. NEW)" maxlength="16"></div></div>
       <div class="field"><label><span class="nm">副標題 <span class="opt">選填</span></span></label><div class="f-input"><textarea id="zhSub" rows="2" placeholder="副標題"></textarea></div></div>
       <div class="field"><label><span class="nm">內頁描述 / 背景圖 <span class="opt">選填</span></span></label>
-        <div class="f-input"><div class="rt"><div class="rtbox"><div class="rttool"><span data-cmd="bold">B</span><span data-cmd="italic"><i>I</i></span><span data-cmd="formatBlock|h3">H</span><span data-cmd="strikeThrough">S</span><span data-cmd="insertOrderedList">≣</span><span data-cmd="insertUnorderedList">☰</span></div><div class="rtarea" id="zhDesc" contenteditable="true" data-ph="開始編輯…"></div></div><div class="imgbox"><div class="plus">＋</div></div></div></div>
+        <div class="f-input"><div class="rt"><div class="rtbox"><div class="rttool"><span data-cmd="bold">B</span><span data-cmd="italic"><i>I</i></span><span data-cmd="formatBlock|h3">H</span><span data-cmd="strikeThrough">S</span><span data-cmd="insertOrderedList">≣</span><span data-cmd="insertUnorderedList">☰</span></div><div class="rtarea" id="zhDesc" contenteditable="true" data-ph="開始編輯…"></div></div><div class="imgbox"><div class="plus">＋</div><div class="bupspec">背景圖 · jpg / png / webp · 建議 ≤ 1 MB</div></div></div></div>
       </div>
 
       <div class="divider"></div>
@@ -286,7 +295,7 @@
       <div class="field"><label><span class="nm">Tag <span class="opt">optional</span></span></label><div class="f-input"><input id="enTag" type="text" placeholder="Tag name (e.g. NEW)" maxlength="16"></div></div>
       <div class="field"><label><span class="nm">Subtitle <span class="opt">optional</span></span></label><div class="f-input"><textarea id="enSub" rows="2" placeholder="Subtitle"></textarea></div></div>
       <div class="field"><label><span class="nm">Description / Image <span class="opt">optional</span></span></label>
-        <div class="f-input"><div class="rt"><div class="rtbox"><div class="rttool"><span data-cmd="bold">B</span><span data-cmd="italic"><i>I</i></span><span data-cmd="formatBlock|h3">H</span><span data-cmd="strikeThrough">S</span><span data-cmd="insertOrderedList">≣</span><span data-cmd="insertUnorderedList">☰</span></div><div class="rtarea" id="enDesc" contenteditable="true" data-ph="Start editing…"></div></div><div class="imgbox"><div class="plus">＋</div></div></div></div>
+        <div class="f-input"><div class="rt"><div class="rtbox"><div class="rttool"><span data-cmd="bold">B</span><span data-cmd="italic"><i>I</i></span><span data-cmd="formatBlock|h3">H</span><span data-cmd="strikeThrough">S</span><span data-cmd="insertOrderedList">≣</span><span data-cmd="insertUnorderedList">☰</span></div><div class="rtarea" id="enDesc" contenteditable="true" data-ph="Start editing…"></div></div><div class="imgbox"><div class="plus">＋</div><div class="bupspec">Background · jpg / png / webp · ≤ 1 MB</div></div></div></div>
       </div>
 
       <div class="divider"></div>
@@ -301,10 +310,11 @@
       <!-- Custom data-type panel (uploads + CTA; only when Data Type = Custom) -->
       <div id="customPanel" style="display:none">
         <div class="divider"></div>
-        <div class="sectitle">Custom 上傳 <span style="color:var(--faint);font-weight:400;font-size:12px">— 背景圖 + 圖片;FE 依上傳的圖片渲染</span></div>
-        <div class="bupgrid">
-          <div class="bupbox"><div class="imgbox"><div class="plus">＋</div></div><div class="buplab">背景圖 (image)</div></div>
-          <div class="bupbox"><div class="imgbox"><div class="plus">＋</div></div><div class="buplab">圖片 (image)</div></div>
+        <div class="sectitle">Custom <span style="color:var(--faint);font-weight:400;font-size:12px">— 選背景 + 上傳圖片;FE 依此渲染</span></div>
+        <div class="styletag">背景 <span style="color:var(--faint)">— 從樣式中選一個</span></div>
+        <div class="dslink" id="cBgField"><span class="cbgswatch" id="cBgSwatch" style="display:none"></span><span class="ph" id="cBgText" style="flex:1">點擊選擇背景…</span><span style="color:var(--faint)">▾</span></div>
+        <div class="bupgrid" style="margin-top:12px">
+          <div class="bupbox"><div class="imgbox"><div class="plus">＋</div></div><div class="buplab">圖片 (image)</div><div class="bupspec">jpg / png / webp · 建議 ≤ 1 MB</div></div>
         </div>
         <div class="sectitle" style="margin-top:16px">CTA <span style="color:var(--faint);font-weight:400;font-size:12px">— 最多 1 個 · 中文名稱 + 英文名稱 + 單一 URL</span></div>
         <div id="cctas"></div>
@@ -323,7 +333,7 @@
     <div class="mhead"><h2 id="bmtitle">ADD BANNER</h2><button class="x" id="bmClose">✕</button></div>
     <div class="mbody">
       <div class="mtop"><div class="ctlrow"><div class="ctl"><span class="sw on" id="bEnable"><i></i></span><span class="lab"><b>啟用狀態</b></span></div></div></div>
-      <div class="sectitle">Banner Type <span style="color:var(--faint);font-weight:400;font-size:12px">— 決定 item 來源、欄位與必填(欄位內容 refer FE §3.2)</span></div>
+      <div class="sectitle">Banner Type <span style="color:var(--faint);font-weight:400;font-size:12px">— 決定 item 來源、欄位與必填</span></div>
       <div class="dtgrid" id="btypegrid"></div>
       <div class="stylenote" id="btypeNote" style="margin-top:10px"></div>
 
@@ -348,6 +358,7 @@
         <div class="ctlrow"><div class="ctl"><span class="sw on" id="bTagSw"><i></i></span><span class="lab"><b>顯示類型標籤</b> — 自片庫帶入(最多 3 個)</span></div></div>
       </div>
 
+      <div id="bTextWrap">
       <div class="divider"></div>
       <div class="langlab">繁體中文(香港) <span style="color:var(--faint);font-weight:400;font-size:12px">— 選填(填一種語言則中英都需填)</span></div>
       <div class="field"><label><span class="nm">小標題</span></label><input id="bzhHeader" type="text" placeholder="小標題"></div>
@@ -359,6 +370,7 @@
       <div class="field"><label><span class="nm">Eyebrow</span></label><input id="benHeader" type="text" placeholder="Eyebrow"></div>
       <div class="field"><label><span class="nm">Title</span></label><input id="benTitle" type="text" placeholder="Title"></div>
       <div class="field"><label><span class="nm">Content</span></label><textarea id="benContent" rows="2" placeholder="Content"></textarea></div>
+      </div><!-- /bTextWrap -->
 
       <div id="bCtaWrap">
         <div class="divider"></div>
@@ -428,6 +440,17 @@
   </div>
 </div>
 
+<!-- ===== SELECT BACKGROUND picker (custom content block) ===== -->
+<div class="modal2" id="bgpicker">
+  <div class="sheet2">
+    <div class="mhead"><h2>SELECT BACKGROUND</h2><button class="x" id="bgpkClose">✕</button></div>
+    <div class="pkbody">
+      <div class="secsub" style="margin-bottom:14px">選一個背景樣式(由設計提供的樣式庫)。</div>
+      <div class="bggrid" id="bggrid"></div>
+    </div>
+  </div>
+</div>
+
 <!-- ===== FE PREVIEW ===== -->
 <div class="pv" id="pv">
   <div class="pvbar"><span class="t">FE PREVIEW · 台灣 · how the layout renders</span><button class="btn ghost" id="pvClose">✕ Close</button></div>
@@ -448,7 +471,7 @@ const DT = {
   'Box Office':    {styles:['票房排行']},
   'Co-creation':   {styles:['影視共創計畫'], note:'此類型不可修改 UI 樣式(固定 影視共創計畫);但仍需選擇數據源。'},
   'AI Competition':{styles:['AI 原力創作計畫'], note:'此類型不可修改 UI 樣式(固定);需選擇數據源(AI Competition)。'},
-  'Custom':        {styles:['Custom'], note:'自訂型:不需數據源;上傳背景圖 + 圖片,並填雙語標題/副標/內容/CTA(見下方)。'},
+  'Custom':        {styles:['Custom'], note:'自訂型:不需數據源;選背景(樣式庫)+ 上傳圖片,並填雙語標題/副標/內容/CTA(見下方)。'},
 };
 function dtDef(k){return DT[k].def||DT[k].styles[0];}
 function dtSelectable(k){return DT[k].selectable!==false && DT[k].styles.length>1;}
@@ -536,8 +559,28 @@ function renderStyles(){
 function renderCustomPanel(){
   const show=curDT==='Custom';
   document.getElementById('customPanel').style.display=show?'block':'none';
-  if(show)renderCtaList('cctas',cCtas,1,'cAddCta');   // renderCtaList is shared with the banner editor
+  if(show){renderCtaList('cctas',cCtas,1,'cAddCta');renderCustomBg();}   // renderCtaList is shared with the banner editor
 }
+/* custom-block background: pick one from a small sample library (popup), not an upload */
+const BG_SAMPLES=[
+  {key:'sunset', name:'Sunset', css:'linear-gradient(135deg,#ffae4a 0%,#ff5e62 100%)'},
+  {key:'ocean',  name:'Ocean',  css:'linear-gradient(135deg,#7b5cff 0%,#46c2ff 100%)'},
+  {key:'mint',   name:'Mint',   css:'linear-gradient(135deg,#1fd1a5 0%,#0b7d6e 100%)'},
+];
+let cBg=null;
+function renderCustomBg(){
+  const t=document.getElementById('cBgText'), sw=document.getElementById('cBgSwatch'), b=BG_SAMPLES.find(x=>x.key===cBg);
+  if(b){t.textContent=b.name;t.classList.remove('ph');sw.style.display='inline-block';sw.style.background=b.css;}
+  else{t.textContent='點擊選擇背景…';t.classList.add('ph');sw.style.display='none';}
+}
+function openBgPicker(){
+  const g=document.getElementById('bggrid');
+  g.innerHTML=BG_SAMPLES.map(b=>`<div class="bgcard" data-bg="${b.key}" style="background:${b.css}"><span class="bgname">${esc(b.name)}</span></div>`).join('');
+  g.querySelectorAll('[data-bg]').forEach(c=>c.addEventListener('click',()=>{cBg=c.dataset.bg;renderCustomBg();document.getElementById('bgpicker').classList.remove('show');}));
+  document.getElementById('bgpicker').classList.add('show');
+}
+document.getElementById('cBgField').addEventListener('click',openBgPicker);
+document.getElementById('bgpkClose').addEventListener('click',()=>document.getElementById('bgpicker').classList.remove('show'));
 /* ---------- data source field + picker ---------- */
 function renderSource(){
   const need=needsSource(curDT);
@@ -582,6 +625,7 @@ function openModal(id){
   document.getElementById('zhDesc').innerHTML=b&&b.zh.desc?b.zh.desc:''; document.getElementById('enDesc').innerHTML=b&&b.en.desc?b.en.desc:'';
   curDT=b?b.dataType:'Ztor Library'; curStyle=b?b.uiStyle:dtDef(curDT); curSource=b?(b.source||''):'';
   cCtas=b&&b.ctas?b.ctas.map(c=>({name:{...c.name},url:c.url})):[];
+  cBg=b&&b.bg?b.bg:null;
   renderDT();renderStyles();
   document.getElementById('valmsg').style.display='none';
   document.querySelectorAll('#modal .invalid').forEach(e=>e.classList.remove('invalid'));
@@ -617,6 +661,7 @@ function saveModal(){
     enabled:document.getElementById('swEnable').classList.contains('on'),
     dataType:curDT, uiStyle:curStyle, source:needsSource(curDT)?curSource:'',
     ctas: curDT==='Custom' ? cCtas.map(c=>({name:{zh:c.name.zh,en:c.name.en},url:c.url})) : undefined,
+    bg: curDT==='Custom' ? cBg : undefined,
     zh:{title:document.getElementById('zhTitle').value, tag:document.getElementById('zhTag').value, sub:document.getElementById('zhSub').value, desc:zhDescV},
     en:{title:document.getElementById('enTitle').value, tag:document.getElementById('enTag').value, sub:document.getElementById('enSub').value, desc:enDescV},
   };
@@ -637,11 +682,19 @@ document.getElementById('mSave').addEventListener('click',saveModal);
    Events Data includes Blind Box + AI Competition items. Crowdfund items are created in BO first. */
 /* Banner Type (FE §3.2) drives: item source, uploads, required fields. Brand Intro has NO item.
    Per-type fields / upload specs / masks / countdown all follow the FE spec — not re-specced here. */
+/* upload specs (format / @2x size / file-size cap) shown on each upload box so ops know the limit — FE §3.3 */
+const UPLOAD_SPEC={
+  bg:     {label:'背景圖（全幅）',       spec:'jpg / webp · 2880×1120 (@2x) · jpg ≤500KB · webp ≤350KB'},
+  main:   {label:'右側主圖（去背主體）', spec:'png / webp / mp4 · 960×1120 (@2x) · png ≤600KB · webp ≤350KB · mp4 ≤15MB'},
+  mainOpt:{label:'右側主圖（選填）',     spec:'png / webp / mp4 · 960×1120 (@2x) · png ≤600KB · webp ≤350KB · mp4 ≤15MB'},
+  title:  {label:'片名圖（選填）',       spec:'png / gif · 530×200 (@2x) · ≤150KB'},
+  media:  {label:'上傳圖片或影片',       spec:'圖片 jpg/png/webp ≤ 2 MB · mp4 ≤ 15MB'},
+};
 const BTYPE={
-  'Brand Intro':   {item:null,          uploads:['上傳圖片或影片'],                       note:'品牌型:上傳圖片或影片(無 item、純自訂文字)。'},
-  'AI Competition':{item:'Events Data', uploads:['背景圖','右側主圖 (圖或 mp4 ≤15MB)'],   note:'item ⇄ 上傳 二選一。選 item(來自 Events Data 賽事)時,7 段倒數讀其賽事時程(FE §3.5);走上傳則無賽事時程來源。可加 CTA(最多 2)。'},
-  'Event':         {item:'Events Data', uploads:['背景圖','右側主圖 (選填·可 mp4 ≤15MB)'], note:'item 來自 Events Data(含盲盒)。右側主圖選填。'},
-  'Film Intro':    {item:'Movie/TV List', uploads:['背景圖','右側主圖','片名圖 (選填)'],   tags:true, note:'item 來自片庫;類型標籤自片庫帶入(≤3),可顯示/隱藏(FE §3.4)。'},
+  'Brand Intro':   {item:null,          uploads:['media'],                  note:'品牌型:上傳圖片或影片(無 item、純自訂文字)。'},
+  'AI Competition':{item:'Events Data', itemOnly:true, uploads:[],          note:'只可從 Events Data 選賽事 item'},
+  'Event':         {item:'Events Data', uploads:['bg','mainOpt'],           note:'item 來自 Events Data(含盲盒)。右側主圖選填。'},
+  'Film Intro':    {item:'Movie/TV List', uploads:['bg','main','title'],    tags:true, note:'item 來自片庫;類型標籤自片庫帶入(≤3),可顯示/隱藏。'},
 };
 const BANNER_TYPES=Object.keys(BTYPE);
 /* items are read directly from the product DB, scoped to the type's source (select-only).
@@ -652,10 +705,8 @@ const BANNER_ITEMS={
 };
 let banners=[
   {id:1,enabled:true,type:'AI Competition',srcMode:'item',item:'Z-ORIGIN: AI原力創作計畫',
-   header:{zh:'Z-ORIGIN: AI原力創作計畫',en:'Z-ORIGIN: AI Program'},
-   title:{zh:'職場「非」人腦動節',en:'The non-human brain festival'},
-   content:{zh:'參賽截止還有 30 天',en:'30 days left to enter'}, tagVisible:false,
-   ctas:[{name:{zh:'立即參賽',en:'Join now'},url:'https://ztor.lx7.com/join'},{name:{zh:'查看參賽作品',en:'View works'},url:'https://ztor.lx7.com/works'}]},
+   header:{zh:'',en:''}, title:{zh:'',en:''}, content:{zh:'',en:''}, tagVisible:false,
+   ctas:[]},   // AI Competition: text + buttons come from the linked item (FE renders from the competition schedule)
 ];
 let bannerRotate=false, bUid=2, editingBId=null, dragBId=null, curBType='Brand Intro', curBItem='', bSrcMode='item', bCtas=[], bActive=0, rotTimer=null;
 function bById(id){return banners.find(b=>b.id===id);}
@@ -669,7 +720,7 @@ function renderBanners(){
   banners.forEach((b,i)=>{
     const row=document.createElement('div');row.className='blk'+(b.enabled?'':' off');
     row.innerHTML=`<span class="ord">${i+1}</span>
-      <div class="ti"><span class="t">${esc(b.title.zh||b.title.en||'(untitled)')}</span><span class="dt">${esc(b.type)}${b.item?' · '+esc(b.item):''} · ${b.ctas.length} CTA</span></div>
+      <div class="ti"><span class="t">${esc(b.title.zh||b.title.en||b.item||'(untitled)')}</span><span class="dt">${esc(b.type)}${b.item?' · '+esc(b.item):''} · ${b.ctas.length} CTA</span></div>
       <span class="sw ${b.enabled?'on':''}" data-ben="${b.id}"><i></i></span>
       <button class="ico" data-bedit="${b.id}" title="edit">⚙</button>
       <button class="ico bmv" title="drag to reorder">✥</button>
@@ -893,13 +944,16 @@ function renderBType(){
     d.addEventListener('click',()=>{if(k!==curBType){curBType=k;curBItem='';bSrcMode=BTYPE[k].item?'item':'upload';}renderBType();});g.appendChild(d);});
   document.getElementById('btypeNote').textContent='ⓘ '+BTYPE[curBType].note;
   renderBSource();
-  document.getElementById('bCtaWrap').style.display='block';   // all banner types (incl. AI Competition) can add CTA
+  const isAI=curBType==='AI Competition';   // AI Competition: content comes from the linked item — no manual text / no CTA
+  document.getElementById('bTextWrap').style.display=isAI?'none':'block';
+  document.getElementById('bCtaWrap').style.display=isAI?'none':'block';
 }
-/* Item ⇄ Upload are MUTUALLY EXCLUSIVE for item-bearing types (Event/Film Intro/AI Competition): pick an item OR upload — not both. */
+/* Item ⇄ Upload are MUTUALLY EXCLUSIVE for item-bearing types (Event/Film Intro): pick an item OR upload.
+   `itemOnly` types (AI Competition) hide the toggle and are item-only (no upload). */
 function renderBSource(){
-  const hasItem=bTypeHasItem(), seg=document.getElementById('bSrcToggle');
-  if(hasItem){seg.style.display='flex';seg.querySelectorAll('.srcbtn').forEach(b=>b.classList.toggle('on',b.dataset.src===bSrcMode));}
-  else{seg.style.display='none';bSrcMode='upload';}   // Brand Intro has no item → upload only
+  const hasItem=bTypeHasItem(), itemOnly=!!BTYPE[curBType].itemOnly, seg=document.getElementById('bSrcToggle');
+  if(hasItem && !itemOnly){seg.style.display='flex';seg.querySelectorAll('.srcbtn').forEach(b=>b.classList.toggle('on',b.dataset.src===bSrcMode));}
+  else{seg.style.display='none';bSrcMode=hasItem?'item':'upload';}   // itemOnly → force item; Brand Intro (no item) → upload
   renderBItem();renderBUploads();renderBTags();
 }
 function renderBItem(){
@@ -916,8 +970,8 @@ function renderBUploads(){
   const show=ups.length && (!bTypeHasItem() || bSrcMode==='upload');       // hidden when source=item (mutually exclusive)
   if(!show){wrap.style.display='none';wrap.innerHTML='';return;}
   wrap.style.display='block';
-  wrap.innerHTML='<div class="styletag">上傳圖片/影片 <span style="color:var(--faint)">— 尺寸/格式 refer FE §3.3</span></div>'+
-    '<div class="bupgrid">'+ups.map(u=>`<div class="bupbox"><div class="imgbox"><div class="plus">＋</div></div><div class="buplab">${esc(u)}</div></div>`).join('')+'</div>';
+  wrap.innerHTML='<div class="styletag">上傳素材 <span style="color:var(--faint)">— 格式 / 尺寸 / 大小上限如下</span></div>'+
+    '<div class="bupgrid">'+ups.map(k=>{const u=UPLOAD_SPEC[k]||{label:k,spec:''};return `<div class="bupbox"><div class="imgbox"><div class="plus">＋</div></div><div class="buplab">${esc(u.label)}</div><div class="bupspec">${esc(u.spec)}</div></div>`;}).join('')+'</div>';
 }
 function renderBTags(){
   document.getElementById('bTagWrap').style.display=(BTYPE[curBType].tags && bSrcMode==='item')?'block':'none';  // tags come from the film item
@@ -956,21 +1010,22 @@ function saveBanner(){
     if(zf&&!ef){e.classList.add('invalid');bad=true;}
     if(ef&&!zf){z.classList.add('invalid');bad=true;}
   };
-  coupleB('bzhHeader','benHeader'); coupleB('bzhTitle','benTitle'); coupleB('bzhContent','benContent');
+  const isAI=curBType==='AI Competition';                  // AI Competition: no text fields, no CTA (content from the linked item)
+  if(!isAI){ coupleB('bzhHeader','benHeader'); coupleB('bzhTitle','benTitle'); coupleB('bzhContent','benContent'); }
   const useItem=bTypeHasItem() && bSrcMode==='item';
   if(useItem && !curBItem){                                 // item required only in item mode
     document.getElementById('bItemField').classList.add('invalid');
     document.getElementById('bItemHint').style.display='block';bad=true;
   }
-  if(validateCtas('bctas'))bad=true;
+  if(!isAI && validateCtas('bctas'))bad=true;
   document.getElementById('bvalmsg').style.display=bad?'block':'none';
   if(bad)return;
   const data={enabled:document.getElementById('bEnable').classList.contains('on'),type:curBType,srcMode:bSrcMode,item:useItem?curBItem:null,
-    header:{zh:document.getElementById('bzhHeader').value,en:document.getElementById('benHeader').value},
-    title:{zh:document.getElementById('bzhTitle').value,en:document.getElementById('benTitle').value},
-    content:{zh:document.getElementById('bzhContent').value,en:document.getElementById('benContent').value},
+    header:isAI?{zh:'',en:''}:{zh:document.getElementById('bzhHeader').value,en:document.getElementById('benHeader').value},
+    title:isAI?{zh:'',en:''}:{zh:document.getElementById('bzhTitle').value,en:document.getElementById('benTitle').value},
+    content:isAI?{zh:'',en:''}:{zh:document.getElementById('bzhContent').value,en:document.getElementById('benContent').value},
     tagVisible:(BTYPE[curBType].tags && bSrcMode==='item')?document.getElementById('bTagSw').classList.contains('on'):undefined,
-    ctas:bCtas.map(c=>({name:{zh:c.name.zh,en:c.name.en},url:c.url}))};
+    ctas:isAI?[]:bCtas.map(c=>({name:{zh:c.name.zh,en:c.name.en},url:c.url}))};
   if(editingBId)Object.assign(bById(editingBId),data);else banners.push(Object.assign({id:bUid++},data));
   closeBanner();renderBanners();
 }
@@ -991,7 +1046,7 @@ function bannerCarousel(vb){
   return `<div class="pvbanner" id="pvbannerEl">
     <div class="bres">${esc(b.type)}</div>
     ${b.header.zh?`<div class="bhead">${esc(b.header.zh)}</div>`:''}
-    ${(b.title.zh||b.title.en)?`<div class="btitle">${esc(b.title.zh||b.title.en)}</div>`:''}
+    ${(b.title.zh||b.title.en||b.item)?`<div class="btitle">${esc(b.title.zh||b.title.en||b.item)}</div>`:''}
     ${b.content.zh?`<div class="bcontent">${esc(b.content.zh)}</div>`:''}
     ${ctas?`<div class="bctas">${ctas}</div>`:''}
     ${arrows}${dots}

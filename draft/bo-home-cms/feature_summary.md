@@ -9,10 +9,10 @@
 **What:** A per-region Back-Office CMS to compose the public homepage without engineering — Banner, Ranking widget, and ordered Content Blocks.
 
 **Features**
-- **Banner** — Add one or many banners in a single carousel slot. Pick a **Banner Type** (Brand Intro · AI Competition · Event · Film Intro) → it drives the fields, required inputs and item source: non-Brand-Intro types select an **Item** from the database (AI Competition / Events Data incl. Blind Box / Movie/TV List); Brand Intro has no item. Uploads (background / cut-out hero static-or-mp4 ≤15MB / title image), optional bilingual eyebrow/headline/desc, CTAs (max 2). Carousel behavior (auto every 5s, hover-pause, arrows + dots) follows the FE spec.
+- **Banner** — Add one or many banners in a single carousel slot. Pick a **Banner Type** (Brand Intro · AI Competition · Event · Film Intro) → it drives the fields, required inputs and item source. **AI Competition is item-only** (select an Events Data item — no upload, no text fields, no CTA; all content + the 7-stage countdown come from the linked item). **Event / Film Intro** are item⇄upload (Events Data incl. Blind Box / Movie/TV List), with uploads (background / cut-out hero static-or-mp4 ≤15MB / title image), optional bilingual eyebrow/headline/desc, and CTAs (max 2, the button hides at 2). **Brand Intro** is upload-only (image/video), no item, with text + CTAs. Carousel behavior (auto every 5s, hover-pause, arrows + dots) follows the FE spec.
 - **Continue Watching** — A fixed section directly under the Banner (logged-in only); the rail auto-fills from watch history. Ops edit only Title / Content / Tag (bilingual, no CTA). Cannot be added/removed/reordered.
 - **Ranking widget** — A single fixed widget (cannot add/delete/reorder) but editable: bilingual title/subtitle, platform on/off + drag-reorder, **+ Add Platform from the BO Rankings module**. Renders between Banner and content.
-- **Content Block** — Ordered list. Each block: **Data Type** (10, from BO data-management modules) → **UI style** (some fixed, some selectable) → **data source**. Bilingual Title + optional Tag/Subtitle/Description. Drag to reorder.
+- **Content Block** — Ordered list. Each block: **Data Type** (from BO data-management modules) → **UI style** (some fixed, some selectable) → **data source**. Bilingual Title + optional Tag/Subtitle/Description. Drag to reorder. **Custom** Data Type has no data source — instead **pick a background from a sample-style popup (3 samples)** + upload an image + 1 CTA.
 
 **Key rules**
 - **Bilingual-coupled:** any optional text field — fill one language → both required; leave both empty → omitted on FE (no blank gap).
@@ -30,10 +30,10 @@
 **是什麼:** 一個分地區的後台 CMS,不需工程即可編排公開首頁 —— Banner、排行榜 widget、可排序的內容區塊。
 
 **功能**
-- **Banner** —— 在單一輪播槽位新增一或多個 banner。先選 **Banner Type**(Brand Intro · AI Competition · Event · Film Intro)→ 由型別決定欄位、必填與 item 來源:非 Brand Intro 型從**資料庫**選一個 **Item**(AI Competition / Events Data 含盲盒 / Movie/TV List);Brand Intro 型無 item。上傳(背景圖 / 去背主圖 靜態或 mp4 ≤15MB / 片名圖)、雙語小標/大標/說明文字、CTA(最多 2)皆依型。輪播行為(自動 5 秒、hover 暫停、箭頭+圓點)依 FE spec。
+- **Banner** —— 在單一輪播槽位新增一或多個 banner。先選 **Banner Type**(Brand Intro · AI Competition · Event · Film Intro)→ 由型別決定欄位、必填與 item 來源。**AI Competition 僅 item**(選一個 Events Data item —— 無上傳、無文字欄位、無 CTA;所有內容與 7 段倒數皆來自所連 item)。**Event / Film Intro** 為 item⇄上傳(Events Data 含盲盒 / Movie/TV List),含上傳(背景圖 / 去背主圖 靜態或 mp4 ≤15MB / 片名圖)、雙語小標/大標/說明文字、CTA(最多 2,達 2 顆時按鈕隱藏)。**Brand Intro** 僅上傳(圖片/影片)、無 item,含文字與 CTA。輪播行為(自動 5 秒、hover 暫停、箭頭+圓點)依 FE spec。
 - **繼續觀看** —— Banner 之下的固定段(僅登入),片列由觀看紀錄自動帶入。營運只編 標題 / 內容 / Tag(雙語、無 CTA);不可新增/刪除/排序。
 - **排行榜 widget** —— 單一固定 widget(不可新增/刪除/排序)但可編輯:雙語標題/副標、平台開關與拖拽排序、**從 BO Rankings 模組新增平台**。顯示於 Banner 與內容之間。
-- **內容區塊** —— 可排序清單。每塊:**Data Type**(10 種,來自 BO data-management 模組)→ **UI 樣式**(部分固定、部分可選)→ **數據源**。雙語標題 + 選填 Tag/副標題/內頁描述。可拖拽排序。
+- **內容區塊** —— 可排序清單。每塊:**Data Type**(來自 BO data-management 模組)→ **UI 樣式**(部分固定、部分可選)→ **數據源**。雙語標題 + 選填 Tag/副標題/內頁描述。可拖拽排序。**Custom** Data Type 無數據源 —— 改為**從 sample 樣式彈窗(3 個樣本)選背景** + 上傳一張圖片 + 1 個 CTA。
 
 **關鍵規則**
 - **雙語耦合:** 任一選填文字欄位 —— 填一種語言則中英都必填;兩語言皆空則 FE 不顯示(不留空位)。

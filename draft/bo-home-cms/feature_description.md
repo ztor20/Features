@@ -24,16 +24,16 @@
 - `HomeConfig { region: Region, bannerSection: BannerSection, continueWatching: ContinueWatching, ranking: Ranking, blocks: ContentBlock[] }`
 - `ContinueWatching { enabled: boolean, title: Bilingual, content: Bilingual, tag: Bilingual }` — fixed section under Banner; logged-in only; list auto from watch history (not ops input); `title` required, `content`/`tag` bilingual-coupled, **no CTA**
 - `BannerSection { banners: Banner[], rotate: boolean }`
-- `Banner { id, enabled: boolean, type: BannerType, srcMode: 'item'|'upload', item: BannerItem | null, eyebrow: Bilingual, headline: Bilingual, desc: Bilingual, bgImage?: Asset, mainAsset?: Asset, titleImage?: Asset, tagAreaVisible?: boolean, ctas: Cta[], schedule: Schedule }` — `srcMode` item⇄upload **mutually exclusive** (Event/Film Intro); all banner types incl. AI Competition allow up to 2 `ctas` (multi-CTA is Banner-only)
+- `Banner { id, enabled: boolean, type: BannerType, srcMode: 'item'|'upload', item: BannerItem | null, eyebrow: Bilingual, headline: Bilingual, desc: Bilingual, bgImage?: Asset, mainAsset?: Asset, titleImage?: Asset, tagAreaVisible?: boolean, ctas: Cta[], schedule: Schedule }` — `srcMode` item⇄upload **mutually exclusive** (Event/Film Intro); **AI Competition is item-only** (always `item`, no upload/toggle) with **no text (`eyebrow`/`headline`/`desc`) and empty `ctas`** (text + buttons come from the linked item); Brand Intro/Event/Film Intro allow up to 2 `ctas` (multi-CTA is Banner-only)
 - `Cta { name: Bilingual, url: Url }` (max 2; bilingual name + one shared url) · `Schedule { from?: DateTime, to?: DateTime }` · `Asset` (image, or mp4 ≤15MB for `mainAsset`; sizes/formats per FE spec §3.3)
 - `Ranking { enabled: boolean, title: Bilingual, tag: Bilingual, subtitle: Bilingual, platforms: Platform[] }`
 - `Platform { key: string, name: string, sub: string, on: boolean, configured: boolean }`
-- `ContentBlock { id, enabled: boolean, dataType: DataType, uiStyle: string, source: string, title: Bilingual, tag: Bilingual, subtitle: Bilingual, description: Bilingual, ctas?: Cta[], bgImage?: Asset, image?: Asset }` (`ctas`/`bgImage`/`image` are Custom-only)
+- `ContentBlock { id, enabled: boolean, dataType: DataType, uiStyle: string, source: string, title: Bilingual, tag: Bilingual, subtitle: Bilingual, description: Bilingual, ctas?: Cta[], bg?: string, image?: Asset }` (`ctas`/`bg`/`image` are Custom-only; `bg` = background sample key picked from the sample-library popup, `image` = uploaded image)
 - `Bilingual { zh: string, en: string }`
 
 **Enums / allowed values:**
-- `BannerType` (FE §3.2, drives item source + field set + required fields): `Brand Intro | AI Competition | Event | Film Intro`. Item source by type — Brand Intro→none (upload image/video); AI Competition→**Events Data**; Event→Events Data (incl. Blind Box); Film Intro→Movie/TV List. Event/Film Intro/AI Competition support item⇄upload (one-of).
-- `BannerItem`: a specific event/item **read directly from the product database**, scoped to the type's source (select-only; not authored here). `null` for Brand Intro; required for the other types.
+- `BannerType` (FE §3.2, drives item source + field set + required fields): `Brand Intro | AI Competition | Event | Film Intro`. Item source by type — Brand Intro→none (upload image/video); AI Competition→**Events Data** (**item-only**: no upload, no text, no CTA); Event→Events Data (incl. Blind Box); Film Intro→Movie/TV List. Event/Film Intro support item⇄upload (one-of); AI Competition is item-only.
+- `BannerItem`: a specific event/item **read directly from the product database**, scoped to the type's source (select-only; not authored here). `null` for Brand Intro; required for the other types (**always required for AI Competition** — item-only, no upload).
 - `DataType`: `Ztor Library | Movie/Tv List | Movie Review | Tastemaker | Ranking | Events Data | Movie New | Award | Box Office | Co-creation | AI Competition | Custom`
 - `DataType.uiStyle` (per type; selectable vs fixed) — Ztor Library/Movie-Tv List/Tastemaker/Ranking/Award are selectable; Movie Review/Events Data/Movie New/Box Office/Co-creation are fixed.
 
@@ -41,7 +41,7 @@
 - `Banner.enabled`: `disabled` ⇄ `enabled` (trigger: BO toggle). `enabled` → rendered on FE; `disabled` → kept in BO, not rendered.
 - `BannerSection.rotate`: `off` ⇄ `on` (trigger: BO; **only meaningful when banners > 1**; off = manual prev/next + dots, on = **5s** auto-advance w/ hover-pause, per FE §3.6).
 - `Banner.type`: one of `Brand Intro | AI Competition | Event | Film Intro` (trigger: BO). Switching type **resets the field set and clears `item`**.
-- `Banner.srcMode`: `item` ⇄ `upload`, **togglable for Event / Film Intro / AI Competition** (mutually exclusive). `item` → `item` required & uploads hidden; `upload` → `item=null` & uploads shown. **illegal:** `srcMode='item'` with null `item` ✗; `srcMode='upload'` with non-null `item` ✗ (Save blocked). **Brand Intro is always `upload`** (no item). AI Competition in upload mode has no schedule source.
+- `Banner.srcMode`: `item` ⇄ `upload`, **togglable for Event / Film Intro** (mutually exclusive). `item` → `item` required & uploads hidden; `upload` → `item=null` & uploads shown. **illegal:** `srcMode='item'` with null `item` ✗; `srcMode='upload'` with non-null `item` ✗ (Save blocked). **AI Competition is always `item`** (item-only — no upload, no toggle; text + buttons + countdown come from the linked item). **Brand Intro is always `upload`** (no item).
 - `ContinueWatching.enabled`: `disabled` ⇄ `enabled` (trigger: BO). Fixed section under Banner; FE renders only when `enabled` **and** the visitor is logged in. **illegal:** add / delete / reorder as a section ✗.
 - `Ranking.enabled`: `disabled` ⇄ `enabled` (trigger: BO). Single fixed widget — **illegal:** add / delete / reorder as a section ✗.
 - `ContentBlock.enabled`: `disabled` ⇄ `enabled` (trigger: BO).
@@ -65,7 +65,7 @@
 |---|---|---|---|---|---|
 | Operator pastes `javascript:`/`data:`/relative URL in a CTA or data source | abuse / trust&safety ‡ | RESOLVED | Accept absolute `http`/`https` only; reject & do not save otherwise | `Cta.url`, `ContentBlock.source` | BO-TC-03 |
 | Half-translated field ships (one language blank) | trust&safety ‡ | RESOLVED | Bilingual coupling — fill one language → both required; both empty → omitted, no reserved space | all `Bilingual` fields | BO-TC-05 |
-| Banner with no linked content | data integrity | RESOLVED | item-bearing types are item⇄upload (mutually exclusive): item mode requires `item`, upload mode uses an uploaded asset; Brand Intro uploads only; Event/Film Intro/AI Competition support item⇄upload | `Banner.type`, `Banner.srcMode`, `Banner.item` | BO-TC-09, BO-TC-10, BO-TC-11 |
+| Banner with no linked content | data integrity | RESOLVED | item mode requires `item`, upload mode uses an uploaded asset; Brand Intro uploads only; Event/Film Intro support item⇄upload (mutually exclusive); AI Competition is item-only (no upload) | `Banner.type`, `Banner.srcMode`, `Banner.item` | BO-TC-09, BO-TC-10, BO-TC-11 |
 | Data source requirement per type | data integrity | RESOLVED | Required for every DataType except `Events Data` / `Movie New`; `Co-creation` IS required | `ContentBlock.source` | BO-TC-06 |
 | Who can edit / change history | auth ‡ / audit ‡ | NEEDS-POLICY-OWNER | Access control + change logging follow the existing BO admin (out of scope here) | — | — |
 

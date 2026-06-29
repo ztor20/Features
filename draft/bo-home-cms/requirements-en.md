@@ -4,8 +4,8 @@
 |------|---------|
 | Routes | `/admin/page-config/home-page` (per region: `香港(中国)` / `台灣` / `全世界`) |
 | Folder | `bo-home-cms` |
-| Version | 1.0 |
-| Updated | 2026-06-23 |
+| Version | 1.1 |
+| Updated | 2026-06-26 |
 | Anchored-commit | — (standalone mock; BO is not anchored) · real admin ref: adminmvp.ztor.com `/#/page-config/home-page` |
 
 > Aligns to the real ztor admin. **The `.md` is authoritative; the prototype (`prototype/index.html`) illustrates.** Field/enum identifiers are byte-identical across the EN / 繁中 pair; only prose is translated.
@@ -14,6 +14,18 @@
 
 ## 1. Purpose
 The internal ops surface to configure the public ztor homepage **per region**, without engineering. The homepage is composed, top → bottom: a **Banner**, **Continue Watching** (fixed, logged-in only), a **Ranking widget**, and a **Layout Sequence** of **Content Blocks**.
+
+## 1A. Changes vs the existing BO CMS (this release)
+The existing Home Page Config has only a **Ranking Widget** + **Layout Sequence** per region; this release adds/changes the following.
+
+| Change | Type |
+|---|---|
+| **Banner** manager — new top section: 4 Banner Types (Brand Intro / AI Competition / Event / Film Intro), per-type item/upload (AI Competition item-only; Brand Intro upload-only), upload size limits, CTA ≤2 (auto-hide at max; AI Competition none), carousel 5s/hover/arrows, publish schedule | 🆕 NEW |
+| **Continue Watching** — new fixed section under Banner (logged-in only; auto-filled list; Title/Content/Tag, no CTA) | 🆕 NEW |
+| **Ranking widget** — add bilingual **Tag** field | 🆕 NEW |
+| **Content Block** — add bilingual **Tag** field (existing editor has none) | 🆕 NEW |
+| **Content Block Data Types** — add **Co-creation**, **AI Competition**, **Custom** (existing has 9). Custom = pick a background from a sample-style popup + upload an image + 1 CTA | 🆕 NEW |
+| Existing 9 Data Types + their UI styles; region tabs; Layout Sequence drag/enable/delete | ✅ unchanged |
 
 ## 2. User scenarios
 - **As an ops editor**, I pick a region, add & arrange banners, edit the Continue Watching section (title/content/tag), toggle/edit the ranking widget, add & arrange content blocks (each bound to a Data Type + data source + UI style), preview, and save — so the homepage changes without engineering. Flow: pick region → edit Banner / Continue Watching / Ranking / Layout Sequence → Preview → Save.
@@ -42,12 +54,12 @@ Picking the **Banner Type** is step one; it determines ① the item source, ② 
 | Banner Type | Item source (select-only, image+name cards, read directly from the DB) | Note |
 |---|---|---|
 | **Brand Intro** | **No item** | **upload image or video**, custom text (no item picker) |
-| **AI Competition** | **Events Data** (event) | item ⇄ upload (one-of); in item mode the 7-stage countdown reads that item's schedule (FE §3.5); **can add CTA (max 2)**; no manual date fields |
+| **AI Competition** | **Events Data** (event) | **item-only — NO upload, NO source toggle**; editor shows ONLY Banner Type + Item picker + enable. **NO text fields (eyebrow/headline/desc) and NO CTA** — all content (text, buttons) + the 7-stage countdown come from the linked competition item (FE §3.5). The banner list row / FE preview shows the linked **item/event name** as the title when no manual title exists. |
 | **Event** | **Events Data** (incl. Blind Box) | item ⇄ upload (one-of); right-side hero optional, mp4 allowed |
 | **Film Intro** | **Movie/TV List** (library film) | type tags pulled from the film (≤3) with a show/hide toggle; title as image or text |
 
 > Per-type fields, upload sizes/formats (background image / right-side cut-out hero static-or-mp4 ≤15MB / title image), masks, carousel, countdown — **all refer to FE spec §3.1–3.6**; not duplicated here.
-> **Source rule (by type):** **Event / Film Intro / AI Competition** are one-of (mutually exclusive) — **Select Item** OR **Upload image/video**; **Brand Intro** is upload image/video only (no item). ⚠️ The item-or-upload exclusivity is a CMS design choice and **differs slightly from FE §3.1** (item + uploads together); also **AI Competition in upload mode has no schedule source** (countdown loses its basis).
+> **Source rule (by type):** **Event / Film Intro** are one-of (mutually exclusive) — **Select Item** OR **Upload image/video**; **AI Competition** is **item-only** (Events Data; no upload, no toggle); **Brand Intro** is upload image/video only (no item). ⚠️ The item-or-upload exclusivity (Event / Film Intro) is a CMS design choice and **differs slightly from FE §3.1** (item + uploads together). AI Competition draws all content + the 7-stage countdown from the linked item (FE §3.5).
 
 ### 4.3 Interactions
 | Action | Result |
@@ -57,8 +69,8 @@ Picking the **Banner Type** is step one; it determines ① the item source, ② 
 | _In the editor:_ pick **Banner Type** | Sets the layout; **resets** that type's field set; clears any previously chosen Item (Brand Intro hides the Item field). |
 | _In the editor:_ click **Item** (non-Brand-Intro) | Opens the **SELECT ITEM** picker scoped to that type's source — **image + name cards, read directly from the database** (select-only); choosing fills it. |
 | _In the editor:_ upload background / cut-out hero (static or mp4) / title image | Type-specific upload fields appear; specs per FE spec §3.3. |
-| _In the editor:_ edit eyebrow/headline/desc · toggle type-tag show/hide (Film Intro only) | Edits the banner draft. |
-| _In the editor:_ + Add CTA · remove CTA | **Max 2**. |
+| _In the editor:_ edit eyebrow/headline/desc · toggle type-tag show/hide (Film Intro only) | Edits the banner draft. **Not applicable to AI Competition** (no text fields — all text comes from the linked item). |
+| _In the editor:_ + Add CTA · remove CTA | **Max 2** (the "+ Add CTA" button hides at 2). **Not applicable to AI Competition** (no CTA). |
 | _In the editor:_ set publish/unpublish time | Optional scheduling window. |
 | Drag ✥ (row) | Reorders banners (= carousel order). |
 | Toggle Rotate | Enables/disables auto-advance (only meaningful when > 1; interval/behavior per FE §3.6). |
@@ -72,7 +84,7 @@ Picking the **Banner Type** is step one; it determines ① the item source, ② 
 | 1 banner | Single banner; no carousel control, no rotate option. |
 | > 1 banner | One-slot carousel, **one section** (never stacks); controls (prev/next arrows + dots), auto every **5s**, hover-pause **per FE §3.6**; rotate OFF → manual only. |
 | Brand Intro type | No item; can upload image or video; render per FE §3.2. |
-| AI Competition type | item (Events Data) ⇄ upload (one-of); in item mode countdown eyebrow/button/link switch per that item's competition schedule (FE §3.5). |
+| AI Competition type | **item-only** (Events Data; no upload, no toggle); text, buttons and the countdown eyebrow/button/link all come from the linked item's competition schedule (FE §3.5); no manual text fields, no CTA. |
 | Film Intro type, tag toggle = hidden | FE omits the tag area (even if the library film has tags). |
 | One language of a text field filled, the other empty | Save blocked; the empty-language field highlighted (fill both or clear both). |
 | Text field empty (both langs) | Omitted on FE with **no reserved space** — the banner text reflows up. |
@@ -81,17 +93,17 @@ Picking the **Banner Type** is step one; it determines ① the item source, ② 
 
 ### 4.5 Validation & data
 **Save validation:**
-- **Item / Upload (mutually exclusive)**: item-bearing types choose one — **item mode** requires an Item; **upload mode** requires upload instead (no item). Brand Intro has no item. Switching Type clears the previously chosen Item.
-- **Text** (eyebrow `eyebrow` / headline `headline` / description `desc`): optional but **bilingual-coupled**; **required fields per type follow FE spec §3.2** (e.g. Film Intro headline = film name is required).
-- **CTA**: **max 2** (incl. AI Competition); each needs a **bilingual name** (`name.zh` + `name.en`) + absolute `http`/`https` url (single url shared). **CTAs exist only on Banner (multi, max 2) and Content Block Custom (single, max 1)**; Continue Watching has no CTA.
+- **Item / Upload**: **Event / Film Intro** choose one (mutually exclusive) — **item mode** requires an Item; **upload mode** requires upload instead (no item). **AI Competition is item-only** (Item required; no upload, no toggle). **Brand Intro** has no item (upload only). Switching Type clears the previously chosen Item.
+- **Text** (eyebrow `eyebrow` / headline `headline` / description `desc`): optional but **bilingual-coupled**; **required fields per type follow FE spec §3.2** (e.g. Film Intro headline = film name is required). **AI Competition has no text fields** (all text comes from the linked item).
+- **CTA**: **max 2** (the "+ Add CTA" button hides at 2); each needs a **bilingual name** (`name.zh` + `name.en`) + absolute `http`/`https` url (single url shared). **CTAs exist only on Banner — Brand Intro / Event / Film Intro (multi, max 2) — and Content Block Custom (single, max 1)**; **AI Competition has no CTA**; Continue Watching has no CTA.
 - **Uploads**: formats/sizes per FE spec §3.3 (right-side hero mp4 ≤15MB).
 
 **Data:**
-- `Banner { id, enabled, type: BannerType, srcMode: 'item'|'upload', item: BannerItem | null, eyebrow: Bilingual, headline: Bilingual, desc: Bilingual, bgImage?: Asset, mainAsset?: Asset, titleImage?: Asset, tagAreaVisible?: boolean, ctas: Cta[], schedule: Schedule }`
-- `srcMode`: `item` or `upload` — **togglable for Event / Film Intro / AI Competition (mutually exclusive)**; **Brand Intro is always `upload` (no item)**. All banner types allow up to 2 `ctas`.
+- `Banner { id, enabled, type: BannerType, srcMode: 'item'|'upload', item: BannerItem | null, eyebrow: Bilingual, headline: Bilingual, desc: Bilingual, bgImage?: Asset, mainAsset?: Asset, titleImage?: Asset, tagAreaVisible?: boolean, ctas: Cta[], schedule: Schedule }` — **AI Competition has no text (`eyebrow`/`headline`/`desc`) and an empty `ctas` array** (text + buttons come from the linked item).
+- `srcMode`: `item` or `upload` — **togglable for Event / Film Intro (mutually exclusive)**; **AI Competition is always `item` (no upload, no toggle)**; **Brand Intro is always `upload` (no item)**. Brand Intro / Event / Film Intro allow up to 2 `ctas`; **AI Competition has none**.
 - `BannerSection { banners: Banner[], rotate: boolean }`
 - `BannerType` = `Brand Intro | AI Competition | Event | Film Intro` (the four FE §3.2 types).
-- `BannerItem`: one event/item from the DB category mapped by Type (AI Competition→**Events Data**; Event→Events Data incl. Blind Box; Film Intro→Movie/TV List), **read directly from the product database**, select-only; the picker lists **image + name** cards, empty if no matching records. **Always `null` for Brand Intro (upload instead); `null` for Event/Film Intro/AI Competition when `srcMode='upload'`, required when `srcMode='item'`.**
+- `BannerItem`: one event/item from the DB category mapped by Type (AI Competition→**Events Data**; Event→Events Data incl. Blind Box; Film Intro→Movie/TV List), **read directly from the product database**, select-only; the picker lists **image + name** cards, empty if no matching records. **Always `null` for Brand Intro (upload instead); always required for AI Competition (item-only, no upload); for Event/Film Intro `null` when `srcMode='upload'`, required when `srcMode='item'`.**
 - `tagAreaVisible`: **Film Intro only**; type tags are pulled from the film (≤3) and this toggle shows/hides the whole tag area (FE §3.4).
 - `Schedule { from?: DateTime, to?: DateTime }`: optional publish/unpublish window.
 - `bgImage / mainAsset / titleImage`: background image / right-side cut-out hero (static or mp4 ≤15MB) / title image; sizes & formats per FE §3.3.
@@ -174,7 +186,7 @@ Aligns to FE homepage §2 "繼續觀看": **logged-in only**, the list is **auto
 |-------|-------------|
 | Section header | “Layout Sequence” + **+ Add Content Block**. |
 | Block list | One row per block: `# · Title · DataType · UIStyle · Tag · enable · ⚙ · ✥(drag) · 🗑`. |
-| Block editor (modal) | Enable (top — scrolls with content, **not frozen**); bilingual **Title (required) / Tag / Subtitle / Description (rich text)** — Tag/Subtitle/Description are **optional** (no show/hide switch); **Data Type** (10); **Data source** picker; **FE UI style**; Cancel/Confirm frozen. |
+| Block editor (modal) | Enable (top — scrolls with content, **not frozen**); bilingual **Title (required) / Tag / Subtitle / Description (rich text)** — Tag/Subtitle/Description are **optional** (no show/hide switch); **Data Type** (12); **Data source** picker; **FE UI style**; Cancel/Confirm frozen. |
 
 ### 6.2 Interactions
 | Action | Result |
@@ -198,7 +210,7 @@ Aligns to FE homepage §2 "繼續觀看": **logged-in only**, the list is **auto
 | Data Type ∈ {Events Data, Movie New} | **No data-source field**; uses the master default. |
 | Data Type = Co-creation | Fixed UI style (`影視共創計畫`) **but data source IS required** (unlike Events Data). |
 | Data Type = AI Competition | Fixed UI style; **data source required** (source: AI Competition). |
-| Data Type = Custom | **No data source**; instead upload **background + image** + bilingual title/subtitle/content + **CTA (max 1)** (FE renders from the uploaded image). |
+| Data Type = Custom | **No data source**; instead **pick a background from the sample-library popup (3 samples)** + **upload an image** + bilingual title/subtitle/content + **CTA (max 1)** (FE renders from the uploaded image). |
 | Data source empty (required type) | Save blocked (“請選擇數據鏈接”). |
 | Invalid URL (CTA / data source) | Rejected — absolute `http`/`https` only. |
 
@@ -217,16 +229,16 @@ Aligns to FE homepage §2 "繼續觀看": **logged-in only**, the list is **auto
 | Box Office | 票房排行 | single (fixed) |
 | Co-creation | 影視共創計畫 | **no (fixed)** — fixed UI like Events Data, but **data source required** |
 | AI Competition | AI 原力創作計畫 | **no (fixed)** — data source required (source: AI Competition) |
-| Custom | Custom | **no (fixed)** — **no data source**; instead upload background + image, and fill bilingual title/subtitle/content/CTA |
+| Custom | Custom | **no (fixed)** — **no data source**; instead pick a background from the sample-library popup + upload an image, and fill bilingual title/subtitle/content/CTA (max 1) |
 
-> **The Data Type options map to the existing BO data-management modules — NOT hardcoded.** The 10 Data Types correspond to the BO `data-management` modules (Ztor Library · Movie/TV Lists · Movie Reviews · Tastemakers · Rankings · Events Data · Movie News · Awards · Box Office Data) plus Co-creation. The catalog (and the content each Data Type resolves to) is supplied by those modules; the Home CMS only *selects* a Data Type — it must read the list dynamically, not hardcode it. The table above is illustrative.
+> **The Data Type options map to the existing BO data-management modules — NOT hardcoded.** Of the 12 Data Types, 11 map to BO `data-management` modules (the 9: Ztor Library · Movie/TV Lists · Movie Reviews · Tastemakers · Rankings · Events Data · Movie News · Awards · Box Office Data — plus Co-creation and AI Competition); **Custom** is CMS-only (no data source). The catalog (and the content each Data Type resolves to) is supplied by those modules; the Home CMS only *selects* a Data Type — it must read the list dynamically, not hardcode it. The table above is illustrative.
 
 ### 6.4 Data
-- `ContentBlock { id, enabled, dataType: DataType, uiStyle: string, source: string, title: Bilingual, tag: Bilingual, subtitle: Bilingual, description: Bilingual, ctas?: Cta[], bgImage?: Asset, image?: Asset }` (`ctas` / `bgImage` / `image` are **Custom-only**)
+- `ContentBlock { id, enabled, dataType: DataType, uiStyle: string, source: string, title: Bilingual, tag: Bilingual, subtitle: Bilingual, description: Bilingual, ctas?: Cta[], bg?: string, image?: Asset }` (`ctas` / `bg` / `image` are **Custom-only**; `bg` = selected background sample key from the sample-library popup, `image` = uploaded image)
 - `DataType`: `Ztor Library | Movie/Tv List | Movie Review | Tastemaker | Ranking | Events Data | Movie New | Award | Box Office | Co-creation | AI Competition | Custom`
 - `Bilingual { zh: string, en: string }`. **Title** is required (both langs). **Tag / Subtitle / Description** are optional but **bilingual-coupled** — for each, `zh` and `en` are both filled or both empty. An empty field is **omitted on FE with no reserved space**.
 
-> **FE block mapping:** FE #8 **Gradient Banner** is built with the **Custom** Data Type (upload background + image + bilingual text + CTA) — no dedicated type. FE #4 Co-creation / #6 AI stay as Data Types here (`Co-creation` / `AI Competition`) — FE spec marks them "Hardcode" only because there was no CMS when it was written. FE #5 screening-room Tab block is **skipped** this version.
+> **FE block mapping:** FE #8 **Gradient Banner** is built with the **Custom** Data Type (pick a background from the sample-library popup + upload an image + bilingual text + CTA) — no dedicated type. FE #4 Co-creation / #6 AI stay as Data Types here (`Co-creation` / `AI Competition`) — FE spec marks them "Hardcode" only because there was no CMS when it was written. FE #5 screening-room Tab block is **skipped** this version.
 
 ---
 
@@ -241,12 +253,12 @@ Aligns to FE homepage §2 "繼續觀看": **logged-in only**, the list is **auto
 - [ ] **Rotate** toggle appears only when **> 1** banner; interval/behavior (auto every **5s**, hover-pause, prev/next arrows + dots) **per FE spec §3.6**; OFF → no auto-advance, manual switching.
 - [ ] **Banner Type (4: `Brand Intro | AI Competition | Event | Film Intro`)** is the primary selector, driving item source, field set, and required fields (field content per FE §3.2); switching Type resets fields and clears the previously chosen Item.
 - [ ] **Item source by Type**: **AI Competition→Events Data** (event), Event→Events Data (incl. Blind Box), Film Intro→Movie/TV List, each from **database records** (image+name cards; select-only); **Brand Intro has no item (uploads image/video instead)**; empty picker if no records.
-- [ ] **Source rule**: **Event / Film Intro / AI Competition** toggle **Select Item / Upload** (mutually exclusive; switching clears the previous item); **Brand Intro** is upload-only.
+- [ ] **Source rule**: **Event / Film Intro** toggle **Select Item / Upload** (mutually exclusive; switching clears the previous item); **AI Competition** is item-only (no upload, no toggle); **Brand Intro** is upload-only.
 - [ ] Banner text (eyebrow/headline/desc) is **optional but bilingual-coupled** (fill one → both required; both empty → omitted on FE with no reserved space); **required fields per type per FE §3.2** (e.g. Film Intro headline = film name required).
 - [ ] **Upload fields** (background image / right-side cut-out hero static-or-mp4 ≤15MB / title image) appear per type; sizes/formats **per FE §3.3**.
-- [ ] **AI Competition type**: item (Events Data) ⇄ upload (one-of); in item mode the 7-stage countdown reads that item's competition schedule (FE §3.5); no manual date fields; **can add CTA (max 2)**.
+- [ ] **AI Competition type**: **item-only** (Events Data; no upload, no source toggle); the editor shows only Banner Type + Item picker + enable; **no text fields, no CTA, no manual date fields**; all text, buttons and the 7-stage countdown come from the linked item (FE §3.5); the row/preview shows the linked item/event name as the title.
 - [ ] **Film Intro type**: type tags pulled from the film (≤3); the whole tag area can be **shown/hidden** (FE §3.4).
-- [ ] **CTA max 2** (incl. AI Competition; **multiple is Banner-only**); if added, each needs a **bilingual name + absolute `http`/`https` url**; invalid blocked.
+- [ ] **CTA max 2** (Brand Intro / Event / Film Intro; the "+ Add CTA" button hides at 2; **AI Competition has none**; **multiple is Banner-only**); if added, each needs a **bilingual name + absolute `http`/`https` url**; invalid blocked.
 - [ ] Banners drag-reorderable (= carousel order); optional **publish/unpublish schedule**; each row has **Delete 🗑** (removes from section and carousel).
 
 **Continue Watching**
@@ -284,7 +296,7 @@ Given / When / Then, with an **observable Then**.
 - **BO-TC-08** — Given a banner row and a content-block row · When **Delete 🗑** is clicked on each · Then that banner leaves the carousel and that block leaves the Layout Sequence (row counts decrement); the Ranking widget exposes **no** delete. *(catches: missing/over-broad delete)*
 - **BO-TC-09** — Given Banner Type = `Film Intro` · When the Item field is clicked · Then the **SELECT ITEM** picker lists Movie/TV List films as **image + name cards read from the database** and choosing one fills the Item; Given the source has no records · Then the picker is empty (the CMS cannot create items here); When Save without an Item · Then blocked with inline error; And When the Type is switched from `Film Intro` to `Event` · Then the previously chosen item is cleared and the picker now lists Events Data (incl. Blind Box) items; And Given Type = `AI Competition` · Then the item comes from the **Events Data** source (events incl. AI-competition items). *(catches: wrong item source per Type; stale item list; missing item link)*
 - **BO-TC-10** — Given Banner Type = `Brand Intro` · When the editor opens · Then **no Item field is shown** and it saves with no item (exception); Given Type = `Film Intro` with the headline (film name) empty · When Save · Then blocked (headline required for this type, FE §3.2); Given 2 CTAs already added · When adding a 3rd · Then blocked (**max 2**). *(catches: Brand Intro wrongly forced to require an item; per-type required fields not validated; CTA over the cap)*
-- **BO-TC-11** — Given Banner Type ∈ {`Event`, `Film Intro`, `AI Competition`} · When switched to **Upload image/video** · Then the item picker hides, the upload area appears, and Save no longer requires an item; switching back to **Select Item** · Then the upload area hides and an Item is required (mutually-exclusive clear); Given `AI Competition` · Then a **source toggle is shown** and **CTA can be added (max 2)**; Given `Brand Intro` · Then only the upload area shows, no item, no toggle. *(catches: item & upload not mutually exclusive; AI Competition wrongly locked item-only; Brand Intro upload missing)*
+- **BO-TC-11** — Given Banner Type ∈ {`Event`, `Film Intro`} · When switched to **Upload image/video** · Then the item picker hides, the upload area appears, and Save no longer requires an item; switching back to **Select Item** · Then the upload area hides and an Item is required (mutually-exclusive clear); Given `AI Competition` · Then **NO source toggle, NO CTA, and NO text fields are shown** — only the Item picker (item required; the upload⇄item toggle does NOT apply); Given `Brand Intro` · Then only the upload area shows, no item, no toggle. *(catches: item & upload not mutually exclusive for Event/Film Intro; AI Competition wrongly given an upload toggle / CTA / text fields; Brand Intro upload missing)*
 - **BO-TC-12** — Given Continue Watching enabled · When a logged-out visitor views FE · Then the section is **not shown**; When logged in · Then it renders **under Banner, above Ranking** with an auto-continue list; Given Content filled in zh only (en empty) · When Save · Then blocked; When attempting to delete/reorder it as a section · Then not possible (fixed widget). *(catches: Continue Watching shown to logged-out; half-translated fields; treated as a normal section)*
 
 ## Not Included
