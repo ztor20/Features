@@ -7,6 +7,7 @@
 | Version | 1.1 |
 | Updated | 2026-06-26 |
 | Anchored-commit | — (standalone mock; BO is not anchored) · real admin ref: adminmvp.ztor.com `/#/page-config/home-page` |
+| FE spec | https://github.com/ztor20/Frontend/blob/main/docs/pages/home/requirements-zh-hant.md — the public homepage this CMS configures; every "refer to FE spec §3.x" cites this |
 
 > Aligns to the real ztor admin. **The `.md` is authoritative; the prototype (`prototype/index.html`) illustrates.** Field/enum identifiers are byte-identical across the EN / 繁中 pair; only prose is translated.
 
