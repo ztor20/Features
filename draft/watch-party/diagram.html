@@ -104,7 +104,7 @@
 <body>
 
 <div class="header">
-  <h1>Ztor Watch Party — Solution Architecture <span class="badge">Build guide · v2 · 2026-06-24</span></h1>
+  <h1>Ztor Watch Party — Solution Architecture <span class="badge">Build guide · v2 +6-28 BO · 2026-06-29</span></h1>
   <p>How to take the working demo to a production Ztor feature. Green = already proven in the demo; amber = what the dev team builds to productionize. The realtime core (Ably + host-authoritative sync) carries over unchanged. <strong>v2 folds in the two 2026-06-22 meetings:</strong> ops-granted hosts only, an ops-assigned content pool the host picks from in-room, a 1,000-seat cap, host-presence handling, confirmation emails, and watch-party orders counted toward total orders.</p>
   <div class="nav">
     <a href="https://ztor-watchparty.vercel.app" target="_blank" class="live">▶ Live demo ↗</a>
@@ -129,8 +129,9 @@
       <li><strong>Hosts are ops-granted only</strong> — no open self-serve. A back-office capability decides who can host.</li>
       <li><strong>Video is not fixed per room.</strong> Ops assigns a host a pool of titles + specific episodes; the host picks/switches among them <em>in-room</em> (marathon-friendly). Room record holds the host + allowed pool, not a single hard-coded videoId.</li>
       <li><strong>Host must stay present</strong> — host controls playback, so a disconnect drops the room into a <code>host_away</code> (paused) state until they return or ops ends it.</li>
-      <li><strong>Capacity</strong> target ~1,000 (advertised ~400–500); enforced atomically before issuing a ticket/token.</li>
-      <li><strong>Tickets</strong> are host-set (free or POPCORN) on the <em>front end</em>; each counts as an <code>Order</code> toward total orders. No replay; refunds are manual (ops marks refunded, CS re-credits).</li>
+      <li><strong>Capacity</strong> a single ~1,000 limit that both displays and gates; enforced atomically before issuing a ticket/token. <em>(6-28 dropped the advertised/server dual-number.)</em></li>
+      <li><strong>Tickets</strong> are host-set (free or POPCORN) on the <em>front end</em>; each counts as an <code>Order</code> toward total orders. No replay; <strong>refunds credit POPCORN back in-system</strong> via a BO button <em>(6-28 — never cash/Stripe)</em>.</li>
+      <li><strong>Host camera (6-28):</strong> real-time tech = <strong>LiveKit</strong> (WebRTC); dev has a working demo. Carried alongside Ably (which stays sync/chat only). AWS IVS shelved for launch (~1+ wk env).</li>
       <li><strong>Confirmation emails</strong> on party creation + ticket purchase (+ start reminder). Live chat is ephemeral (not retained after the room ends).</li>
     </ul>
   </div>
@@ -265,7 +266,7 @@
         </div>
         <div class="module">
           <div class="name">Capacity config</div>
-          <div class="role">Default + per-campaign room cap (target ~1,000) and a separate advertised number (~400–500, display-only). Feeds the cap guard.</div>
+          <div class="role">A single room capacity (~1,000) that both displays and gates admission. Feeds the cap guard. <em>(6-28 dropped the advertised dual-number.)</em></div>
           <div class="tags"><span class="tag todo">build</span></div>
         </div>
         <div class="module">
@@ -274,8 +275,8 @@
           <div class="tags"><span class="tag todo">build</span></div>
         </div>
         <div class="module">
-          <div class="name">Analytics + manual refund</div>
-          <div class="role">Watch-party orders (counted toward total orders), subscriber-vs-new, chat activity, export. Ops can mark an order refunded (status + audit only; CS re-credits).</div>
+          <div class="name">Analytics + POPCORN refund</div>
+          <div class="role">Watch-party orders (counted toward total orders), attendees, chat activity, export. Ops can refund an order — credits POPCORN back to the buyer in-system (never cash/Stripe) + audit.</div>
           <div class="tags"><span class="tag todo">build</span></div>
         </div>
         <div class="module">
@@ -422,7 +423,7 @@ sequenceDiagram
         <tr>
           <td><code>Capacity</code></td>
           <td class="demo">Unbounded; whoever has the link joins</td>
-          <td class="prod"><span class="must">Per-room cap (~1,000)</span> enforced atomically before a ticket/token issues; separate advertised number is display-only.</td>
+          <td class="prod"><span class="must">Single per-room cap (~1,000)</span> enforced atomically before a ticket/token issues. <em>(6-28 dropped the advertised dual-number.)</em></td>
         </tr>
         <tr>
           <td><code>Host presence</code></td>
@@ -432,12 +433,12 @@ sequenceDiagram
         <tr>
           <td><code>Tickets / orders</code></td>
           <td class="demo">None — free open join</td>
-          <td class="prod">Host sets free/POPCORN price on the front end; each ticket is an idempotent <code>Order</code> counted toward total orders. No replay; refunds manual.</td>
+          <td class="prod">Host sets free/POPCORN price on the front end; each ticket is an idempotent <code>Order</code> counted toward total orders. No replay; refunds credit POPCORN back in-system.</td>
         </tr>
         <tr>
           <td><code>Back office</code></td>
           <td class="demo">None</td>
-          <td class="prod"><span class="must">New ops surface</span> (<a href="https://ztor-watchparty.vercel.app/bo" target="_blank">/bo</a>): host/content grants, capacity, live monitor, analytics, manual refund, audit log.</td>
+          <td class="prod"><span class="must">New ops surface</span> (<a href="https://ztor-watchparty.vercel.app/bo" target="_blank">/bo</a>): host/content grants, capacity, live monitor, analytics, POPCORN refund, audit log.</td>
         </tr>
         <tr>
           <td><code>Notifications</code></td>
@@ -475,7 +476,7 @@ sequenceDiagram
         <tr><td>2</td><td class="prod">Token endpoint with Ztor identity</td><td class="demo">clientId = userId; add per-room capability scoping. The demo's <code>/api/ably-auth</code> is the starting point.</td></tr>
         <tr><td>3</td><td class="prod">Room service + Rooms table</td><td class="demo">create/lookup; assert host; stop trusting videoId/host from the URL.</td></tr>
         <tr><td>4</td><td class="prod">Swap player to HLS + entitlement</td><td class="demo">Resolve signed manifest by videoId; keep the same event hooks so sync code is untouched.</td></tr>
-        <tr><td>5</td><td class="prod">Back office — grants, capacity, monitor, analytics</td><td class="demo">HostGrant + ContentGrant (title+episode), capacity config, live monitor + End-room, watch-party orders/analytics, manual refund + audit. Prototyped at <a href="https://ztor-watchparty.vercel.app/bo" target="_blank">/bo</a>.</td></tr>
+        <tr><td>5</td><td class="prod">Back office — grants, capacity, monitor, analytics</td><td class="demo">HostGrant + ContentGrant (title+episode), capacity config, live monitor + End-room, watch-party orders/analytics, POPCORN refund + audit. Prototyped at <a href="https://ztor-watchparty.vercel.app/bo" target="_blank">/bo</a>.</td></tr>
         <tr><td>6</td><td class="prod">In-room episode pick + host-presence + tickets</td><td class="demo">Host picks/switches episode from the granted pool; <code>host_away</code> pause/resume; idempotent ticket Order + atomic cap guard; confirmation emails.</td></tr>
         <tr><td>7</td><td class="prod">QA the flows</td><td class="demo">Two-client sync; late-join catch-up; over-cap rejected (exactly one wins); non-granted host blocked; refund logs an audit row. (Sync verified in demo.)</td></tr>
         <tr><td>8</td><td class="prod">Optional: persist comments, add voice</td><td class="demo">Only if the product calls for chat history/moderation or talk-while-watching.</td></tr>

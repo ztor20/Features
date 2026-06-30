@@ -12,10 +12,10 @@
 ```mermaid
 flowchart TD
   A["Add a host<br/>search directory → grant"] --> B["Assign content<br/>series = episodes · movie = whole title"]
-  B --> C["Set capacity<br/>hard ~1,000 + advertised number"]
+  B --> C["Set capacity<br/>single limit (~1,000)"]
   C --> D["Monitor rooms<br/>occupancy · host-away · camera-live"]
   D --> E{"Need to act?"}
-  E -- dispute --> F["Mark order refunded<br/>logged · CS re-credits"]
+  E -- dispute --> F["Refund order<br/>POPCORN credited back · logged"]
   E -- runaway room --> G["End room"]
   E -- no --> D
 ```
@@ -61,7 +61,7 @@ Plain-language requirement list. **Who** = the side that experiences it: **Ops**
 | BR-05 | The host picks and switches the title/episode **live in the room**, limited to what they were given. | Host |
 | BR-06 | A host can't stream anything outside what ops assigned. | Automatic |
 | **Room & capacity** | | |
-| BR-07 | Each room has a real cap (~1,000) plus a separate, lower **advertised** number for marketing. | Ops |
+| BR-07 | Each room has a **single capacity limit** (~1,000) that gates admission (the 6-28 sync dropped the separate advertised number). | Ops |
 | BR-08 | A room never oversells — admission stops exactly at capacity. | Automatic |
 | BR-09 | The host must stay present; if they drop, the room **pauses** for everyone and resumes when they're back. | Host |
 | BR-10 | Ops can **end** a live room or **cancel** a scheduled one. | Ops |
@@ -69,7 +69,7 @@ Plain-language requirement list. **Who** = the side that experiences it: **Ops**
 | BR-11 | The host sets the ticket price (**free or POPCORN**) when creating the party. | Host |
 | BR-12 | A fan can join only if they're registered and hold a valid ticket. | Fan |
 | BR-13 | A double-tap on Pay only charges **once**. | Automatic |
-| BR-14 | **No automatic refunds** — ops marks an order refunded (logged), and CS re-credits POPCORN manually. | Ops |
+| BR-14 | Ops can **refund** an order from a BO button — it **credits the ticket's POPCORN back to the buyer in-system** (never cash/Stripe) and is logged. | Ops |
 | BR-15 | Every watch-party ticket counts as an **order** toward the title's total. | Automatic |
 | BR-16 | **Revenue share / commission split is a future phase** — stats are tracked now, the split isn't computed yet. | Future |
 | **Watching** | | |
@@ -99,7 +99,7 @@ Three automatic emails. Short English copy below; the full **bilingual (EN + 繁
 > Hi {{hostName}}, your watch party is ready. **{{partyName}}** · Starts **{{startTimeLocal}}** · Ticket **{{ticketPrice}}**. Share this link so ticketed fans can join: **{{joinLink}}** (code {{roomCode}}). Open the room at start and pick the episode — you control playback, so please stay for the whole session.
 
 **2 · Ticket purchased → Buyer** — *Subject: You're in — ticket for "{{partyName}}"*
-> Hi {{buyerName}}, your ticket is confirmed. **{{partyName}}** — {{titleName}} · Starts **{{startTimeLocal}}** · Paid **{{ticketPrice}}**. Join: **{{joinLink}}**. Please note — this is a live session with **no replay**, so join at the start time. Can't make it? Contact support (refunds are manual).
+> Hi {{buyerName}}, your ticket is confirmed. **{{partyName}}** — {{titleName}} · Starts **{{startTimeLocal}}** · Paid **{{ticketPrice}}**. Join: **{{joinLink}}**. Please note — this is a live session with **no replay**, so join at the start time. Can't make it? Contact support.
 
 **3 · Starting soon → Ticket holders** — *Subject: Starting soon: "{{partyName}}"*
 > Hi {{buyerName}}, **{{partyName}}** starts at **{{startTimeLocal}}** — soon! Join when it goes live: **{{joinLink}}**. It's live only, no replay. Grab your popcorn 🍿

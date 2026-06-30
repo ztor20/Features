@@ -38,7 +38,7 @@ Shared nouns → `_docs/BRD/_shared-contract.md`. Feature-local → `_feature.md
 - **FR-05** A viewer can use live chat + see the presence list; chat is not retained after the room ends.
 - **FR-06** The system emails the host on create and the buyer on purchase + a start reminder.
 - **FR-07** Purchase copy states **no replay** before payment.
-- **FR-08** A granted host can **turn their camera on/off in-room** (host-only, off by default); when on, every viewer sees the host in a **picture-in-picture** tile. The camera is a separate live stream (Amazon IVS), not frame-synced to the movie, not recorded; it drops on host-away/end. The toggle is unavailable if ops set `hostCameraAllowed = false` for the party.
+- **FR-08** A granted host can **turn their camera on/off in-room** (host-only, off by default); when on, every viewer sees the host in a **picture-in-picture** tile. The camera is a separate live stream (**LiveKit** — real-time WebRTC, chosen 6-28), independent of the movie's host-authoritative sync, not recorded; it drops on host-away/end. The toggle is unavailable if ops set `hostCameraAllowed = false` for the party.
 
 ## Edge / empty / loading / error states
 | State | Behaviour |

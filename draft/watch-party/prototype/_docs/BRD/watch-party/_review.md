@@ -1,5 +1,7 @@
 # Watch Party BRD — Adversarial Self-Review Gate
 
+> ⚠️ **Historical snapshot (v2/v3, 2026-06-24).** This verdict predates the **2026-06-28 dev-sync** changes — **single capacity** (no `advertisedCapacity`), **POPCORN refund credited in-system** (no "CS re-credits manually"), and **LiveKit** as the streaming layer (not IVS). The live spec above reflects 6-28; this review is kept as the record of the v2/v3 gate. See ADR `decisions/2026-06-28-watch-party-bo-changes.md`.
+
 **Reviewer:** fresh-context adversarial reviewer (no prior context; verified against written files only)
 **Date:** 2026-06-24
 **Files reviewed:** `_shared-contract.md`, `watch-party/_feature.md`, `watch-party/BO.md`, `watch-party/Frontend.md`
