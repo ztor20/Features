@@ -7,6 +7,7 @@
 | Version | 1.1 |
 | Updated | 2026-06-26 |
 | Anchored-commit | —(獨立 mock;BO 不錨定)· 真實後台參考:adminmvp.ztor.com `/#/page-config/home-page` |
+| FE spec | https://github.com/ztor20/Frontend/tree/main/docs/pages/home —— 本 CMS 所配置的公開首頁;所有「refer to FE spec §3.x」皆指向此 |
 
 > 對齊真實 ztor 後台。**以 `.md` 為準,原型(`prototype/index.html`)僅作示意。** 欄位/列舉識別碼(英文)中英版逐字一致,只翻譯敘述。
 
