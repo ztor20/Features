@@ -15,5 +15,5 @@ The `.md` wins over the prototype. **Build order:** `feature_description.md` (al
 | `_review.md` | human / AI | sign-off | fresh-context critic PASS/FAIL record |
 
 **Live prototype:** https://bo-home-cms.vercel.app
-**FE homepage spec** (the public homepage this CMS configures; every `refer to FE spec §3.x` points here): https://github.com/ztor20/Frontend/blob/main/docs/pages/home/requirements-zh-hant.md
+**FE homepage spec** (the public homepage this CMS configures; every `refer to FE spec §3.x` points here): https://github.com/ztor20/Frontend/tree/main/docs/pages/home
 **Surface:** BO only (Back Office; standalone mock, no FE anchoring).
