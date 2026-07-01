@@ -123,6 +123,26 @@ export function grantsForHost(userId: string) {
   return CONTENT_GRANTS.filter((g) => g.userId === userId);
 }
 
+// ---- ModeratorGrant (host → extra accounts who may moderate the party) ------
+// 6-29: besides the host, ops can assign additional accounts as Moderators —
+// they enter the room and moderate (manage comments, kick users). FE self-serve
+// assignment is a future phase; for launch it's ops-assigned in the back office.
+export type ModeratorGrant = { hostId: string; moderatorIds: string[] };
+
+export const MODERATOR_GRANTS: ModeratorGrant[] = [
+  { hostId: "u_a", moderatorIds: ["u_c"] }, // Alex Rivera → Casey Lam moderates
+];
+
+export function moderatorsForHost(userId: string): string[] {
+  return MODERATOR_GRANTS.find((m) => m.hostId === userId)?.moderatorIds ?? [];
+}
+
+// ---- Capacity (6-29) --------------------------------------------------------
+// Ops sets ONE site-wide maximum; a creator picks their room's capacity up to
+// this ceiling and can never exceed it. (Refines the 6-28 single-number: it's a
+// hard ceiling, not just a default.)
+export const SITE_MAX_CAPACITY = 1000;
+
 // ---- WatchParty -------------------------------------------------------------
 export type WatchParty = {
   id: string;
@@ -279,16 +299,35 @@ export const AUDIT_LOG: AuditEntry[] = [
   { id: "a5", actor: "system", action: "order.refund", target: "o_wp_001_4 · 150🍿", at: "2026-06-23T15:20:00Z" },
 ];
 
+// Has the party started (so attendance is meaningful)?
+export function hasStarted(p: WatchParty): boolean {
+  return p.status === "live" || p.status === "host_away" || p.status === "ended";
+}
+
+// Actual attendance for a party (6-29 metric). Live rooms = who's present now;
+// ended rooms = a deterministic mock (~86% of sold); not-yet-started = 0.
+export function attendedFor(p: WatchParty): number {
+  if (!hasStarted(p)) return 0;
+  if (p.status === "live" || p.status === "host_away") return p.occupancy;
+  return Math.round(p.ticketsSold * 0.86); // ended — mock realised attendance
+}
+
 // ---- Derived analytics ------------------------------------------------------
 export function analytics() {
   const ticketOrders = WATCH_PARTIES.reduce((s, p) => s + p.ticketsSold, 0);
   const liveNow = WATCH_PARTIES.filter((p) => p.status === "live" || p.status === "host_away").length;
   const popcornRevenue = WATCH_PARTIES.reduce((s, p) => s + p.ticketPricePopcorn * p.ticketsSold, 0);
+  // Attendance Rate (6-29) = actual attendance ÷ tickets sold, over started parties.
+  const started = WATCH_PARTIES.filter(hasStarted);
+  const soldStarted = started.reduce((s, p) => s + p.ticketsSold, 0);
+  const attendedStarted = started.reduce((s, p) => s + attendedFor(p), 0);
+  const attendanceRate = soldStarted > 0 ? attendedStarted / soldStarted : 0;
   return {
     ticketOrders, // counts toward total order count
     liveNow,
     popcornRevenue,
-    attendees: ticketOrders,
+    attendees: attendedStarted, // real attendance, not just sold
+    attendanceRate, // attended ÷ sold (started parties)
     chatActivityRate: 0.62, // mock
     avgWatchMinutes: 47, // mock
   };

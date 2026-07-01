@@ -10,7 +10,7 @@ There are **three** transactional emails. All are system-sent (not a marketing c
 |---|---|---|---|
 | 1 | `party_created` | Host creates a watch party | Host |
 | 2 | `ticket_purchased` | A fan buys / claims a ticket | Buyer |
-| 3 | `party_reminder` | Shortly before start time | Ticket holders |
+| 3 | `party_reminder` | **24 hours before** start time (6-29) | Ticket holders |
 
 ## Placeholders
 Fill these from the room + order records. Keep the exact `{{token}}` spelling.
@@ -108,15 +108,17 @@ Fill these from the room + order records. Keep the exact `{{token}}` spelling.
 
 ---
 
-## 3 · Starting soon → Ticket holders (`party_reminder`)
+## 3 · Party reminder (24 h before) → Ticket holders (`party_reminder`)
 
-**Subject (EN):** Starting soon: "{{partyName}}"
-**主旨 (繁中):** 即將開始：「{{partyName}}」
+*Sent **24 hours before** start time (confirmed 2026-06-29).*
+
+**Subject (EN):** Tomorrow: your watch party "{{partyName}}"
+**主旨 (繁中):** 明天開演：你的共看派對「{{partyName}}」
 
 **Body (EN):**
 > Hi {{buyerName}},
 >
-> **{{partyName}}** starts at **{{startTimeLocal}}** — that's soon!
+> This is your 24-hour reminder — **{{partyName}}** starts **{{startTimeLocal}}**.
 >
 > Tap to join when it goes live:
 > **{{joinLink}}**
@@ -128,7 +130,7 @@ Fill these from the room + order records. Keep the exact `{{token}}` spelling.
 **內文 (繁中):**
 > {{buyerName}} 你好，
 >
-> **{{partyName}}** 將於 **{{startTimeLocal}}** 開始，快要登場了！
+> 提前 24 小時提醒你 —**{{partyName}}** 將於 **{{startTimeLocal}}** 開始。
 >
 > 直播開始時點此加入：
 > **{{joinLink}}**
@@ -140,7 +142,7 @@ Fill these from the room + order records. Keep the exact `{{token}}` spelling.
 ---
 
 ## Content-team open questions
-- Confirm the **send window** for the reminder (e.g. 30 min / 1 hour before start).
+- ~~Confirm the **send window** for the reminder~~ — **resolved 6-29: 24 hours before start.**
 - Confirm brand sign-off line (「Ztor 團隊」 vs a specific brand voice).
 - Should the host email include a short "how to run a watch party" link?
 - 繁中 wording for **POPCORN / 爆米花** and **入場券** — align with the existing purchase-confirmation email.

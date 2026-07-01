@@ -31,14 +31,19 @@ Shared nouns → `_docs/BRD/_shared-contract.md`. Feature-local → `_feature.md
 - **Given** Gary is live and the party allows it, **When** he turns his **camera** on, **Then** every viewer sees his face-cam in a **PiP** tile (a late joiner learns it's already on); when he turns it off or steps away, the tile disappears for everyone. The camera is separate from playback — switching episodes or pausing the movie does not affect it.
 
 ## Functional requirements
-- **FR-01** A **granted** host can create a room: name, start time, POPCORN price or free, share link/code.
+- **FR-01** A **granted** host can create a room: name, start time, **capacity up to the site-wide maximum**, **public or private** (private = a join password), POPCORN price or free, share link/code (6-29).
 - **FR-02** A host can, **in-room**, pick/switch the title + episode — restricted to their content grant.
-- **FR-03** A fan can buy a ticket with POPCORN (or join free) and is admitted only if registered + entitled + within cap + geo/age-eligible.
+- **FR-03** A fan can buy a ticket with POPCORN (or join free) and is admitted only if registered + entitled + within cap + geo/age-eligible. The ticket is **bound to the buyer's account** — not shareable; a **paid** join requires accepting a **terms & conditions** checkbox first (6-29).
 - **FR-04** A viewer's playback stays host-synced (play/pause/seek + late-join snapshot); host-away pauses all.
 - **FR-05** A viewer can use live chat + see the presence list; chat is not retained after the room ends.
-- **FR-06** The system emails the host on create and the buyer on purchase + a start reminder.
+- **FR-06** The system emails the host on create, the buyer on purchase, and a **reminder 24 h before** start (6-29).
 - **FR-07** Purchase copy states **no replay** before payment.
 - **FR-08** A granted host can **turn their camera on/off in-room** (host-only, off by default); when on, every viewer sees the host in a **picture-in-picture** tile. The camera is a separate live stream (**LiveKit** — real-time WebRTC, chosen 6-28), independent of the movie's host-authoritative sync, not recorded; it drops on host-away/end. The toggle is unavailable if ops set `hostCameraAllowed = false` for the party.
+- **FR-09** The host can enter the room **15 minutes early** to warm up (preshow), open mic/camera, control playback/episode switching, **manage chat and kick users** (6-29).
+- **FR-10** A **kicked** user is added to the room's **session blacklist** and cannot rejoin that session; the host or a moderator/ops can lift it. (A **site-wide** blacklist is a later phase.) (6-29)
+- **FR-11** An ops-assigned **moderator** (extra account besides the host) can enter the host's rooms to **manage chat and kick** — same moderation powers as the host, no playback control (6-29).
+- **FR-12** The **geoblock notice** shows on the movie page **and again at the watch-party entry** — a user who obtains a shared link is still blocked at join if ineligible (6-29).
+- **FR-13** The room shows a **system-requirements notice** (from LiveKit — supported browser/camera/mic/network) to both **host and guest** before joining (6-29).
 
 ## Edge / empty / loading / error states
 | State | Behaviour |

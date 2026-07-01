@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { PageHeader } from "@/components/bo/BoShell";
 import { Card, Metric, Btn, Toast, cx } from "@/components/bo/ui";
-import { WATCH_PARTIES, analytics, hostName, getTitle, AUDIT_LOG } from "@/lib/bo-data";
+import { WATCH_PARTIES, analytics, attendedFor, hasStarted, hostName, getTitle, AUDIT_LOG } from "@/lib/bo-data";
 
 export default function Analytics() {
   const a = analytics();
@@ -12,6 +12,8 @@ export default function Analytics() {
   const perParty = WATCH_PARTIES.map((p) => ({
     p,
     orders: p.ticketsSold,
+    attended: attendedFor(p),
+    started: hasStarted(p),
     revenue: p.ticketPricePopcorn * p.ticketsSold,
   }));
 
@@ -28,9 +30,10 @@ export default function Analytics() {
         actions={<Btn variant="default" onClick={exportCsv}>⬇ Export report</Btn>}
       />
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-8">
         <Metric label="Watch-party orders" value={a.ticketOrders.toLocaleString()} sub="included in total orders" />
-        <Metric label="Attendees" value={a.attendees.toLocaleString()} sub="across all parties" />
+        <Metric label="Attendees" value={a.attendees.toLocaleString()} sub="actual (of sold)" />
+        <Metric label="Attendance rate" value={`${Math.round(a.attendanceRate * 100)}%`} sub="attended ÷ sold" />
         <Metric label="Chat activity rate" value={`${Math.round(a.chatActivityRate * 100)}%`} sub="of viewers posted" />
         <Metric label="Avg watch time" value={`${a.avgWatchMinutes}m`} sub="per attendee" />
       </div>
@@ -44,15 +47,26 @@ export default function Analytics() {
               <th className="px-4 py-2.5 font-medium">Watch party</th>
               <th className="px-4 py-2.5 font-medium">Title · host</th>
               <th className="px-4 py-2.5 font-medium text-right">Orders</th>
+              <th className="px-4 py-2.5 font-medium text-right">Attendance</th>
               <th className="px-4 py-2.5 font-medium text-right">POPCORN</th>
             </tr>
           </thead>
           <tbody>
-            {perParty.map(({ p, orders, revenue }) => (
+            {perParty.map(({ p, orders, attended, started, revenue }) => (
               <tr key={p.id} className="border-t border-line/70">
                 <td className="px-4 py-2.5">{p.name}</td>
                 <td className="px-4 py-2.5 text-muted text-xs">{getTitle(p.titleId)?.name} · {hostName(p.hostId)}</td>
                 <td className="px-4 py-2.5 text-right tabular-nums">{orders.toLocaleString()}</td>
+                <td className="px-4 py-2.5 text-right tabular-nums">
+                  {started ? (
+                    <>
+                      {attended.toLocaleString()}
+                      <span className="text-muted text-xs"> · {Math.round((attended / orders) * 100)}%</span>
+                    </>
+                  ) : (
+                    <span className="text-muted">—</span>
+                  )}
+                </td>
                 <td className="px-4 py-2.5 text-right tabular-nums">{revenue === 0 ? "—" : `${revenue.toLocaleString()}🍿`}</td>
               </tr>
             ))}

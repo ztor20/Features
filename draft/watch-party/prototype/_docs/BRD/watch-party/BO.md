@@ -11,7 +11,7 @@ on the Frontend — BO only reads those.
 ## Contract reference
 Shared nouns → `_docs/BRD/_shared-contract.md`. Feature-local → `_feature.md#shared-data-contract`.
 - **reads:** `WatchParty.*`, `Order` (watch_party_ticket), `RoomOccupancy`, `HostCameraState`, `User.displayName`, `Title`, `Episode`, `EmailNotification`
-- **writes:** `HostGrant.*`, `ContentGrant.*`, `WatchParty.capacity` (single limit), `WatchParty.hostCameraAllowed`, `WatchParty.status` (end/cancel only), `Order.status` (→ `refunded`), `AuditLog.*` (system, on every write here)
+- **writes:** `HostGrant.*`, `ContentGrant.*`, `ModeratorGrant.*` (6-29), `siteMaxCapacity` (site-wide ceiling), `WatchParty.hostCameraAllowed`, `WatchParty.status` (end/cancel only), `Order.status` (→ `refunded`), `AuditLog.*` (system, on every write here)
 
 ## Scenarios
 - **Given** ops opens the BO, **When** they open **Hosts**, pick Gary's account and toggle **Grant host**, **Then** a `HostGrant{userId, status:active}` is written, an `AuditLog` row is added, and Gary's account can now see "host a watch party" on the Frontend.
@@ -19,20 +19,23 @@ Shared nouns → `_docs/BRD/_shared-contract.md`. Feature-local → `_feature.md
 - **Given** a room is `live`, **When** ops opens **Watch Parties → the room**, **Then** ops sees `occupancy / capacity`, the attendee list, a **Host camera** indicator (Live / Off / Disabled), and an **End room** control; if the host disconnected the room shows a `host_away` banner.
 - **Given** a party where ops doesn't want the host on camera, **When** ops flips the **Host camera** toggle off, **Then** `WatchParty.hostCameraAllowed = false` is written + audited and the host's in-room camera toggle is unavailable; **End room** stops any live camera with the room.
 - **Given** a fan disputes a charge, **When** ops opens the room's orders and clicks **Mark refunded** on that order (confirm), **Then** `Order.status = refunded`, the ticket's **POPCORN is credited back to the buyer internally** (never cash/Stripe), and an `AuditLog{action:'order.refund'}` row is written.
-- **Given** the Aug-4 campaign, **When** ops opens **Settings**, **Then** they set a single room **capacity = 1000** that both displays and gates admission (the 6-28 sync dropped the advertised/server dual-number).
+- **Given** the Aug-4 campaign, **When** ops opens **Settings**, **Then** they set the **site-wide maximum capacity = 1000**; creators may size each room up to that ceiling but never above it (6-29).
+- **Given** a host who needs help moderating, **When** ops opens **Hosts → Moderators** for that host and adds another registered account, **Then** a `ModeratorGrant` is written (audited) and that account may enter the host's rooms to manage chat and kick users (6-29).
 - **Given** a non-ops user, **When** they hit a `/bo` URL, **Then** they get a permission-denied screen (no data).
 
 ## Functional requirements
 - **FR-01** The ops admin can grant/revoke the **host capability** on any account.
 - **FR-02** The ops admin can assign a host a pool of **titles + specific episodes** they may stream.
-- **FR-03** The ops admin can set a **default capacity** and a per-room capacity — a **single limit** value (no advertised/server dual-number; 6-28).
+- **FR-03** The ops admin sets **one site-wide maximum capacity** (a hard ceiling); creators pick each room's capacity up to it and can **never exceed** it (6-29; 6-28 had already dropped the advertised/server dual-number).
 - **FR-04** The ops admin can **monitor** every scheduled/live/ended room: status, occupancy vs cap, host-away.
 - **FR-05** The ops admin can **end** (kill) a live room and **cancel** a scheduled one.
 - **FR-05a** The ops admin can **allow/disable the host camera per party** (`hostCameraAllowed`) and sees a **camera-live** indicator on live rooms (monitor list + detail). Ending the room stops any live camera.
-- **FR-06** The ops admin can view **analytics**: watch-party orders (counted in total orders), attendees, chat activity, avg watch time, and **export**. (No subscriber/new split — Ztor has no subscription feature.)
+- **FR-06** The ops admin can view **analytics**: watch-party orders (counted in total orders), attendees, **attendance rate (attended ÷ sold)**, chat activity, avg watch time, and **export**. Deeper reports + revenue tiering land in August (6-29). (No subscriber/new split — Ztor has no subscription feature.)
 - **FR-07** The ops admin can **mark an order refunded** via a BO refund button — sets status, **credits the ticket's POPCORN back to the buyer internally** (never cash/Stripe), and writes an audit row (6-28).
-- **FR-08** Every grant/assign/capacity/end/cancel/refund action is **written to the audit log**.
+- **FR-08** Every grant/assign/capacity/moderator/end/cancel/refund action is **written to the audit log**.
 - **FR-09** Ticket **price is read-only** in BO (host sets it on the Frontend).
+- **FR-10** The ops admin can assign **moderators** to a host — extra accounts (besides the host) who may enter that host's rooms to **manage chat and kick** users; searchable over the registered directory (6-29). FE self-serve assignment is a later phase.
+- **FR-11** The host or ops can **lift a session blacklist** (a kicked user is barred from that session; ops can re-admit). A **site-wide** blacklist is a later phase.
 
 ## Edge / empty / loading / error states
 | State | Behaviour |
@@ -64,9 +67,9 @@ Shared nouns → `_docs/BRD/_shared-contract.md`. Feature-local → `_feature.md
 Admin shell (dedicated, bypasses the consumer chrome) with left nav:
 1. **Overview** `/bo` — headline metrics (parties live now, tickets sold, watch-party orders, attendees) + a list of parties with status chips.
 2. **Watch Parties** `/bo/parties` — the monitor: filterable list (Scheduled / Live / Ended; live rows show a **🎥 cam-live** badge) → **detail** `/bo/parties/[id]` (occupancy vs cap, attendee list, orders + POPCORN refund, **host-camera card with allow toggle + Live/Off/Disabled status**, end/cancel, host-away banner, no-replay note).
-3. **Hosts** `/bo/hosts` — accounts with grant/revoke toggle → per-host **Content** assignment (title cards + episode-level ticks).
-4. **Analytics** `/bo/analytics` — watch-party orders, attendees, chat activity, avg watch time + **Export**.
-5. **Settings** `/bo/settings` — single default capacity, policy notes (no-replay, POPCORN refund), email notifications (templates in [`email-templates.md`](./email-templates.md)), and the **rev-share future-phase** banner (NEEDS-POLICY-OWNER: Susan).
+3. **Hosts** `/bo/hosts` — accounts with grant/revoke toggle → per-host **Content** assignment (title cards + episode-level ticks) **and per-host Moderators** (searchable picker; chips of assigned moderator accounts) (6-29).
+4. **Analytics** `/bo/analytics` — watch-party orders, attendees, **attendance rate**, chat activity, avg watch time + **Export**.
+5. **Settings** `/bo/settings` — **site-wide maximum capacity** (hard ceiling), policy notes (no-replay, POPCORN refund), email notifications incl. the **24 h** reminder (templates in [`email-templates.md`](./email-templates.md)), and the **rev-share future-phase** banner (NEEDS-POLICY-OWNER: Susan).
 
 ## Not Included
 - Setting ticket **price** (host self-serve on Frontend; BO is read-only).

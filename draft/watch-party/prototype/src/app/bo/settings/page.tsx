@@ -3,35 +3,37 @@
 import { useState } from "react";
 import { PageHeader } from "@/components/bo/BoShell";
 import { Card, Btn, Toast } from "@/components/bo/ui";
+import { SITE_MAX_CAPACITY } from "@/lib/bo-data";
 
 const EMAILS = [
   { type: "party_created", who: "Host", when: "on room creation" },
   { type: "ticket_purchased", who: "Buyer", when: "on ticket purchase" },
-  { type: "party_reminder", who: "Buyer", when: "before start time" },
+  { type: "party_reminder", who: "Buyer", when: "24 h before start" },
 ];
 
 export default function Settings() {
-  const [capacity, setCapacity] = useState(1000);
+  const [capacity, setCapacity] = useState(SITE_MAX_CAPACITY);
   const [toast, setToast] = useState<string | null>(null);
 
   function save() {
-    setToast(`Default capacity saved — ${capacity.toLocaleString()}.`);
+    setToast(`Site-wide maximum capacity saved — ${capacity.toLocaleString()}.`);
     setTimeout(() => setToast(null), 2600);
   }
 
   return (
     <>
-      <PageHeader title="Settings" sub="Default room capacity, fan-facing policy, and notifications for watch parties." />
+      <PageHeader title="Settings" sub="Site-wide capacity ceiling, fan-facing policy, and notifications for watch parties." />
 
       {/* Capacity */}
       <Card className="p-5 mb-6">
-        <h2 className="font-semibold mb-1">Room capacity</h2>
+        <h2 className="font-semibold mb-1">Site-wide maximum capacity</h2>
         <p className="text-sm text-muted mb-4">
-          A single hard limit that gates admission (per-party override available on each room). The 6-28 dev sync
-          dropped the separate advertised/server dual-number — there is now <em>one</em> capacity value.
+          One hard ceiling for every watch party (6-29). A creator picks their room&rsquo;s capacity when they
+          create it, but can <strong className="text-text">never exceed this maximum</strong>. (The 6-28 sync had already
+          dropped the old advertised/server dual-number — this makes the single value a site-wide cap, not just a default.)
         </p>
         <div className="max-w-xs">
-          <label className="block text-xs text-muted mb-1.5">Default capacity (hard limit)</label>
+          <label className="block text-xs text-muted mb-1.5">Maximum room capacity (hard ceiling)</label>
           <input
             type="number"
             value={capacity}
@@ -39,10 +41,10 @@ export default function Settings() {
             onChange={(e) => setCapacity(Math.max(1, Number(e.target.value) || 0))}
             className="w-full bg-bg border border-line rounded-md px-3 py-2 text-sm focus:outline-none focus:border-accent tabular-nums"
           />
-          <p className="text-[11px] text-muted mt-1">One number — used for both display and admission.</p>
+          <p className="text-[11px] text-muted mt-1">Creators set each room&rsquo;s size up to this number.</p>
         </div>
         <div className="mt-4">
-          <Btn variant="primary" onClick={save}>Save defaults</Btn>
+          <Btn variant="primary" onClick={save}>Save maximum</Btn>
         </div>
       </Card>
 

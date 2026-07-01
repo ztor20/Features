@@ -33,12 +33,15 @@
 **Feature-specific entities & fields** (exact names + types):
 - `HostGrant` { `id`: string, `userId`: string→User.id, `status`: enum, `grantedByOpsId`: string→User.id, `createdAt`: ts, `revokedAt`: ts|null }
 - `ContentGrant` { `id`: string, `userId`: string→User.id (the host), `titleId`: string→Title.id, `episodeIds`: string[]→Episode.id, `grantedByOpsId`: string→User.id, `createdAt`: ts }
-- `WatchParty` { `id`: string, `hostId`: string→User.id, `name`: string, `titleId`: string→Title.id, `episodeId`: string→Episode.id|null, `status`: enum, `scheduledStartAt`: ts(UTC), `capacity`: integer (single limit — 6-28 dropped `advertisedCapacity`), `ticketPricePopcorn`: integer(≥0), `isFree`: boolean, `ticketsSold`: integer, `hostCameraAllowed`: boolean (default true), `createdAt`: ts }
+- `ModeratorGrant` **(6-29)** { `id`: string, `hostId`: string→User.id, `moderatorId`: string→User.id, `grantedByOpsId`: string→User.id, `createdAt`: ts } — extra accounts (besides the host) who may enter the host's rooms to manage chat + kick. Ops-assigned; FE self-serve is a later phase.
+- `SiteConfig.siteMaxCapacity` **(6-29)** — **persisted integer**, one site-wide **maximum** room capacity. `WatchParty.capacity ≤ siteMaxCapacity` is enforced at create/edit; a creator can never exceed it.
+- `WatchParty` { `id`: string, `hostId`: string→User.id, `name`: string, `titleId`: string→Title.id, `episodeId`: string→Episode.id|null, `status`: enum, `scheduledStartAt`: ts(UTC), `capacity`: integer (host-set, **≤ `siteMaxCapacity`**; 6-28 dropped `advertisedCapacity`), `isPrivate`: boolean, `joinPassword`: string|null (**6-29**; set when `isPrivate`), `ticketPricePopcorn`: integer(≥0), `isFree`: boolean, `ticketsSold`: integer, `hostCameraAllowed`: boolean (default true), `createdAt`: ts }
+- `SessionBlacklistEntry` **(6-29)** — **runtime / per-session**, not a site ban. `{ watchPartyId, userId }` — a kicked user cannot rejoin **that session**; the host or a moderator/ops can lift it. A **site-wide** blacklist is a later phase.
 - `WatchPartyTicket` — modelled as an `Order` with `kind = watch_party_ticket`, `refId = WatchParty.id`, `amountPopcorn = WatchParty.ticketPricePopcorn`. No separate entity; reuses shared `Order`.
 - `EmailNotification` { `id`: string, `type`: enum, `toUserId`: string→User.id, `watchPartyId`: string→WatchParty.id, `sentAt`: ts }
 - `RoomOccupancy` — **runtime only** (Ably presence); not persisted. `occupancy` = live count of present clients.
 - `WatchParty.hostCameraAllowed` — **persisted boolean** (default `true`). Ops policy: whether this party's host may turn their camera on at all. Lives on `WatchParty` (added to the entity above); ops-writable, host/fan read-only.
-- `HostCameraState` — **runtime only** (signalled over the camera channel + reflected in the BO monitor); not persisted. `{ isLive: boolean, ingestUrl?: string, playbackUrl?: string, startedAt?: ts }`. The **media bytes never touch Ztor's backend or Ably** — the camera rides its own live-media path (host encoder → live ingest → CDN → viewer's PiP player). Ably/the camera channel only carries the **on/off signal**, never the video.
+- `HostCameraState` — **runtime only** (signalled over the camera channel + reflected in the BO monitor); not persisted. `{ isLive: boolean, startedAt?: ts }`. The **media bytes never touch Ably** — the camera rides its own real-time media layer (**LiveKit** — WebRTC SFU: host browser publishes → LiveKit fans out → each viewer subscribes in the PiP tile). Ably/the camera channel only carries the **on/off signal**, never the video. (Decided 6-28; LiveKit replaced the earlier IVS/LL-HLS sketch.)
 
 **Enums / allowed values:**
 - `HostGrant.status`: `active | revoked`
@@ -80,6 +83,22 @@
 - **No replay**: once a room is `ended`, there is no rewind/VOD — the ticket buys the live session only (stated at purchase).
 - **Ticket = Order**: a watch-party ticket is an `Order` of kind `watch_party_ticket`; it counts toward the title's total order count.
 - **Host camera (watch-along)**: a **host-only** live video of the host's webcam, shown to fans as a **picture-in-picture** tile beside the movie. **Real-time tech decided 2026-06-28 (dev sync): LiveKit** (WebRTC SFU) — dev already stood up a working demo at `stagingdev.ztor.ai/live-demo`. Envelope: **host-only** (viewers never broadcast) · up to **1,000 viewers** per room · **Hong Kong** region. The camera is a **separate live stream carried by LiveKit**, **independent of the movie's host-authoritative play/pause/seek** — toggling the camera or its latency never affects movie sync. **Ably carries only the camera on/off signal**, never the video. *(AWS IVS was judged correct long-term but ~1+ week of env setup, so not pursued for launch; the earlier LL-HLS-on-CDN sketch is superseded — see `outputs/diagrams/watch-party-vendor-options.md` + ADR `decisions/2026-06-28-watch-party-bo-changes.md`.)*
+
+## 2026-06-29 refinements (IT meeting)
+Layered on the 6-22/6-25/6-28 spec; source ADR `decisions/2026-06-28-watch-party-bo-changes.md` + the 6-29 IT meeting notes.
+- **Capacity is a site-wide ceiling.** `SiteConfig.siteMaxCapacity` (ops-write); `WatchParty.capacity ≤ siteMaxCapacity` enforced at create/edit. *(BO writes the max; FE host sets ≤ it.)*
+- **Moderators.** `ModeratorGrant{hostId, moderatorId}` — ops assigns extra accounts who may enter the host's rooms to manage chat + kick (same powers as host, no playback control). FE self-serve = later.
+- **Session blacklist.** `SessionBlacklistEntry{watchPartyId,userId}` on kick → no rejoin *that session*; host/mod/ops can lift. Site-wide blacklist = later.
+- **Ticket bound to buyer.** A `watch_party_ticket` Order is tied to `userId`; join requires the joiner == the ticket's `userId` (not shareable).
+- **Paid-join T&C.** A paid join must record acceptance of a terms checkbox before admission.
+- **Private rooms.** `WatchParty.isPrivate` + `joinPassword` — private rooms require the password at the waiting room.
+- **Preshow warm-up = 15 min.** Host may enter 15 min before `scheduledStartAt` (within `preshow`).
+- **Reminder = 24 h before.** `EmailNotification.type = party_reminder` sends 24 h before start (was "shortly before").
+- **Geoblock at entry.** `Title.geoPolicy` enforced on the movie page **and** at the watch-party entry (bypassed-link case).
+- **Attendance rate.** BO analytics adds attended ÷ sold (over started parties); deeper reports / revenue tiering land in August.
+- **Streaming = LiveKit** (6-28), reflected in `HostCameraState` above.
+- **Nice-to-have / later:** co-host (multi-host), per-creator capacity, pinned message, site-wide blacklist, price-approval review, camera recording.
+- **Cross-track note:** WP revenue may also surface in the creator **Tastemaker report** (共創收益) — that's the financial-report track, out of scope here (6-28 kept WP revenue in the BO only for July).
 
 ## Resolved decisions (gap engine)
 All 15 lenses run; all 7 ‡ non-negotiables below. Status ∈ `RESOLVED | NEEDS-POLICY-OWNER | UNRESOLVED`.

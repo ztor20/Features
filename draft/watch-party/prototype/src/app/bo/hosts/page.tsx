@@ -7,7 +7,9 @@ import {
   ACCOUNTS,
   TITLES,
   CONTENT_GRANTS,
+  MODERATOR_GRANTS,
   getTitle,
+  hostName,
   type Account,
   type Title,
 } from "@/lib/bo-data";
@@ -26,10 +28,18 @@ function seedGrants(): GrantMap {
   return m;
 }
 
+function seedMods(): Record<string, string[]> {
+  const m: Record<string, string[]> = {};
+  for (const g of MODERATOR_GRANTS) m[g.hostId] = [...g.moderatorIds];
+  return m;
+}
+
 export default function HostsAndContent() {
   const [accounts, setAccounts] = useState<Account[]>(() => ACCOUNTS.map((a) => ({ ...a })));
   const [grants, setGrants] = useState<GrantMap>(seedGrants);
+  const [mods, setMods] = useState<Record<string, string[]>>(seedMods);
   const [assignFor, setAssignFor] = useState<Account | null>(null);
+  const [modFor, setModFor] = useState<Account | null>(null);
   const [addOpen, setAddOpen] = useState(false);
   const [hostQuery, setHostQuery] = useState("");
   const [removeTarget, setRemoveTarget] = useState<Account | null>(null);
@@ -79,7 +89,7 @@ export default function HostsAndContent() {
     <>
       <PageHeader
         title="Hosts & Content"
-        sub="Only people added here can host a watch party — there is no open self-serve. For each host, assign the exact titles (and, for series, episodes) they may stream; they pick among these in-room."
+        sub="Only people added here can host a watch party — there is no open self-serve. For each host, assign the exact titles (and, for series, episodes) they may stream; they pick among these in-room. You can also assign Moderators — extra accounts (besides the host) who may enter the room to manage chat and kick users."
         actions={<Btn variant="primary" onClick={openAddHost}>+ Add new host</Btn>}
       />
 
@@ -109,11 +119,13 @@ export default function HostsAndContent() {
 
                   <div className="flex items-center gap-2">
                     <Btn variant="default" onClick={() => setAssignFor(acc)}>Assign content</Btn>
+                    <Btn variant="default" onClick={() => setModFor(acc)}>Moderators</Btn>
                     <Btn variant="danger" onClick={() => setRemoveTarget(acc)}>Remove</Btn>
                   </div>
                 </div>
 
                 <div className="mt-3 pt-3 border-t border-line/70">
+                  <div className="text-[10px] uppercase tracking-widest text-muted mb-1.5">Content</div>
                   {summary ? (
                     <div className="flex flex-wrap gap-2">
                       {summary.map((s) => (
@@ -127,6 +139,21 @@ export default function HostsAndContent() {
                     <div className="text-xs text-amber-300">
                       ⚠ No content assigned — this host can&rsquo;t create a party yet.
                     </div>
+                  )}
+
+                  <div className="text-[10px] uppercase tracking-widest text-muted mt-3 mb-1.5">
+                    Moderators <span className="text-muted/60 normal-case tracking-normal">· extra accounts who can moderate this host&rsquo;s rooms</span>
+                  </div>
+                  {(mods[acc.id]?.length ?? 0) > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {mods[acc.id].map((mid) => (
+                        <span key={mid} className="text-xs bg-surface2 border border-line rounded-md px-2.5 py-1 text-text">
+                          🛡 {hostName(mid)}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-xs text-muted">Host only — no extra moderators assigned.</div>
                   )}
                 </div>
               </Card>
@@ -202,8 +229,131 @@ export default function HostsAndContent() {
         />
       )}
 
+      {modFor && (
+        <ModeratorModal
+          account={modFor}
+          accounts={accounts}
+          current={mods[modFor.id] ?? []}
+          onClose={() => setModFor(null)}
+          onSave={(next) => {
+            setMods((m) => ({ ...m, [modFor.id]: next }));
+            flash(`Updated ${modFor.displayName}'s moderators — ${next.length} assigned. Logged.`);
+            setModFor(null);
+          }}
+        />
+      )}
+
       <Toast msg={toast} />
     </>
+  );
+}
+
+function ModeratorModal({
+  account,
+  accounts,
+  current,
+  onClose,
+  onSave,
+}: {
+  account: Account;
+  accounts: Account[];
+  current: string[];
+  onClose: () => void;
+  onSave: (next: string[]) => void;
+}) {
+  const [assigned, setAssigned] = useState<string[]>(() => [...current]);
+  const [query, setQuery] = useState("");
+
+  // Anyone registered can moderate — except the host themselves and those already assigned.
+  const candidates = accounts.filter((a) => a.id !== account.id && !assigned.includes(a.id));
+  const q = query.trim().toLowerCase();
+  const shown = q
+    ? candidates.filter((a) => a.displayName.toLowerCase().includes(q) || a.email.toLowerCase().includes(q))
+    : candidates;
+
+  function add(id: string) {
+    setAssigned((xs) => [...xs, id]);
+    setQuery("");
+  }
+  function remove(id: string) {
+    setAssigned((xs) => xs.filter((x) => x !== id));
+  }
+  const nameOf = (id: string) => accounts.find((a) => a.id === id)?.displayName ?? id;
+
+  return (
+    <Modal
+      open
+      onClose={onClose}
+      title={`Moderators — ${account.displayName}`}
+      footer={
+        <>
+          <Btn variant="ghost" onClick={onClose}>Cancel</Btn>
+          <Btn variant="primary" onClick={() => onSave(assigned)}>Save moderators</Btn>
+        </>
+      }
+    >
+      <p className="text-xs text-muted mb-3">
+        Assign extra accounts who may enter <span className="text-text">{account.displayName}</span>&rsquo;s watch-party rooms
+        to <strong className="text-text">moderate</strong> — manage chat and kick users. The host always moderates; this adds helpers.
+        (Front-end self-serve assignment is a future phase.)
+      </p>
+
+      {/* Currently assigned */}
+      <div className="mb-3">
+        <div className="text-[10px] uppercase tracking-widest text-muted mb-1.5">Assigned moderators</div>
+        {assigned.length === 0 ? (
+          <p className="text-sm text-muted">None yet — add one below.</p>
+        ) : (
+          <div className="flex flex-wrap gap-2">
+            {assigned.map((id) => (
+              <span key={id} className="inline-flex items-center gap-1.5 text-xs bg-surface2 border border-line rounded-md pl-2.5 pr-1.5 py-1">
+                🛡 <span className="text-text">{nameOf(id)}</span>
+                <button
+                  type="button"
+                  onClick={() => remove(id)}
+                  aria-label={`Remove ${nameOf(id)}`}
+                  className="w-4 h-4 rounded text-muted hover:text-danger hover:bg-danger/10 leading-none"
+                >
+                  ×
+                </button>
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Add — searchable directory */}
+      <div className="text-[10px] uppercase tracking-widest text-muted mb-1.5">Add a moderator</div>
+      <input
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Search a registered user by name or email…"
+        className="w-full bg-bg border border-line rounded-md px-3 py-2 text-sm mb-2 focus:outline-none focus:border-accent"
+      />
+      {candidates.length === 0 ? (
+        <p className="text-sm text-muted">Everyone is already assigned.</p>
+      ) : shown.length === 0 ? (
+        <p className="text-sm text-muted px-1 py-2">No users match &ldquo;{query}&rdquo;.</p>
+      ) : (
+        <div className="space-y-1.5 max-h-56 overflow-y-auto">
+          {shown.map((a) => (
+            <button
+              key={a.id}
+              type="button"
+              onClick={() => add(a.id)}
+              className="w-full flex items-center gap-3 text-left px-3 py-2 rounded-md hover:bg-surface2 border border-transparent hover:border-line"
+            >
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-surface2 to-line shrink-0" aria-hidden />
+              <div className="min-w-0">
+                <div className="text-sm font-medium">{a.displayName}</div>
+                <div className="text-xs text-muted">{a.email} · {a.role}</div>
+              </div>
+              <span className="ml-auto text-xs text-accent">Add →</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </Modal>
   );
 }
 
