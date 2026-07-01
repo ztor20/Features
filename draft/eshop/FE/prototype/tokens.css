@@ -1,0 +1,888 @@
+/* ============================================================
+   Ztor 2.0 — Design Tokens
+   Source of truth: Figma file PjfXW29QsWoPUSaFvYC0Wb (Foundations)
+   ============================================================ */
+
+:root {
+  /* ─────────────────────────────────────────
+     COLOR — Primitives
+     ───────────────────────────────────────── */
+
+  /* Accent — Orange (brand). Anchored on #ffa33f at 500; tints/shades
+     mirror the prior ramp's lightness curve. Var names kept (--yellow-*)
+     so all 32 consumers resolve unchanged — only the values moved. */
+  --yellow-50:  #fff5e5;
+  --yellow-100: #ffe7c7;
+  --yellow-200: #ffcf94;
+  --yellow-300: #ffba6b;
+  --yellow-400: #ffab52;
+  --yellow-500: #ffa33f;   /* brand */
+  --yellow-600: #f37e12;
+  --yellow-700: #be600e;
+  --yellow-800: #85410a;
+  --yellow-900: #4f2708;
+  --yellow-ink: #271302;   /* text on accent bg */
+
+  /* Neutral */
+  --neutral-50:  #fafafa;
+  --neutral-100: #f5f5f5;
+  --neutral-200: #e5e5e5;
+  --neutral-300: #d4d4d4;
+  --neutral-400: #a3a3a3;
+  --neutral-500: #737373;
+  --neutral-600: #525252;
+  --neutral-700: #1e1e1e;
+  --neutral-800: #131313;
+  --neutral-900: #0a0a0a;  /* canvas dark */
+  --neutral-white: #ffffff;
+  --neutral-black: #000000;
+
+  /* Content-vertical accents — the colour-coded category pills
+     (.section-eyebrow--tag). Two PRIMARY pillars (film/music) carry the loud,
+     opposed pair (blue/red); two SECONDARY verticals (AI/events) take the
+     quiet pair (orange/green); functional sections stay charcoal (no colour).
+     White label on every fill. Re-theme verticals here. */
+  --cat-film:    #8b5cf6;   /* 影視 — violet · PRIMARY pillar (re-hued off brand orange 2026-06-20; was #ff6a00, clashed with accent #ffa33f) */
+  --cat-music:   #ff3b30;   /* 音樂    — red    · PRIMARY pillar     */
+  --cat-origin:  #014aff;   /* 原力/AI — blue   · secondary (cool = AI; freed when film took orange) */
+  --cat-events:  #00c853;   /* 活動/同場加映 — green · secondary      */
+  --cat-neutral: #565656;   /* 功能/跨類 — charcoal (not a vertical)  */
+
+  /* Skeleton-loader surface — sits just above the dark canvas. */
+  --skeleton-surface: #161616;
+
+  /* Score-orb liquid tiers — psychological grade scale, harmonized to
+     brand yellow #ffa33f by ANALOGOUS hues (not complements):
+       rust   = poor    (red psychology, on yellow's warm side)
+       honey  = caution (literally darkened brand yellow)
+       leaf   = good    (green psychology, on yellow's green side)
+       prism  = exceptional (a muted, antique rainbow — the film
+                outgrows the scale; saturation kept low on purpose)
+     Deliberately separate from Status colors: scores are a grading
+     scale, not system feedback. */
+  /* Stops compressed toward the center: the liquid layer is an
+     oversized block (140%) clipped by the orb, so the gradient's
+     outer reaches are never visible — all four hues must live in
+     the central band. */
+  /* ONE LIQUID: true black, every tier. The fill level alone encodes the
+     score — 77 is a glass 77% full of the brand's own ink. The four
+     liquid tokens are kept (components and 16 pages reference the tier
+     classes) but they all point at the same material on purpose — don't
+     "fix" this back into a ramp without a design decision. */
+  --score-liquid-top: #0a0a0a;
+  --score-liquid-high: #0a0a0a;
+  --score-liquid-mid:  #0a0a0a;
+  --score-liquid-low:  #0a0a0a;
+
+  /* Score-orb NUMERAL inks — the tier lives in the number, not the
+     liquid (design decision 2026-06-11). The ladder follows grade
+     PSYCHOLOGY (gold-medal / green-good / amber-caution / red-poor),
+     each hue tuned to sit elegantly with the yellow canvas and pop on
+     the black liquid (all ≥7:1 on #0a0a0a):
+       top  = brand yellow — gold-medal: excellence owns the brand color
+       high = #30d158, Apple's dark-mode system green — engineered for
+              colored text on near-black (APCA Lc 61 on the liquid vs 55
+              for --success-500, which read too dark). True green, so it
+              stays unmistakably distinct from gold; saturated, so it
+              doesn't go pastel-cheap like the old #4ade80
+       mid  = honey amber — caution, warm side of the brand
+       low  = signal red, softened just enough to stay refined */
+  --score-ink-top:  #ffa33f;
+  --score-ink-high: #30d158;
+  --score-ink-mid:  #ffb340;
+  --score-ink-low:  #ff5a5a;
+
+  /* Status */
+  --success-500: #22c55e;
+  --success-700: #15803d;
+  --warning-500: #fb923c;
+  --warning-700: #c2410c;
+  --error-500:   #ef4444;
+  --error-700:   #b91c1c;
+  --error-ink:   #2a0a0a;  /* text on red bg */
+  --info-500:    #3b82f6;
+  --info-700:    #1d4ed8;
+
+  /* White Alpha — standard transparency stops for overlays / borders / glass */
+  --white-alpha-4:  rgba(255, 255, 255, 0.04);
+  --white-alpha-8:  rgba(255, 255, 255, 0.08);
+  --white-alpha-16: rgba(255, 255, 255, 0.16);
+  --white-alpha-24: rgba(255, 255, 255, 0.24);
+
+  /* ─────────────────────────────────────────
+     COLOR — Semantic (Dark mode)
+     ───────────────────────────────────────── */
+
+  --bg-primary:   var(--neutral-900);   /* page bg */
+  --bg-secondary: var(--neutral-800);   /* surface (raised section) */
+  --bg-tertiary:  var(--neutral-700);   /* card / elevated panel */
+  --bg-card:      var(--bg-tertiary);   /* semantic alias */
+
+  --text-primary:   rgba(255, 255, 255, 0.95);
+  --text-secondary: rgba(255, 255, 255, 0.65);
+  --text-tertiary:  rgba(255, 255, 255, 0.45);
+  --text-disabled:  rgba(255, 255, 255, 0.35);
+
+  --border-subtle:  rgba(255, 255, 255, 0.04);
+  --border-default: rgba(255, 255, 255, 0.12);
+  --border-strong:  rgba(255, 255, 255, 0.22);
+
+  --interactive-primary:    var(--yellow-500);
+  --interactive-on-primary: var(--yellow-ink);
+
+  /* Glass overlay tokens (used by Ghost/IconButton) */
+  --glass-bg-default:  rgba(255, 255, 255, 0.10);
+  --glass-bg-hover:    rgba(255, 255, 255, 0.18);
+  --glass-bg-pressed:  rgba(255, 255, 255, 0.26);
+  --glass-bg-disabled: rgba(255, 255, 255, 0.04);
+
+  --glass-stroke-default:  rgba(255, 255, 255, 0.20);
+  --glass-stroke-hover:    rgba(255, 255, 255, 0.32);
+  --glass-stroke-pressed:  rgba(255, 255, 255, 0.45);
+  --glass-stroke-disabled: rgba(255, 255, 255, 0.08);
+
+  /* GLASS effect web equivalent (Figma GLASS effect ≈ backdrop-filter) */
+  --glass-blur: blur(20px) saturate(1.4);
+
+  /* ── Liquid-glass material — FAITHFUL 1:1 port of the 21st.dev "Apple Tahoe"
+       button (easemize), inspected live. SINGLE SOURCE shared by:
+       • the secondary button  .btn--ghost             (02-button.css)
+       • the 計畫與價格 pill     .popcorn-section         (08-header.css)
+       • the mobile snap nav    .glass-tabs/.shop-filter (45-sticky-tabs.css)
+       • the bottom nav pill    .botnav                  (43-bottom-nav.css)
+       Their lens = background:white 5% + backdrop-filter:blur(8px) url(#…)
+       saturate(1.5) + the 10-layer specular box-shadow below. The url() is the
+       shared #liquid-glass filter injected by assets/liquid-glass.js. */
+  --glass-fill: rgba(255, 255, 255, 0.05);            /* button + pill: exactly 21st.dev (oklch .985 / .05) */
+  /* Navs sit over dark pages with no bright backdrop to frost, so the white-5%
+     button recipe makes them invisible. A nav MUST be visible — give the navs a
+     real dark-glass fill (same box-shadow + blur, just an opaque-enough base). */
+  --glass-nav-tint: rgba(20, 22, 30, 0.52);
+  /* navs want a HEAVY frost (the button stays at 21st.dev's light blur 8px). A
+     translucent tint + strong blur = real frosted glass you can see content
+     through; the original nav recipe was ~blur(17px). */
+  --glass-nav-backdrop: blur(18px) saturate(1.6);
+  /* orange liquid glass (the "Vote" CTA) — same machinery as the dark glass,
+     just an orange-tinted fill (the specular box-shadow stays white = glass shine) */
+  --glass-fill-orange:       rgba(255, 163, 63, 0.22);
+  --glass-fill-orange-hover: rgba(255, 163, 63, 0.32);
+  --glass-backdrop: blur(8px) saturate(1.5);          /* exactly 21st.dev */
+  --glass-border:   0.51px solid rgba(255, 255, 255, 0.14);   /* thinned 20% twice (≈0.64× of the original 0.8px) — very subtle edge */
+  /* depth — 21st.dev's 10-layer specular box-shadow (bright inner highlights +
+     dark contour + two ambient drops). This stack IS the visible "reflections".
+     RIM THINNED 20% TWICE (2026-06-29): every INSET layer's geometry
+     (offset/blur/spread) scaled ×0.8 then ×0.8 again → ≈0.64× of the original, so
+     the glossy shine line reads thinner + more subtle. ALPHAS are UNCHANGED → the
+     shine stays exactly as bright, only narrower. The two OUTER drop shadows
+     (depth) are left as-is. Original values are ≈×1.5625 of these. */
+  --glass-shadow:
+    inset 0 0 0 0.64px rgba(255, 255, 255, 0.10),
+    inset 1.15px 1.92px 0 -1.28px rgba(255, 255, 255, 0.90),
+    inset -1.28px -1.28px 0 -1.28px rgba(255, 255, 255, 0.80),
+    inset -1.92px -5.12px 0.64px -3.84px rgba(255, 255, 255, 0.60),
+    inset -0.19px -0.64px 2.56px 0 rgba(0, 0, 0, 0.12),
+    inset -0.96px 1.6px 0 -1.28px rgba(0, 0, 0, 0.20),
+    inset 0 1.92px 2.56px -1.28px rgba(0, 0, 0, 0.20),
+    inset 1.28px -4.16px 0.64px -2.56px rgba(0, 0, 0, 0.10),
+    0 1px 5px 0 rgba(0, 0, 0, 0.10),
+    0 6px 16px 0 rgba(0, 0, 0, 0.08);
+
+  /* ─────────────────────────────────────────
+     MOTION — premium reveal system (single source of truth).
+     Two curves, a NON-uniform duration scale, a subtle travel scale,
+     and a role-sequence so a header cascades eyebrow→title→sub→cta
+     instead of firing as one flat block. Read by the shared reveal
+     module (assets/reveal.js) via getComputedStyle, and by component
+     CSS for hover/press. Do NOT re-inline literals per page.
+
+     BREAKPOINTS (reference — CSS vars can't drive @media):
+       1280px  header condensation stage 1
+       1024px  header condensation stage 2, tablet adjustments
+        768px  site-wide mobile breakpoint (single source: the
+               MOBILE TWEAKS block at the END of components.css)
+     ───────────────────────────────────────── */
+  --ease-out:        cubic-bezier(0.16, 1, 0.3, 1);   /* default: all entrances / hover / press / nav snap */
+  --ease-settle:     cubic-bezier(0.22, 1, 0.36, 1);  /* heavier tail: long cascades (footer tagline) */
+  --ease-emphasized: cubic-bezier(0.4, 0, 0.2, 1);    /* exits / header hide — strong acceleration */
+
+  /* Nav scroll-system durations (sticky-tabs.js + 45-sticky-tabs.css). The behavioural
+     thresholds (STEP/SHOW_AT/REVEAL_AT px) live as named constants at the top of the JS. */
+  --dur-nav-show:  200ms;   /* header reveal / community-bar base */
+  --dur-nav-hide:  250ms;   /* header hide + the stuck shelf riding up with it */
+  --dur-nav-morph: 380ms;   /* plain → glass material morph as a row sticks */
+
+  /* Duration scale — by element weight, deliberately non-uniform */
+  --dur-xs:  360ms;   /* eyebrow, link — small, read instantly */
+  --dur-sm:  440ms;   /* title, sub, tabs — header spine */
+  --dur-md:  520ms;   /* cards, media — heaviest pixels, calmest move */
+  --dur-tag: 460ms;   /* footer tagline chars */
+
+  /* Travel scale — premium subtle (10–30px); desktop / mobile */
+  --reveal-y-sm:   12px;  --reveal-y-sm-m:  8px;   /* eyebrow, link, tagline char */
+  --reveal-y-md:   16px;  --reveal-y-md-m: 12px;   /* title, sub, tabs */
+  --reveal-y-lg:   20px;  --reveal-y-lg-m: 14px;   /* cards, media */
+
+  /* Stagger — peers within a role group (ms); desktop / mobile */
+  --stagger-base:  60ms;  --stagger-base-m: 38ms;
+  --stagger-tag:   26ms;  --stagger-tag-m:  16ms;
+
+  /* Role-sequence — delay from section trigger to each group (ms) */
+  --seq-eyebrow:  0ms;
+  --seq-title:   90ms;
+  --seq-sub:    160ms;
+  --seq-media:  210ms;
+  --seq-cta:    260ms;
+
+  /* ─────────────────────────────────────────
+     TYPOGRAPHY
+     ───────────────────────────────────────── */
+
+  /* Font stacks — Latin tier first so mixed CJK+EN runs render English / 數字
+     in Proxima Nova (Adobe Typekit kit `mul0tkj`), then fall through to Inter,
+     and finally to the CJK face for Chinese glyphs (browsers walk the stack
+     per-glyph).
+     'proxima-nova' (lowercase) is Typekit's exposed family name.
+     'Proxima Nova' kept for any future self-hosted copy.
+     Display tier:  brand UI — Hero / H1–H4 / Button LG / Nav.
+     Text tier:     reading & secondary UI. */
+  --font-cjk-display: 'proxima-nova', 'Proxima Nova', 'Inter',
+                      'LINE Seed TW', 'Noto Sans TC',
+                      'PingFang TC', 'Microsoft JhengHei', sans-serif;
+  --font-cjk-text:    'proxima-nova', 'Proxima Nova', 'Inter',
+                      'Noto Sans TC',
+                      'PingFang TC', 'Microsoft JhengHei', sans-serif;
+  /* ^ Text tier 中文 = Noto Sans TC（Dolly DS 規範雙 tier 分層:Display tier
+     用 LINE Seed、Text tier 用 Noto——LINE Seed 字重不足,需 Medium 的場景靠
+     Noto）。2026-06-17 移除 L 暫塞的 LINE Seed,恢復 Text tier=Noto。 */
+  --font-latin:       'proxima-nova', 'Proxima Nova', 'Inter',
+                      system-ui, -apple-system, sans-serif;
+
+  /* Font weights */
+  --fw-thin:      100;
+  --fw-light:     300;
+  /* Regular = 400 per Dolly DS 規範（2026-06-17 改回）。L 曾設 500,稱 16px
+     Noto 400 在暗底 shimmer;但實測一般文案 400 無虞,且需與 Medium(500)
+     拉開階層(Regular≠Medium),故回 400。 */
+  --fw-regular:   400;
+  --fw-medium:    500;
+  --fw-semibold:  600;
+  --fw-bold:      700;
+  --fw-extrabold: 800;
+  --fw-black:     900;
+
+  /* Font sizes */
+  --fs-display:  76px;
+  --fs-h1:       48px;
+  --fs-h2:       42px;
+  --fs-feature-title: 36px;
+  --fs-h3:       24px;
+  --fs-h4:       20px;
+  --fs-h5:       16px;
+  --fs-body-lg:  18px;
+  --fs-body:     16px;
+  --fs-body-sm:  14px;
+  --fs-caption:  12px;
+
+  /* Page-header (canonical) — the ONE size every page title/desc uses, so the
+     header reads identically on shop / cocreate / zorigin / news / library.
+     Compact by intent (the page title is quiet chrome, not a hero). Standardised
+     on the shop header 2026-06-24; retires the old 24px page-head + hardcoded
+     shop-head 20px/13px. */
+  --fs-page-title: var(--fs-h4);   /* 20px */
+  --fs-page-desc:  13px;
+
+  /* Line heights */
+  --lh-display:  83px;
+  --lh-h1:       57px;
+  --lh-h2:       50px;
+  --lh-feature-title: 43px;
+  --lh-h3:       31px;
+  --lh-h4:       26px;
+  --lh-h5:       24px;
+  --lh-body-lg:  30px;
+  --lh-body:     27px;
+  --lh-body-sm:  23px;
+  --lh-caption:  18px;
+  --lh-label:    15px;
+
+  /* Letter spacing */
+  --ls-display: -2px;
+  --ls-h1:      -1px;
+  --ls-h2:      -1px;
+  --ls-h3:      -0.5px;
+  --ls-h4:       0;
+  --ls-h5:       0;
+  --ls-body:     0;
+  --ls-body-lg:  0;
+  --ls-body-sm:  0;
+  --ls-caption:  0;
+  --ls-label:    1.2px;
+
+  /* ─────────────────────────────────────────
+     SPACING (4px base scale)
+     ───────────────────────────────────────── */
+
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-14: 56px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+  --space-32: 128px;
+  --space-40: 160px;
+
+  /* ─────────────────────────────────────────
+     RADIUS
+     ───────────────────────────────────────── */
+
+  --radius-none: 0;
+  --radius-xs:   2px;
+  --radius-sm:   4px;
+  --radius-md:   8px;
+  --radius-lg:   12px;
+  --radius-xl:   16px;
+  --radius-2xl:  24px;
+  --radius-pill: 9999px;
+
+  /* ─────────────────────────────────────────
+     LAYOUT
+     ───────────────────────────────────────── */
+
+  --container-max:        1280px;
+  --container-wide:       1440px;
+  --container-padding-x:  48px;
+  --header-height:        64px;
+
+  /* ─────────────────────────────────────────
+     Z-INDEX scale — single source for GLOBAL/chrome layering.
+     (Local within-component stacking 0–3 stays inline — not a global concern.)
+     Values match the CURRENT stack exactly so adopting a token is a no-op.
+     NAV/header/drawer/sheet entries (marked ⚑) are documented here for order,
+     but those files are NOT swapped yet — nav guardrail, pending approval.
+     ───────────────────────────────────────── */
+  --z-sticky:     20;     /* ⚑ sticky tab rows (.tabstick-host)        */
+  --z-nav-pop:    40;     /* ⚑ sticky-tab collapse dropdown            */
+  --z-siderail:   90;     /* ⚑ desktop side rail (below header)        */
+  --z-sheet-scrim: 90;    /* ⚑ shop filter sheet scrim (below header)  */
+  --z-sheet:      95;     /* ⚑ shop filter top-sheet (below header)    */
+  --z-header:     100;    /* ⚑ site header                             */
+  --z-dropdown:   200;    /* ⚑ header dropdowns                        */
+  --z-drawer:     300;    /* ⚑ side drawers (watch-history / notif)    */
+  --z-fab:        400;    /*    floating action button                 */
+  --z-bottomnav:  1000;   /* ⚑ mobile bottom nav                       */
+  --z-modal:      1200;   /* ⚑ mobile drawer / modal                   */
+  --z-dev:        9999;   /*    dev-only toggles                       */
+
+  /* Mobile clearance above the floating bottom-nav pill (43-bottom-nav.css):
+     the pill sits at bottom:12px and measures ~54px tall (~66px incl. its
+     offset), so floating UI on phones (toasts, etc.) offsets by this to clear
+     it with a comfortable ~18px gap. safe-area shifts pill + UI together, so
+     the relative gap holds on notched iPhones. */
+  --botnav-clearance: calc(84px + env(safe-area-inset-bottom, 0px));
+}
+
+/* ─────────────────────────────────────────
+   TYPOGRAPHY UTILITY CLASSES
+   17 styles matching Figma Foundations
+   ───────────────────────────────────────── */
+
+.t-display {
+  font-family: var(--font-cjk-display);
+  font-size: var(--fs-display);
+  line-height: var(--lh-display);
+  letter-spacing: var(--ls-display);
+  font-weight: var(--fw-bold);
+}
+
+.t-h1 {
+  font-family: var(--font-cjk-display);
+  font-size: var(--fs-h1);
+  line-height: var(--lh-h1);
+  letter-spacing: var(--ls-h1);
+  font-weight: var(--fw-bold);
+}
+
+.t-h2 {
+  font-family: var(--font-cjk-display);
+  font-size: var(--fs-h2);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  font-weight: var(--fw-bold);
+}
+
+.t-feature-title {
+  font-family: var(--font-cjk-display);
+  font-size: var(--fs-feature-title);
+  line-height: var(--lh-feature-title);
+  letter-spacing: var(--ls-h2);
+  font-weight: var(--fw-bold);
+}
+
+.t-h3 {
+  font-family: var(--font-cjk-display);
+  font-size: var(--fs-h3);
+  line-height: var(--lh-h3);
+  letter-spacing: var(--ls-h3);
+  font-weight: var(--fw-bold);
+}
+
+.t-h4 {
+  font-family: var(--font-cjk-display);
+  font-size: var(--fs-h4);
+  line-height: var(--lh-h4);
+  font-weight: var(--fw-bold);
+}
+
+.t-h5 {
+  font-family: var(--font-cjk-text);
+  font-size: var(--fs-h5);
+  line-height: var(--lh-h5);
+  font-weight: var(--fw-bold);
+}
+
+.t-body-lg {
+  font-family: var(--font-cjk-text);
+  font-size: var(--fs-body-lg);
+  line-height: var(--lh-body-lg);
+  font-weight: var(--fw-regular);
+}
+
+.t-body {
+  font-family: var(--font-cjk-text);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  font-weight: var(--fw-regular);
+}
+
+.t-body-sm {
+  font-family: var(--font-cjk-text);
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body-sm);
+  font-weight: var(--fw-regular);
+}
+
+.t-body-reading {
+  font-family: var(--font-cjk-text);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  font-weight: var(--fw-light);
+}
+
+.t-body-preview {
+  font-family: var(--font-cjk-text);
+  font-size: var(--fs-body-lg);
+  line-height: var(--lh-body-lg);
+  font-weight: var(--fw-light);
+}
+
+.t-caption {
+  font-family: var(--font-cjk-text);
+  font-size: var(--fs-caption);
+  line-height: var(--lh-caption);
+  font-weight: var(--fw-regular);
+}
+
+.t-eyebrow {
+  font-family: var(--font-cjk-text);
+  font-size: var(--fs-caption);
+  line-height: var(--lh-label);
+  letter-spacing: var(--ls-label);
+  font-weight: var(--fw-medium);
+  text-transform: uppercase;
+}
+
+.t-nav {
+  font-family: var(--font-cjk-display);
+  font-size: var(--fs-h5);
+  line-height: var(--lh-h5);
+  font-weight: var(--fw-regular);
+}
+
+.t-button-lg {
+  font-family: var(--font-cjk-display);
+  font-size: var(--fs-h5);
+  line-height: var(--lh-h5);
+  font-weight: var(--fw-bold);
+}
+
+.t-button-md {
+  font-family: var(--font-cjk-text);
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body-sm);
+  font-weight: var(--fw-medium);
+}
+
+.t-button-sm {
+  font-family: var(--font-cjk-text);
+  font-size: var(--fs-caption);
+  line-height: var(--lh-caption);
+  font-weight: var(--fw-medium);
+}
+
+/* ─────────────────────────────────────────
+   GLOBAL RESET / BASE
+   ───────────────────────────────────────── */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-cjk-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Sticky footer：main 自己撐到「視窗高 − header 高」，內部 flex column，
+   footer 用 margin-top:auto 推到底。內容少的短頁（如活動頁）下方留白落在
+   main 內，footer 不浮上來。footer 位於 main 內部（全站結構一致）。
+   main 自帶 min-height，不依賴 body 是否為 flex 容器。 */
+main {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - var(--header-height));
+}
+
+/* Reserve the scrollbar gutter so navigating between a tall page (scrollbar
+   shown) and a short one (no scrollbar) doesn't shift centred content — the
+   "jump" on page change. No-op on overlay-scrollbar systems (e.g. macOS). */
+html {
+  scrollbar-gutter: stable;
+}
+
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; }
+img { max-width: 100%; display: block; }
+
+/* Accessibility — global keyboard focus ring (WCAG 2.4.7 Focus Visible).
+   :focus-visible only → never shows on mouse/touch, only keyboard. Components
+   with their own :focus-visible (higher specificity) keep their custom ring;
+   this is the baseline for everything else that had none. Additive — no
+   change to mouse/touch interaction anywhere. */
+:focus-visible {
+  outline: 2px solid var(--yellow-500);
+  outline-offset: 2px;
+}
+
+/* Text selection — brand yellow with ink text, replacing the browser
+   default magenta/blue. */
+::selection {
+  background: var(--yellow-500);
+  color: var(--yellow-ink);
+}
+::-moz-selection {
+  background: var(--yellow-500);
+  color: var(--yellow-ink);
+}
+
+/* ─────────────────────────────────────────
+   LAYOUT UTILITIES
+   ───────────────────────────────────────── */
+
+.container {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding-left: var(--container-padding-x);
+  padding-right: var(--container-padding-x);
+}
+
+.container--wide {
+  max-width: var(--container-wide);
+}
+
+.full-bleed {
+  width: 100%;
+}
+
+/* ─────────────────────────────────────────
+   SECTION RHYTHM
+   Each homepage chapter sits inside a .section.
+   Backgrounds alternate page <-> surface for cinematic zebra rhythm.
+   ───────────────────────────────────────── */
+
+.section {
+  position: relative;
+  padding-block: var(--space-section);
+}
+
+.section--tight { padding-block: clamp(48px, 6vw, 80px); }
+.section--loose { padding-block: clamp(96px, 12vw, 160px); }
+
+/* ── SECTION BACKGROUNDS + THEMES moved out ───────────────────────────────
+   The zebra background classes (.section-bg-page / .section-bg-surface) and
+   all their foreground contrast rules now live in their own file:
+       section-themes.css   (linked after components.css on every page)
+   Keep section-background work there — do NOT re-add it here. ──────────── */
+
+/* ─────────────────────────────────────────
+   SECTION EYEBROW
+   Yellow brand label that opens each homepage section.
+   ───────────────────────────────────────── */
+
+.section-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-cjk-text);
+  font-size: var(--fs-caption);
+  line-height: 1.33;
+  letter-spacing: 0.12em;
+  font-weight: var(--fw-medium);
+  text-transform: uppercase;
+  color: var(--yellow-500);
+}
+
+/* ─────────────────────────────────────────
+   SECTION HEADER
+   Pattern: [chapter-eyebrow] → [title row: title/sub on left, link on right]
+   Used at the top of every chapter on the homepage.
+   ───────────────────────────────────────── */
+
+.section-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-bottom: var(--space-10);
+}
+
+.section-header__row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-8);
+  flex-wrap: wrap;
+}
+
+.section-header__copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.section-header__title {
+  font-family: var(--font-cjk-display);
+  font-weight: var(--fw-bold);
+  font-size: clamp(28px, 3.4vw, 42px);
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.section-header__sub {
+  font-family: var(--font-cjk-text);
+  font-weight: var(--fw-regular);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text-secondary);
+  max-width: 520px;
+  margin: 0;
+}
+
+/* "查看所有 →" right-side link */
+.section-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-cjk-text);
+  font-size: var(--fs-body-sm);
+  font-weight: var(--fw-medium);
+  color: var(--yellow-500);
+  white-space: nowrap;
+  /* Invisible hit-area expansion: padding grows the tap target to ~44px,
+     the matching negative margin cancels the layout shift, so the link
+     looks identical but is far easier to hit. Visual weight unchanged
+     on purpose — the section's CTA is its content, not this exit. */
+  padding: 12px 14px;
+  margin: -12px -14px;
+  border-radius: var(--radius-pill);
+  transition: gap 150ms ease;
+}
+
+.section-link:hover { gap: var(--space-3); }
+
+.section-link__arrow {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  /* Plain arrow in the link's own colour (currentColor) — at 16px the glass
+     material is too small to read, so we drop it for a clean single-colour
+     glyph. currentColor means it adapts to any section background (yellow on
+     dark, --yellow-ink on the yellow surface) with no per-theme image. */
+  background: currentColor;
+  -webkit-mask: url('assets/icons/arrow_right.svg') center / contain no-repeat;
+          mask: url('assets/icons/arrow_right.svg') center / contain no-repeat;
+  /* The "beckon" loop lives below, gated behind .is-beckoning — a per-link
+     IntersectionObserver (index.html / screening-room.html) adds the class
+     when THE LINK enters the viewport, removes it when fully off-screen.
+     So the knock plays the moment you arrive at a section, every visit.
+     Without JS the arrow is simply still — motion is enhancement. */
+}
+
+/* Ambient "beckon": the arrow alone knocks twice (6px, then a 3px echo)
+   the moment its section arrives, then rests — 840ms of motion at the
+   START of a 3.5s cycle (76% silence after). Knock-first matters: the
+   observer adds the class on entry, so the eye sees the loop begin.
+   Horizontal on purpose: it rehearses the hover's gap-widen instead of
+   introducing a second motion language. Whole-link bounce is banned —
+   moving text can't be read. Viewport entry IS the stagger: links arrive
+   one at a time, so no per-section delays are needed.
+   Percentages = absolute knock times (240/480/660/840ms) over the cycle —
+   change the duration and you change the knock speed; recompute, don't
+   eyeball. */
+.section-link.is-beckoning .section-link__arrow {
+  animation: section-link-beckon 3.5s infinite;
+}
+
+@keyframes section-link-beckon {
+  0%     { transform: translateX(0);
+           animation-timing-function: var(--ease-out); }
+  6.9%   { transform: translateX(6px);
+           animation-timing-function: cubic-bezier(0.77, 0, 0.175, 1); }
+  13.7%  { transform: translateX(0);
+           animation-timing-function: var(--ease-out); }
+  18.9%  { transform: translateX(3px);
+           animation-timing-function: cubic-bezier(0.77, 0, 0.175, 1); }
+  24%    { transform: translateX(0); }
+  100%   { transform: translateX(0); }
+}
+
+/* On hover the invitation goes quiet and the gap-widen does its job.
+   Pause (not none) — `none` would snap a mid-knock arrow back. */
+@media (hover: hover) and (pointer: fine) {
+  .section-link:hover .section-link__arrow { animation-play-state: paused; }
+}
+
+/* The loop is pure decoration — remove it entirely, keep hover feedback. */
+@media (prefers-reduced-motion: reduce) {
+  .section-link__arrow { animation: none; }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   English locale type system. i18n.js sets <html lang="en"> and loads
+   Satoshi (UI/body) + Afacad (display headings). Chinese is untouched.
+
+   Roles:
+     • Hero headlines, page & section titles → Afacad
+     • Body, buttons, forms, navigation, prices, stats, dense UI → Satoshi
+
+   Base = everything Satoshi (the 3 font tokens), then an explicit Afacad
+   allow-list for the editorial title tier only. */
+html[lang="en"] {
+  --font-cjk-display: 'Satoshi', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-cjk-text:    'Satoshi', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-latin:       'Satoshi', 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Afacad — hero headlines + page/section titles only. Higher specificity
+   than the component rules (html[lang="en"] prefix), so no !important. */
+html[lang="en"] :is(
+  /* hero + page/section headings */
+  .hero-carousel__title,
+  .page-head__title,
+  .section-header__title,
+  .shop-head__title,
+  .lb-head__title,
+  .creator-hero__name,
+  .creator-sec__title,
+  .rf-hero__title,
+  .t-display, .t-h1, .t-h2,
+  /* navigation — ALL nav → Afacad in English (per L) */
+  .side-rail__label,
+  .header__nav-link,
+  .header-switch__btn,
+  .glass-tabs__item,
+  .botnav__label,
+  .mdrawer__link,
+  /* card / thumbnail titles */
+  .ai-mosaic__tile-title,
+  .classic-card__title,
+  .film-card__title,
+  .community-card__title,
+  .register-card__title,
+  .post-card__title,
+  .news-card__title,
+  .activity-card__title,
+  .aic-card__title,
+  .work-card__title,
+  .shop-card__title,
+  .creator-card__name,
+  .cocreation-card__title
+) {
+  font-family: 'Afacad', 'Satoshi', 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Afacad size compensation (English locale only).
+   Afacad's x-height is optically smaller than Proxima Nova / Satoshi at the
+   same em-size. Rule: wherever Afacad is the rendered family, add +2px so the
+   visual weight matches the design intent.
+
+   Implementation: explicit overrides on the named elements in the Afacad
+   allow-list (hero titles, page/section titles, creator name). Card titles and
+   small labels use Afacad but are small enough that +2px would cause layout
+   shifts — the rail label gets its own scoped rule in 34-side-rail.css.
+
+   Scoped to html[lang="en"] so CJK (LINE Seed / Proxima) is untouched.    */
+html[lang="en"] .hero-carousel__title {
+  /* Base: clamp(44px, 5.4vw, 76px) → bump min+max by 2px */
+  font-size: clamp(46px, 5.4vw, 78px);
+}
+html[lang="en"] .page-head__title {
+  /* Base: var(--fs-h3) = 24px */
+  font-size: 26px;
+}
+html[lang="en"] .shop-head__title {
+  /* Base: 20px */
+  font-size: 22px;
+}
+html[lang="en"] .lb-head__title {
+  /* Base: 20px */
+  font-size: 22px;
+}
+html[lang="en"] .creator-hero__name {
+  /* Base: 40px */
+  font-size: 42px;
+}
+html[lang="en"] .creator-sec__title {
+  /* Base: 16px — display label at a small size; +2 keeps it proportional */
+  font-size: 18px;
+}
+/* .section-header__title: no desktop font-size in the component CSS (inherits
+   browser h2 UA default); the mobile clamp(28–36) will get +2px if surfaced
+   at desktop through the html[lang="en"] rule below, but at mobile it's already
+   tuned — leave the mobile breakpoint rule in 33-mobile-tweaks.css as-is. */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE SPACING TOKENS (foundation)
+   Semantic spacing on top of the --space-* primitive scale, redefined at the
+   phone breakpoint so spacing flows from ONE place instead of being hand-tuned
+   per component. Desktop and mobile get genuinely different values here.
+   Components reference these (--space-section, --gap-card, --gap-rail, --stack-*)
+   so a single edit retunes density site-wide. Migration is incremental: new +
+   refactored components use these; the legacy px get converted in the sweep.
+   ═══════════════════════════════════════════════════════════════════════════ */
+:root {
+  --space-section: clamp(64px, 9vw, 100px);   /* .section vertical rhythm */
+  --gap-card: var(--space-6);                 /* card inner padding (24px) */
+  --gap-rail: var(--space-6);                 /* rail / grid gap (24px) */
+  --stack-md: var(--space-5);                 /* medium vertical stack (20px) */
+  --stack-lg: var(--space-10);                /* section-header bottom (40px) */
+}
+@media (max-width: 767.98px) {
+  :root {
+    --space-section: clamp(40px, 10vw, 64px); /* tighter vertical rhythm on phone */
+    --gap-card: var(--space-4);               /* 24 → 16 */
+    --gap-rail: var(--space-4);               /* 24 → 16 */
+    --stack-lg: var(--space-8);               /* 40 → 20 */
+  }
+}

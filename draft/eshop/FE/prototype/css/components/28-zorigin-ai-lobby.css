@@ -1,0 +1,321 @@
+/* ─────────────────────────────────────────
+   Z-ORIGIN (AI 原力創作計畫) — AIC Lobby (Figma 101:5666)
+   Two card families on the shared page-head + glass-tabs layout:
+   · .aic-card  — landscape 16:9 competition tile (image + bottom-gradient
+                  overlay + status tag + title). Figma AIC-Unit (111:3157).
+   · .work-card — portrait 2:3 featured work (poster + status badge + title +
+                  creator row + optional vote button). Figma Voting-Desktop.
+   ───────────────────────────────────────── */
+
+/* Block spacing between the 徵集 section and the 精選作品 section. */
+.zorigin-section + .zorigin-section { margin-top: var(--space-16); }
+
+/* Tabs row: glass-tabs on the left, an action (我的投票) pinned right.
+   This row IS the filter bar above the .aic-grid, so it owns its own trailing
+   gap (the .tabstick inside it can't — its --filter margin would land between
+   the nav and the button, not below the row). Tokenized to match the bare
+   .tabstick--filter elsewhere: --space-8 desktop, --space-6 phone (see below). */
+.tabs-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-8);
+}
+
+/* ── 徵集卡 grid (3-up landscape) ── */
+.aic-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-6);
+}
+
+.aic-card {
+  position: relative;
+  display: block;
+  aspect-ratio: 343 / 193;
+  border: 0.5px solid var(--white-alpha-8);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 250ms ease;
+}
+/* 4th 徵集卡: shown only at ≥1680 (see wide-screen block) to fill the 4-col
+   row; hidden by default so the 3-col layout stays a clean single row. */
+.aic-card--xl-only { display: none; }
+.aic-card:hover { transform: translateY(-4px); }
+.aic-card:hover .aic-card__img { transform: scale(1.04); }
+
+.aic-card__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 400ms ease;
+}
+
+/* Bottom gradient holding the tag + title (transparent → black 60%). */
+.aic-card__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-3) var(--space-4);
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.6) 50%);
+}
+
+.aic-card__title {
+  margin: 0;
+  font-family: var(--font-cjk-display);
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: var(--fw-bold);
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Load-more — centred quiet text button + chevron. */
+.load-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  margin-top: var(--space-6);
+  padding: var(--space-3);
+  border: none;
+  background: transparent;
+  font-family: var(--font-cjk-text);
+  font-size: 14px;
+  font-weight: var(--fw-medium);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color 160ms ease;
+}
+.load-more:hover { color: var(--text-primary); }
+.load-more__chev { width: 16px; height: 16px; flex-shrink: 0; }
+
+/* ── 精選作品 grid (5-up portrait poster) ── */
+.works-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));   /* minmax(0,…) keeps columns
+    truly equal — plain 1fr (= minmax(auto,1fr)) lets a column grow to its content's
+    min-width, which was inflating column 1 (submit tile + the landscape work-06). */
+  gap: var(--space-6);
+}
+
+.work-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  text-decoration: none;
+  color: inherit;
+}
+
+.work-card__poster {
+  position: relative;
+  display: block;
+  aspect-ratio: 256 / 384;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.work-card__poster img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 300ms ease;
+}
+.work-card:hover .work-card__poster img { transform: scale(1.03); }
+
+/* Status badge bottom-right of the poster (reuses .status-tag glass styles). */
+.work-card__badge {
+  position: absolute;
+  right: 11px;
+  bottom: 11px;
+}
+
+/* 優勝 — solid yellow winner badge with ink text. */
+.status-tag--win {
+  background: var(--yellow-500);
+  border-color: transparent;
+  color: var(--neutral-900);   /* was #0a0a0a (identical). NOTE: semantically this is
+                                  text-on-accent → --yellow-ink (#271302) would be more
+                                  correct, but that changes the shade — flagged, not applied. */
+}
+
+/* Info block below the poster. */
+.work-card__title {
+  margin: 0;
+  font-family: var(--font-cjk-display);
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: var(--fw-bold);
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.work-card__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.work-card__creator {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  flex: 1;
+}
+.work-card__avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  object-fit: cover;
+}
+.work-card__creator-name {
+  font-family: var(--font-latin);
+  font-size: 14px;
+  line-height: 23px;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Vote button is a real .btn (btn--yellow-ghost for 投票, btn--ghost for
+   改投・收回); this only stops it shrinking in the meta row. */
+.work-card__vote { flex-shrink: 0; }
+
+/* 即將截止 — Error glass tag (DS ActivityTag/Error 640:1776): rose tint over
+   black + error-red text. Distinct from the highlight-rose ramp. */
+.status-tag--error {
+  background: linear-gradient(rgba(243, 53, 85, 0.12), rgba(243, 53, 85, 0.12)), rgba(0, 0, 0, 0.6);
+  border-color: rgba(243, 53, 85, 0.3);
+  color: var(--error-500);
+}
+
+/* Small mask icon inside a button — follows the button text colour. */
+.btn__icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  background-color: currentColor;
+  -webkit-mask: var(--icon) center / contain no-repeat;
+  mask: var(--icon) center / contain no-repeat;
+}
+
+/* ── Z-ORIGIN responsive ── */
+@media (max-width: 1100px) {
+  .works-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (max-width: 900px) {
+  .aic-grid { grid-template-columns: repeat(2, 1fr); }
+  .works-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  .aic-grid { grid-template-columns: 1fr; }
+  .works-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  /* .tabs-row stays one row (nav left / 我的投票 right) — no wrap; see ≤767.98 block. */
+}
+
+/* ── Z-ORIGIN — extended phone / small-phone responsive ── */
+
+/* Phone ≤767.98px: tabs-row stacks; section spacing tightens. */
+@media (max-width: 767.98px) {
+  .zorigin-section + .zorigin-section {
+    margin-top: var(--space-12);
+  }
+
+  /* tabs-row (phone): 我的投票 shares the filter row — nav LEFT, vote RIGHT, one
+     row (was wrap → button dropped to its own row, wasting vertical space). The
+     base rule's justify-content:space-between does the split. zorigin-only class,
+     so no other page's nav layout is touched. */
+  .tabs-row {
+    flex-wrap: nowrap;
+    gap: var(--space-3);
+    margin-bottom: var(--space-6);   /* phone: match .tabstick--filter's tighter gap */
+  }
+
+  /* The generic sticky-tabs mobile rule stretches the pill to flex:1 1 100% and
+     CENTRES it (45-sticky-tabs.css) — that's what forced 我的投票 to wrap. Opt this
+     zorigin host out to a left/right split: the pill hugs LEFT and, on overflow,
+     SHRINKS + scrolls internally (min-width:0 → filter pills keep priority), while
+     我的投票 stays pinned RIGHT and never shrinks (flex:0 0 auto). Keyed to
+     .tabs-row (zorigin-only) so every other snapped nav stays centred. Holds at
+     rest AND when snapped — both states carry .tabstick-host. */
+  .tabs-row.tabstick-host > .tabstick:has(> .glass-tabs) {
+    flex: 0 1 auto;
+    min-width: 0;
+    justify-content: flex-start;
+  }
+  .tabs-row > .btn {
+    flex: 0 0 auto;
+  }
+
+  /* aic-grid: single column (extends the 600px rule upward to 767.98px). */
+  .aic-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  /* works-grid: 2-up portrait on phone. */
+  .works-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-4);
+  }
+
+  /* work-card: tighten internal gap. */
+  .work-card {
+    gap: var(--space-2);
+  }
+
+  .work-card__title {
+    font-size: var(--fs-body-sm);
+    line-height: 1.4;
+  }
+
+  .work-card__creator-name {
+    font-size: var(--fs-caption);
+  }
+
+  /* aic-card title: smaller on phone. */
+  .aic-card__title {
+    font-size: var(--fs-body-sm);
+    line-height: 1.4;
+  }
+}
+
+/* Small phone ≤480px: works-grid stays 2-up but with tighter gap;
+   aic-grid single-col with aspect-ratio preserved. */
+@media (max-width: 480px) {
+  .works-grid {
+    gap: var(--space-3);
+  }
+
+  .aic-grid {
+    gap: var(--space-3);
+  }
+
+  /* work-card meta: hide creator name if very tight — keep avatar + vote. */
+  .work-card__creator-name {
+    font-size: 11px;
+  }
+
+  /* load-more: full-width tap target. */
+  .load-more {
+    width: 100%;
+    padding: var(--space-4);
+  }
+}

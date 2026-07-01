@@ -1,0 +1,100 @@
+/* ─────────────────────────────────────────
+   MOBILE TWEAKS — single breakpoint @ 768px
+   IMPORTANT: this block MUST stay at the END of the file. It overrides
+   component rules of equal specificity, so it only wins by source order.
+   (It previously sat mid-file and every rule below its components was
+   silently dead — do not move it back up.)
+   Quick adaptation to make the desktop layout legible on phones for
+   demo. Not a full mobile design — future sprint will redesign per
+   section (proper nav, hero crop, card hierarchy, etc.).
+   ───────────────────────────────────────── */
+
+@media (max-width: 767.98px) {
+
+  /* Tighter horizontal padding for all .container / sections */
+  :root { --container-padding-x: 20px; }
+
+  /* Header — hide nav links, keep logo + actions; tighter padding */
+  .header__nav-links { display: none; }
+  .header { padding-inline: var(--space-4); }
+  .header__actions { gap: var(--space-3); }
+
+  /* Section rhythm now comes from the responsive --space-section token
+     (tokens.css), so .section is NOT re-declared here — re-declaring it broke
+     .section--flush-top on mobile (re-added top padding after heroes). */
+
+  /* Section header — stack title row, scale down heading */
+  .section-header { margin-bottom: 36px; }
+  .section-header__title { font-size: clamp(28px, 7vw, 36px); line-height: 1.3; }
+  .section-header__row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+  }
+
+  /* Hero carousel — shorter, scaled text + drag-follow touch setup */
+  .hero-carousel {
+    height: clamp(420px, 70vw, 560px);
+    /* Allow vertical pan to pass through to the page scroll naturally.
+       JS only calls preventDefault() once a horizontal gesture is locked —
+       this tells the browser the default vertical scroll is safe to start
+       without waiting for the JS passive-listener handshake. */
+    touch-action: pan-y;
+  }
+  .hero-carousel__title { font-size: clamp(28px, 7.5vw, 40px); }
+  .hero-carousel__sub { font-size: 14px; }
+  .hero-carousel__ctas { gap: 10px; }
+  .hero-carousel__nav--prev { left: 12px; }
+  .hero-carousel__nav--next { right: 12px; }
+  /* Mobile copy-vs-edge safety: the copy is left-aligned starting at the
+     container padding (~20px), so a wide left blur eats the headline's first
+     characters. Narrow the LEFT edge to 16px (clears the copy; still softens
+     the frame edge as banners slide through). Extra specificity (.hero-carousel
+     prefix) so this wins over the base clamp(44px…) regardless of bundle order.
+     Right edge keeps its default width — no copy ever sits there. */
+  .hero-carousel .hero-carousel__edge--l { width: 16px; }
+
+  /* 影視共創 — 3 col → 1 col */
+  .cocreation-grid { grid-template-columns: 1fr; gap: var(--space-5); }
+
+  /* AI 原力 — 2 col → 1 col (mosaic 內保持 2 col) */
+  .ai-mosaic { grid-template-columns: 1fr; gap: 28px; }
+
+  /* 電影庫 — rail shows ~2.4 cards (peek next); ranked ~1.5.
+     Rank digit size/offsets need no mobile override anymore — they're
+     in cqi units and scale with the card automatically. */
+  .films-rail__track { --rail-cols: 2.4; --rail-gap: 12px; }
+  .films-rail__track--ranked { --rail-cols: 1.5; }
+  .film-card { --card-w: 144px; }   /* smaller on phones (responsive, not drift) — ~2.4 cards peek */
+  .film-card--ranked { --card-w: calc(144px + 48px); }   /* poster stays 144px; 48px rank gutter */
+  .films-rail__tabs { overflow-x: auto; scrollbar-width: none; }
+  .films-rail__tabs::-webkit-scrollbar { display: none; }
+  .film-card--ranked { padding-left: var(--space-12); }
+
+  /* 社群 — 3 col → 1 col */
+  .community-grid { grid-template-columns: 1fr; gap: var(--space-5); }
+
+  /* 新聞 — 2 col → stack; list card 圖左 38% */
+  .news-grid { grid-template-columns: 1fr; gap: 28px; }
+  .news-card--hero .news-card__title { font-size: 20px; }
+  .news-card--hero .news-card__body { padding: var(--space-5); }
+  .news-card--list { gap: 14px; padding: var(--space-4) 0; }
+  .news-card--list .news-card__cover { flex: 0 0 38%; }
+  .news-card--list .news-card__title { font-size: 14px; line-height: 1.45; }
+
+  /* 同場加映 — 3 col → 1 col, card 自然 hug */
+  .activity-grid { grid-template-columns: 1fr; gap: var(--space-4); }
+  .activity-card { min-height: auto; padding: var(--space-6); }
+
+  /* Footer — 5 col → 1 col stack */
+  .site-footer { padding: var(--space-14) 0 var(--space-6); }
+  .site-footer__top { grid-template-columns: 1fr; gap: 28px; }
+  .site-footer__brand { max-width: 100%; }
+  .site-footer__divider { margin: var(--space-8) 0 var(--space-5); }
+  .site-footer__bottom-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+  }
+  .site-footer__notice { max-width: 100%; }
+}

@@ -1,0 +1,159 @@
+/* ════════════════════════════════════════════════════════════════════════
+   refine-home.css  ·  HOME-only Mobbin-benchmarked rework (Ztor 2.0)
+   ────────────────────────────────────────────────────────────────────────
+   Scope: EVERY rule is nested under `body.rf-home` so nothing leaks to other
+   pages that share components.css. tokens.css / components.css are NEVER
+   edited — this layer only re-tunes layout rhythm + adds two new home blocks.
+
+   Benchmarks adopted (web, via Mobbin):
+     · Netflix / Disney+ / Paramount+ home  — hero bleeds into the first rail
+       so the fold shows "hero + the top of a rail" (information scent).
+     · Paramount+ / Netflix logged-in home  — a resume ("Your Next Watch")
+       rail leads the page for returning users.
+     · Kickstarter / GoFundMe home          — the featured funded project sits
+       high with a visible progress bar; we keep the co-create rail near top.
+
+   What this layer does NOT do: change IA, nav labels, slugs, copy voice, or
+   any brand token. It re-sequences rhythm and adds a logged-in resume rail.
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────────────────────────────────────
+   1. HERO → FIRST-RAIL OVERLAP  (the core category move)
+   The streaming category no longer ends the hero on a hard edge followed by
+   a tall gap. The first content rail rises to sit just under the hero, so
+   above the fold you see the hero AND the start of the ranking rail. We do
+   this by pulling the first section up with a negative margin and trimming
+   its top padding — purely visual, fully reversible.
+   ───────────────────────────────────────────────────────────────────────── */
+body.rf-home main > section[data-screen-label="ranking"] {
+  margin-top: clamp(-72px, -5vw, -40px);
+  padding-top: clamp(40px, 5vw, 64px);
+  /* Sit above the hero's bottom darken-gradient so the rail reads as the
+     next layer, not a patch over the image. */
+  position: relative;
+  z-index: 2;
+}
+
+/* A soft top-fade on the first section blends the lift into the hero's
+   existing bottom darken, so the seam is gradient, not a line. Sits behind
+   content, ignores pointer. Uses the page bg token via currentColor-free
+   gradient on the section's own --bg (page bg = neutral-900). */
+body.rf-home main > section[data-screen-label="ranking"]::before {
+  content: "";
+  position: absolute;
+  inset: -64px 0 auto 0;
+  height: 64px;
+  background: linear-gradient(to bottom, rgba(10, 10, 10, 0), var(--bg-primary));
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   2. SECTION RHYTHM — tighten to category cadence (DENSITY 2 → calm but not
+   sparse). Streaming homes run rails closer together than the current
+   clamp(64,9vw,100) gap; that gap reads as a marketing site, not a feed.
+   We pull the vertical rhythm in ~20% so more rails enter the fold on scroll
+   without feeling cramped. Brand zebra stripes (page/surface) are untouched.
+   ───────────────────────────────────────────────────────────────────────── */
+body.rf-home main > section.section {
+  padding-block: clamp(52px, 7vw, 80px);
+}
+
+/* Section header sits closer to its rail — the category keeps the label and
+   its content tight so the rail is the hero of the row, not the heading. */
+body.rf-home .section-header {
+  margin-bottom: var(--space-8); /* 32, down from 40 */
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   3. EYEBROW RESTRAINT — REMOVED 2026-06-18. The home eyebrows are now
+   inverted brand PILLS (dark→amber/black, yellow→black/white; see
+   section-themes.css). A pill is meant to be a uniform, deliberate chip on
+   every section, so the old "dim + de-weight the later ones" treatment
+   (opacity .55 / wider tracking / smaller) is dropped — it would leave some
+   pills faded and inconsistent. Eyebrow styling now lives only in
+   section-themes.css, applied equally to every section. */
+
+/* ─────────────────────────────────────────────────────────────────────────
+   4. LOGGED-IN RESUME RAIL — "繼續觀看"
+   Paramount+/Netflix lead the returning-user home with a continue-watching
+   rail. Ztor already has this data (the watch-history drawer) but hides it
+   behind an icon. We surface it as the FIRST rail for logged-in users only.
+   Markup is injected once near the top of <main>; visibility is auth-gated
+   via body[data-auth] so logged-out users never see it (no empty state).
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* Auth gating: show only when logged in. */
+body.rf-home .resume-rail { display: none; }
+body.rf-home[data-auth="logged-in"] .resume-rail { display: block; }
+
+/* The resume rail is now a YELLOW zebra stripe, so it must NOT tuck under
+   the hero (the old negative-margin "lift" + fade was a dark-on-dark effect
+   that, with a yellow rail, dragged yellow to ~7px off the hero buttons and
+   smeared a fade into the hero bottom). Clean zebra edge instead: no overlap,
+   normal section padding. The hero's own padding-bottom now owns the gap. */
+body.rf-home[data-auth="logged-in"] .resume-rail {
+  margin-top: 0;
+  padding-top: clamp(40px, 5vw, 64px);
+  position: relative;
+  z-index: 2;
+}
+body.rf-home[data-auth="logged-in"] .resume-rail::before { content: none; }
+/* …and the ranking section drops back to normal flow when resume leads. */
+body.rf-home[data-auth="logged-in"] main > section[data-screen-label="ranking"] {
+  margin-top: 0;
+  padding-top: clamp(52px, 7vw, 80px);
+}
+body.rf-home[data-auth="logged-in"] main > section[data-screen-label="ranking"]::before {
+  display: none;
+}
+
+/* Resume CARDS are the shared `.film-card--resume` component (portrait poster
+   + .film-card__resume-time badge + .film-card__progress), the SAME one
+   screening-room.html uses — styled in components.css. No page-keyed card CSS
+   here any more; this page only owns the rail layout + auth gating below. */
+
+/* The resume track reuses the films-rail look: horizontal scroll, hidden
+   scrollbar, scroll-snap. Mirrors .films-rail__track spacing. */
+body.rf-home .resume-track {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  padding: 2px 2px 8px;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+body.rf-home .resume-track::-webkit-scrollbar { display: none; }
+
+/* ─────────────────────────────────────────────────────────────────────────
+   5. CO-CREATION lift — the fan-economy differentiator. Kickstarter/GoFundMe
+   put the funded project high with its progress bar visible. The co-create
+   cards already carry a progress bar; we sharpen the funded state so the
+   "達標" card reads as a win at a glance (category convention: green is the
+   funded signal). brand orange stays the primary accent for in-progress.
+   ───────────────────────────────────────────────────────────────────────── */
+/* (Removed) cocreation success badge was forced to #0a0a0a here — near-black
+   on a dark card rendered 目標達成 invisible. The global .badge--success now
+   uses the brighter system green (#30d158); no per-page override needed. */
+
+/* ─────────────────────────────────────────────────────────────────────────
+   6. MOBILE — collapse the overlap so the hero never crops the first rail on
+   small screens (the lift is a desktop scent move; on mobile the rail simply
+   follows the hero with normal spacing). Honors brand mobile breakpoint.
+   ───────────────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  body.rf-home main > section[data-screen-label="ranking"],
+  body.rf-home[data-auth="logged-in"] .resume-rail {
+    margin-top: 0;
+    padding-top: clamp(40px, 11vw, 56px);
+  }
+  body.rf-home main > section[data-screen-label="ranking"]::before,
+  body.rf-home[data-auth="logged-in"] .resume-rail::before {
+    display: none;
+  }
+  body.rf-home main > section.section {
+    padding-block: clamp(44px, 11vw, 64px);
+  }
+}

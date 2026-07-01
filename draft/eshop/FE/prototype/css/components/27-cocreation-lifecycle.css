@@ -1,0 +1,174 @@
+/* ─────────────────────────────────────────
+   CO-CREATION CARD — lifecycle status states
+   Mirrors Figma "Crowdfund-Card" states (node 165:33664). The status badge
+   is a glass "ActivityTag": colour tint over a dark underlay so it reads on
+   any surface. Footer swaps between metrics / date-line / CTA per state.
+   ───────────────────────────────────────── */
+.status-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  align-self: flex-start;
+  padding: 6px var(--space-3);
+  border: 0.8px solid transparent;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-cjk-text);
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: var(--fw-medium);
+  white-space: nowrap;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+.status-tag__icon {
+  display: inline-flex;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+/* Movie icon (assets/icons/movie.svg) — mask so it follows the tag colour. */
+.status-tag__icon--movie {
+  background-color: currentColor;
+  -webkit-mask: url('assets/icons/movie.svg') center / contain no-repeat;
+  mask: url('assets/icons/movie.svg') center / contain no-repeat;
+}
+
+/* 計畫進行中 / 即將投入製作 / 製作中 */
+.status-tag--yellow {
+  background: linear-gradient(rgba(255, 163, 63, 0.12), rgba(255, 163, 63, 0.12)), rgba(0, 0, 0, 0.6);
+  border-color: rgba(255, 163, 63, 0.3);
+  color: var(--yellow-500);
+}
+/* 目標達成 / 已上架 */
+.status-tag--green {
+  background: linear-gradient(rgba(34, 197, 94, 0.12), rgba(34, 197, 94, 0.12)), rgba(0, 0, 0, 0.6);
+  border-color: rgba(34, 197, 94, 0.3);
+  color: var(--success-500);
+}
+/* 即將開放（亮灰）*/
+.status-tag--soon {
+  background: linear-gradient(rgba(163, 163, 163, 0.12), rgba(163, 163, 163, 0.12)), rgba(0, 0, 0, 0.6);
+  border-color: rgba(163, 163, 163, 0.3);
+  color: var(--text-secondary);
+}
+/* 已結束 / 已取消（暗灰）*/
+.status-tag--ended {
+  background: linear-gradient(rgba(115, 115, 115, 0.12), rgba(115, 115, 115, 0.12)), rgba(0, 0, 0, 0.6);
+  border-color: rgba(115, 115, 115, 0.3);
+  color: var(--text-tertiary);
+}
+
+/* Grey progress fill for ended / cancelled projects (no yellow glow). */
+.cocreation-card__bar-fill--muted {
+  background: var(--neutral-500);
+  box-shadow: none;
+}
+
+/* Footer status line (yellow) — start date / release date. Optional leading icon. */
+.cocreation-card__note {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-cjk-text);
+  font-weight: var(--fw-medium);
+  font-size: 16px;
+  line-height: 27px;
+  color: var(--yellow-500);
+}
+.cocreation-card__note-icon {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  background-color: currentColor;
+  -webkit-mask: url('assets/icons/media-play.svg') center / contain no-repeat;
+  mask: url('assets/icons/media-play.svg') center / contain no-repeat;
+}
+
+/* CTA pinned bottom-right (e.g. 已上架 → 立即收看). */
+.cocreation-card__cta-row {
+  margin-top: auto;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* News index — render the list as a 2-column grid so a long article list
+   doesn't become one very tall single column, and rows aren't stretched to
+   the full wide container. Collapses to 1 column on mobile. */
+.news-list--grid {
+  display: grid;
+  /* minmax(0,…): plain 1fr can't shrink below the card's intrinsic
+     width (image flex-basis 40% of a min-content row), which forced
+     horizontal page overflow on narrow windows. */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: var(--space-10);
+}
+@media (max-width: 1080px) {
+  .news-list--grid { column-gap: var(--space-6); }
+}
+/* Uniform row hairline + even top padding across both columns. */
+.news-list--grid > .news-card--list {
+  border-bottom: 1px solid var(--white-alpha-8);
+}
+.news-list--grid > .news-card--list:first-child { padding-top: var(--space-5); }
+
+/* ─────────────────────────────────────────
+   RESPONSIVE — LIFECYCLE / PROGRESS + NEWS-LIST-GRID
+   NOTE: Original @media (max-width: 768px) block below replaced + expanded.
+   ───────────────────────────────────────── */
+
+/* ── Tablet (768–1023) ── */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .news-list--grid {
+    column-gap: var(--space-5);
+  }
+}
+
+/* ── Phone (<768) ── */
+@media (max-width: 767.98px) {
+  /* News grid: single column (was already in the 768 block — kept here
+     at the correct breakpoint 767.98 to close the 768px gap) */
+  .news-list--grid {
+    grid-template-columns: 1fr;
+    column-gap: 0;
+  }
+
+  .news-list--grid > .news-card--list:first-child {
+    padding-top: 0;
+  }
+
+  /* Status tag: stay compact on narrow screens */
+  .status-tag {
+    padding: var(--space-1) var(--space-3);
+    font-size: 11px;
+  }
+
+  /* Note footer: tighter on phone */
+  .cocreation-card__note {
+    font-size: var(--fs-body-sm);
+    line-height: var(--lh-body-sm);
+    gap: var(--space-2);
+  }
+
+  /* CTA row: full-width button feel on phones */
+  .cocreation-card__cta-row {
+    justify-content: flex-start;
+  }
+}
+
+/* ── Small phone (<480) ── */
+@media (max-width: 480px) {
+  .status-tag {
+    padding: 3px var(--space-2);
+    font-size: 10px;
+  }
+
+  /* Note icon: slightly smaller */
+  .cocreation-card__note-icon {
+    width: 14px;
+    height: 14px;
+  }
+}

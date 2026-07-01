@@ -1,0 +1,183 @@
+/* ─────────────────────────────────────────
+   通知 DRAWER (logged-in)
+   Right-aligned slide-out below the header — same shell as 觀看歷史 but
+   FULL-HEIGHT & scrollable (notification feed). Trigger: 通知 bell.
+   ───────────────────────────────────────── */
+.notif-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-drawer);
+  pointer-events: none;
+}
+.notif-drawer.is-open { pointer-events: auto; }
+
+.notif-drawer__scrim {
+  position: absolute;
+  inset: var(--header-height) 0 0 0;
+  background: rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  transition: opacity 280ms ease;
+}
+.notif-drawer.is-open .notif-drawer__scrim { opacity: 1; }
+
+.notif-drawer__panel {
+  position: absolute;
+  top: var(--header-height);
+  right: 0;
+  bottom: 0;                 /* full height, feed scrolls internally */
+  width: min(420px, 100%);
+  display: flex;
+  flex-direction: column;
+  background: rgba(19, 19, 19, 0.96);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-left: 1px solid var(--border-subtle);
+  /* Shadow ONLY when open — a closed off-canvas drawer must not bleed its
+     leftward shadow into the viewport's right edge (greys the yellow stripes).
+     See the matching note in 10-drawer.css (watch-drawer). */
+  box-shadow: none;
+  transform: translateX(100%);
+  transition: transform 320ms cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 320ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.notif-drawer.is-open .notif-drawer__panel {
+  transform: translateX(0);
+  box-shadow: -24px 0 60px rgba(0, 0, 0, 0.5);
+}
+
+.notif-drawer__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 24px 16px;
+  flex-shrink: 0;
+}
+.notif-drawer__title {
+  font-family: var(--font-cjk-display);
+  font-weight: var(--fw-bold);
+  font-size: 22px;
+  line-height: 1.3;
+  color: var(--text-primary);
+  margin: 0;
+}
+.notif-drawer__close {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.08);
+  transition: background 200ms ease;
+}
+.notif-drawer__close:hover { background: rgba(255, 255, 255, 0.14); }
+.notif-drawer__close-icon {
+  width: 16px;
+  height: 16px;
+  background-color: var(--text-tertiary);
+  -webkit-mask: url('assets/icons/close.svg') center / contain no-repeat;
+          mask: url('assets/icons/close.svg') center / contain no-repeat;
+}
+
+/* Head right-side actions: 全部已讀 + close. */
+.notif-drawer__head-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.notif-drawer__mark-read {
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: var(--font-cjk-text);
+  font-size: 14px;
+  font-weight: var(--fw-medium);
+  color: var(--text-secondary);
+  transition: color 200ms ease;
+}
+.notif-drawer__mark-read:hover { color: var(--yellow-500); }
+
+.notif-drawer__list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 4px 24px 16px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.07) transparent;
+}
+.notif-drawer__list::-webkit-scrollbar { width: 6px; }
+.notif-drawer__list::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.07); border-radius: var(--radius-pill); }
+
+/* ── Notification item — [unread dot] [thumb] [title + time] ── */
+.notif-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 0;
+  text-decoration: none;
+  color: inherit;
+}
+.notif-item + .notif-item { border-top: 1px solid var(--border-subtle); }
+
+/* Unread dot — always reserves the column; coloured only when unread. */
+.notif-item__dot {
+  flex: 0 0 auto;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: transparent;
+}
+.notif-item--unread .notif-item__dot { background: var(--error-500); }
+
+.notif-item__thumb {
+  flex: 0 0 auto;
+  width: 48px;
+  aspect-ratio: 4 / 5;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--bg-secondary);
+}
+.notif-item__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* Brand (ztor) / user thumbs — icon centred on a dark tile. */
+.notif-item__thumb--brand,
+.notif-item__thumb--user {
+  display: grid;
+  place-items: center;
+  background: var(--bg-tertiary);
+}
+/* ztor wordmark via mask so it renders neutral (品牌黃在此太搶眼). */
+.notif-item__brand-logo {
+  width: 72%;
+  height: 100%;
+  background-color: var(--neutral-400);
+  -webkit-mask: url('assets/icons/ztor_logo.svg') center / contain no-repeat;
+          mask: url('assets/icons/ztor_logo.svg') center / contain no-repeat;
+}
+.notif-item__thumb--user img { width: 52%; height: 52%; opacity: 0.55; }
+
+.notif-item__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.notif-item__title {
+  font-family: var(--font-cjk-text);
+  font-weight: var(--fw-regular);
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--text-primary);
+  transition: color 200ms ease;
+}
+.notif-item:hover .notif-item__title { color: var(--yellow-500); }
+.notif-item__time {
+  font-family: var(--font-cjk-text);
+  font-size: 12px;
+  color: var(--text-tertiary);
+}

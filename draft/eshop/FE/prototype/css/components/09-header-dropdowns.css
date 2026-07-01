@@ -1,0 +1,390 @@
+/* ─────────────────────────────────────────
+   HEADER DROPDOWNS — language picker + profile menu
+   Shared glass shell, anchored under the trigger button.
+   .header__popover-anchor wraps trigger + dropdown so the
+   dropdown can be position:absolute relative to the trigger.
+   ───────────────────────────────────────── */
+
+.header__popover-anchor {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.header-dropdown {
+  /* position:fixed（非 absolute）：JS 一載入就把這顆選單 portal 到 <body> 尾端，
+     absolute 會相對視窗、被 top:100% 推到頁面底下而撐出多餘捲動高度（短頁 footer
+     下方憑空多出一段空白）。fixed 不計入頁面捲動高，也和 JS 打開時設的 fixed 一致。 */
+  position: fixed;
+  top: calc(100% + 16px);
+  right: 0;
+  background: rgba(19, 19, 19, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+  z-index: var(--z-dropdown);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px);
+  transition: opacity 160ms ease, transform 160ms ease, visibility 160ms;
+  /* Clip horizontally; scroll vertically when the menu is taller than the
+     viewport. max-height is set inline by JS so it always fits below the
+     trigger with a small bottom gap. */
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.07) transparent;
+}
+
+.header-dropdown::-webkit-scrollbar {
+  width: 6px;
+}
+.header-dropdown::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 3px;
+}
+.header-dropdown::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+.header-dropdown::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.header-dropdown.is-open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* ─── Language picker — premium glass popover ───
+   A considered floating object, not a system menu. Double-bezel: the panel
+   is the machined tray (16px radius, top-edge highlight, layered shadow) and
+   each row is an inner core (12px radius) that floats inside the 6px padding,
+   giving concentric curves. The active tick is driven ENTIRELY by the
+   --active class (i18n.js owns it) via a pseudo-element, so the check FOLLOWS
+   the chosen language instead of being welded to one row — the old bug. */
+.header-dropdown--lang {
+  width: 248px;
+  padding: 6px;
+  border-radius: var(--radius-xl);                       /* 16px outer tray */
+  background: rgba(20, 20, 22, 0.72);
+  backdrop-filter: blur(24px) saturate(1.6);
+  -webkit-backdrop-filter: blur(24px) saturate(1.6);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  box-shadow:
+    0 20px 48px -16px rgba(0, 0, 0, 0.72),               /* ambient lift */
+    0 4px 12px rgba(0, 0, 0, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);             /* machined top edge */
+  transform-origin: top right;                           /* grow from the globe */
+  transition:
+    opacity 220ms cubic-bezier(0.32, 0.72, 0, 1),
+    transform 220ms cubic-bezier(0.32, 0.72, 0, 1),
+    visibility 220ms;
+  /* the checkmark glyph, masked so it inherits the brand accent */
+  --lang-check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='11' viewBox='0 0 14 11' fill='none'%3E%3Cpath d='M1 5.5L5 9.5L13 1.5' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+.header-dropdown--lang:not(.is-open) {
+  transform: translateY(-8px) scale(0.96);
+}
+
+.lang-dropdown__item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 48px;                                      /* ≥44px touch target */
+  padding: 12px 14px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-lg);                       /* 12px inner core */
+  font-family: var(--font-cjk-display);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--text-secondary);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background-color 200ms cubic-bezier(0.32, 0.72, 0, 1),
+    color 200ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.lang-dropdown__item + .lang-dropdown__item {
+  margin-top: 2px;
+}
+
+.lang-dropdown__item:hover {
+  background: rgba(255, 255, 255, 0.055);
+  color: var(--text-primary);
+}
+
+.lang-dropdown__item:focus-visible {
+  outline: none;
+  background: rgba(255, 255, 255, 0.055);
+  color: var(--text-primary);
+  box-shadow: inset 0 0 0 1.5px rgba(255, 163, 63, 0.55);
+}
+
+/* Popup active row — a selected chip, not a coloured block: a whisper-soft
+   warm plate defined by a crisp inset accent hairline. The tick + accent label
+   carry the state. Scoped to the popup so the chip never leaks to the drawer. */
+.header-dropdown--lang .lang-dropdown__item--active,
+.header-dropdown--lang .lang-dropdown__item--active:hover {
+  background: rgba(255, 163, 63, 0.07);
+  box-shadow: inset 0 0 0 1px rgba(255, 163, 63, 0.22);
+  color: var(--yellow-500);
+  font-weight: 600;
+}
+
+/* Mobile drawer shares the [data-lang] active class but is a different surface:
+   the active language reads via accent text alone — no chip, no ring, no tick. */
+.mdrawer__link.lang-dropdown__item--active {
+  color: var(--yellow-500);
+  font-weight: 600;
+}
+
+.lang-dropdown__item-label {
+  flex: 1;
+  min-width: 0;
+}
+
+/* The old inline SVG tick was welded to the 繁體中文 row only, so it could
+   never follow a switch to English. Retired in favour of the pseudo below. */
+.lang-dropdown__check {
+  display: none;
+}
+
+/* Checkmark slot on EVERY row (reserves width so labels never shift), painted
+   only on the active row and cross-fading in when the language changes. */
+.lang-dropdown__item::after {
+  content: "";
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  background-color: var(--yellow-500);
+  -webkit-mask: var(--lang-check) center / 14px 11px no-repeat;
+  mask: var(--lang-check) center / 14px 11px no-repeat;
+  opacity: 0;
+  transform: scale(0.6);
+  transition:
+    opacity 220ms cubic-bezier(0.32, 0.72, 0, 1),
+    transform 220ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.lang-dropdown__item--active::after {
+  opacity: 1;
+  transform: scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header-dropdown--lang,
+  .lang-dropdown__item,
+  .lang-dropdown__item::after {
+    transition-duration: 1ms;
+  }
+  .header-dropdown--lang:not(.is-open) {
+    transform: none;
+  }
+  .lang-dropdown__item::after {
+    transform: none;
+  }
+}
+
+/* ─── Profile menu (375 wide) ─── */
+.header-dropdown--profile {
+  width: 375px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  /* Stronger glass — the wider panel needs more blur to feel rich
+     against busy backgrounds. */
+  background: rgba(19, 19, 19, 0.72);
+  backdrop-filter: blur(28px) saturate(1.4);
+  -webkit-backdrop-filter: blur(28px) saturate(1.4);
+}
+
+/* Clickable area that links to the user's own profile page.
+   Negative margin lets the hover bg extend slightly past the head's
+   normal content edges so the affordance reads as a contained tile. */
+.profile-menu__head-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  margin: -8px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.profile-menu__head-row:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.profile-menu__head-row:hover .profile-menu__head-chevron {
+  color: var(--text-primary);
+  transform: translateX(2px);
+}
+
+.profile-menu__avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.profile-menu__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.profile-menu__info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.profile-menu__name {
+  font-family: var(--font-cjk-text);
+  font-weight: var(--fw-bold);
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.profile-menu__role {
+  font-family: var(--font-latin);
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--text-tertiary);
+}
+
+.profile-menu__head-chevron {
+  width: 24px;
+  height: 24px;
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 150ms ease, transform 150ms ease;
+}
+
+.profile-menu__actions {
+  display: flex;
+  gap: 16px;
+  margin-top: 20px;        /* extra room so head-row hover bg doesn't crowd the pills */
+}
+
+/* Action pills here use .btn .btn--quiet .btn--sm; stretch to fill row. */
+.profile-menu__actions .btn { flex: 1; }
+
+.profile-menu__section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.profile-menu__section-title {
+  font-family: var(--font-cjk-text);
+  font-size: 14px;
+  line-height: 25px;
+  color: var(--text-tertiary);
+}
+
+.profile-menu__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-menu__list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-family: var(--font-cjk-text);
+  font-size: 16px;
+  line-height: 27px;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+  transition: color 120ms ease;
+}
+
+.profile-menu__list-item:hover { color: var(--yellow-500); }
+.profile-menu__list-item:hover .profile-menu__list-icon { color: var(--yellow-500); }
+
+.profile-menu__list-item-inner {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Icon glyph rendered via CSS mask so it inherits the parent's currentColor
+   (so hover yellow flows from list-item color → icon bg). The SVG file path
+   comes from the inline --icon CSS variable on each instance. */
+.profile-menu__list-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  display: inline-block;
+  background-color: currentColor;
+  -webkit-mask: var(--icon) center / contain no-repeat;
+          mask: var(--icon) center / contain no-repeat;
+  color: var(--text-primary);
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+/* Smaller variant used inside .btn--quiet pills (e.g. 設定). */
+.profile-menu__pill-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  display: inline-block;
+  background-color: currentColor;
+  -webkit-mask: var(--icon) center / contain no-repeat;
+          mask: var(--icon) center / contain no-repeat;
+}
+
+.profile-menu__list-value {
+  font-family: var(--font-latin);
+  font-size: 14px;
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+}
+
+.profile-menu__divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  margin: 0;
+}
+
+.profile-menu__version {
+  font-family: var(--font-latin);
+  font-size: 14px;
+  line-height: 16px;
+  color: #707177;
+}

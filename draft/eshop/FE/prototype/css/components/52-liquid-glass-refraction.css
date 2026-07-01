@@ -1,0 +1,40 @@
+/* ════════════════════════════════════════════════════════════════
+   52-liquid-glass-refraction.css — 1:1 with 21st.dev (2026-06-27)
+
+   The displacement refraction, applied EXACTLY as the 21st.dev "Apple Tahoe"
+   button does it: backdrop-filter: blur(8px) url(#liquid-glass) saturate(1.5)
+   (blur, then the shared displacement filter, then saturate — their order). The
+   #liquid-glass filter + its WebP map are injected by assets/liquid-glass.js,
+   which also adds html.glass-refract (the gate). Ungated by engine — same as
+   21st.dev; the plain frost in the component CSS is the fallback if url()
+   backdrop filters aren't supported.
+
+   --glass-fill (white 5%) + the 10-layer specular box-shadow (the "reflections")
+   live in the component CSS and render in every browser regardless.
+
+   ── SCOPE: BUTTONS ONLY (navs intentionally excluded) ─────────────────────────
+   The #liquid-glass filter uses primitiveUnits="objectBoundingBox" with scale=0.5,
+   so its displacement THROW is ~0.5×(box dimension). On a near-square BUTTON that
+   is a few px — the intended subtle refraction. On a NAV PILL (wide + short — the
+   bottom nav, the pinned shop/library filter bars, the stretched shop type-nav)
+   the HORIZONTAL throw becomes ~0.5×width ≈ 100–230px, which samples the backdrop
+   OUTSIDE the box and drops the whole backdrop-filter. That is the transparency
+   bug: a nav goes HALF see-through (the stretched top filter pill) or — on the
+   full-width bottom nav, the widest of all — FULLY see-through (worst when the
+   .lg-ready compositing class is missed on an instant/View-Transition nav, so this
+   rule, not the .lg-ready frost, wins). So navs DO NOT get the url() refraction.
+   Every nav uses the plain blur+saturate frost (--glass-nav-backdrop) from its own
+   component CSS — 43-bottom-nav (botnav) and 45-sticky-tabs (glass-tabs /
+   shop-filter / nav-trigger) — which covers the whole pill on every engine and
+   gives ONE consistent nav treatment. Keep this filter on buttons only.
+   ════════════════════════════════════════════════════════════════ */
+
+/* Lens-based surfaces — secondary button + orange "Vote" button + 計畫與價格 pill
+   (frost on ::before). All share the one #liquid-glass displacement filter.
+   BUTTONS ONLY — navs are excluded on purpose (see the scope note above). */
+.glass-refract .btn--ghost::before,
+.glass-refract .btn--yellow-ghost::before,
+.glass-refract .popcorn-section::before {
+  -webkit-backdrop-filter: blur(8px) url(#liquid-glass) saturate(1.5);
+          backdrop-filter: blur(8px) url(#liquid-glass) saturate(1.5);
+}

@@ -1,0 +1,410 @@
+/* ============================================================
+   refine-shop.css — Ztor 2.0 SHOP family rework
+   Mobbin-benchmarked storefront + auction patterns on the Ztor skin.
+   References: Weverse (fan-store status tags + wishlist), Faire/Cosmos
+   (hover quick-add, price-forward grid), Rarible/Foundation (timed-auction
+   card: countdown + current bid + bid count + outbid state).
+
+   SCOPE: every rule sits under `body.rf-shop`. Never touches tokens.css
+   or components.css. Linked AFTER components.css on the 5 shop pages.
+   Motion: transform/opacity only; honored prefers-reduced-motion at end.
+   ============================================================ */
+
+/* ─────────────────────────────────────────
+   GRID — denser rhythm, 5-up at wide, graceful steps down.
+   Editorial row-gap kept; tighten column gap a touch for a fuller field.
+   ───────────────────────────────────────── */
+body.rf-shop .shop-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  column-gap: 18px;
+  row-gap: 40px;
+}
+@media (max-width: 1480px) { body.rf-shop .shop-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (max-width: 1180px) { body.rf-shop .shop-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 760px)  { body.rf-shop .shop-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 14px; row-gap: 28px; } }
+
+/* ─────────────────────────────────────────
+   PRODUCT CARD — keeps the chromeless 2:3 anatomy. Adds:
+   · media lift + image scale on hover (transform-only)
+   · a wishlist heart (top-right) — Weverse/Faire affordance
+   · a quick "加入購物車" bar that rises from the image foot on hover
+   · status flag becomes a real pill (limited / new / bundle / sold)
+   ───────────────────────────────────────── */
+body.rf-shop .shop-card {
+  --rf-radius: 14px;
+  position: relative;
+}
+body.rf-shop .shop-card__media {
+  border-radius: var(--rf-radius);
+  transition: transform 380ms var(--ease-out, cubic-bezier(0.23,1,0.32,1)),
+              box-shadow 380ms var(--ease-out, cubic-bezier(0.23,1,0.32,1));
+  will-change: transform;
+}
+body.rf-shop .shop-card__media img {
+  transition: transform 600ms var(--ease-out, cubic-bezier(0.23,1,0.32,1));
+}
+@media (hover: hover) and (pointer: fine) {
+  body.rf-shop .shop-card:hover .shop-card__media {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 40px -22px rgba(0,0,0,0.9);
+  }
+  body.rf-shop .shop-card:hover .shop-card__media img { transform: scale(1.045); }
+}
+body.rf-shop .shop-card:focus-visible {
+  outline: none;
+}
+body.rf-shop .shop-card:focus-visible .shop-card__media {
+  outline: 2px solid var(--yellow-500);
+  outline-offset: 3px;
+}
+
+/* status flag → glass pill, top-left, over the image */
+body.rf-shop .shop-card__body .shop-card__flag { display: none; } /* hide the old inline flag; we re-place it on the media */
+body.rf-shop .shop-card__media .rf-flag {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 9px;
+  border-radius: 999px;
+  font-family: var(--font-latin);
+  font-size: 10.5px;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--yellow-ink);
+  background: var(--yellow-500);
+  backdrop-filter: blur(4px);
+}
+body.rf-shop .shop-card__media .rf-flag--neutral {
+  color: var(--text-primary);
+  background: rgba(10,10,10,0.62);
+  border: 1px solid var(--white-alpha-16);
+}
+body.rf-shop .shop-card__media .rf-flag--sold {
+  color: var(--text-secondary);
+  background: rgba(10,10,10,0.78);
+  border: 1px solid var(--white-alpha-16);
+}
+
+/* wishlist heart — Weverse/Faire affordance, fades in on hover, persists when active */
+body.rf-shop .rf-wish {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 3;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 999px;
+  background: rgba(10,10,10,0.55);
+  backdrop-filter: blur(6px);
+  color: var(--text-primary);
+  cursor: pointer;
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 180ms var(--ease-out, ease), transform 180ms var(--ease-out, ease), background 160ms ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  body.rf-shop .shop-card:hover .rf-wish { opacity: 1; transform: scale(1); }
+}
+body.rf-shop .rf-wish:hover { background: rgba(10,10,10,0.78); }
+body.rf-shop .rf-wish:focus-visible { opacity: 1; transform: scale(1); outline: 2px solid var(--yellow-500); outline-offset: 2px; }
+body.rf-shop .rf-wish svg { width: 17px; height: 17px; display: block; }
+body.rf-shop .rf-wish[aria-pressed="true"] {
+  opacity: 1;
+  transform: scale(1);
+  color: var(--yellow-500);
+}
+body.rf-shop .rf-wish[aria-pressed="true"] svg { fill: currentColor; stroke: currentColor; }
+/* a small pop when toggled on */
+body.rf-shop .rf-wish.rf-wish--pop { animation: rf-pop 320ms var(--ease-out, ease); }
+@keyframes rf-pop { 0%{transform:scale(1);} 40%{transform:scale(1.28);} 100%{transform:scale(1);} }
+
+/* quick add-to-cart RELOCATED → css/components/shop-quickadd.css (a shared,
+   non-clipped footer component). The old position:absolute-inside-.shop-card__media
+   rules were clipped to zero on touch (invisible + untappable on phones), so they
+   were removed here. Only the wishlist-heart affordances remain in this file. */
+/* touch / no-hover: keep the wishlist heart visible (no hover to reveal it) */
+@media (hover: none), (pointer: coarse) {
+  body.rf-shop .rf-wish { opacity: 1; transform: none; }
+}
+/* sold-out card: dim the wishlist heart (quick-add isn't rendered when sold out) */
+body.rf-shop .shop-card--soldout .rf-wish { opacity: 0.4; }
+
+/* price emphasis + a struck "original" when present (KakaoTalk/NAVER) */
+body.rf-shop .shop-card__price { font-size: 14px; }
+body.rf-shop .shop-card__price-was {
+  font-family: var(--font-latin);
+  font-size: 12px;
+  font-weight: var(--fw-regular);
+  color: var(--text-tertiary);
+  text-decoration: line-through;
+}
+
+/* ─────────────────────────────────────────
+   FILTER CHIPS — Weverse/Kakao pill switcher feel, but Ztor-quiet.
+   Keeps the text-underline active treatment AND adds an animated count.
+   We do NOT restyle into heavy pills (brand stays editorial); we add a
+   subtle press feedback + focus ring + the live count animation.
+   ───────────────────────────────────────── */
+body.rf-shop .shop-filter__item {
+  position: relative;
+  padding: 4px 2px;
+  border-radius: 6px;
+  transition: color 150ms var(--ease-out, ease), transform 120ms var(--ease-out, ease);
+}
+body.rf-shop .shop-filter__item:active { transform: translateY(1px); }
+body.rf-shop .shop-filter__item:focus-visible {
+  outline: 2px solid var(--yellow-500);
+  outline-offset: 2px;
+  color: var(--neutral-white);
+}
+body.rf-shop .shop-count { transition: opacity 160ms ease; }
+body.rf-shop .shop-count.is-updating { opacity: 0.35; }
+
+/* ─────────────────────────────────────────
+   LOADING SKELETON — shown before render fills the grid.
+   Pure CSS shimmer; transform/opacity-safe (background-position only,
+   compositor-friendly enough and disabled under reduced-motion).
+   ───────────────────────────────────────── */
+body.rf-shop .rf-skel {
+  display: block;
+}
+body.rf-shop .rf-skel__media {
+  aspect-ratio: 2 / 3;
+  border-radius: 14px;
+  background: linear-gradient(100deg, var(--neutral-800) 30%, var(--neutral-700) 50%, var(--neutral-800) 70%);
+  background-size: 220% 100%;
+  animation: rf-shimmer 1.25s ease-in-out infinite;
+}
+body.rf-shop .rf-skel__line {
+  height: 11px;
+  margin-top: 12px;
+  border-radius: 4px;
+  background: linear-gradient(100deg, var(--neutral-800) 30%, var(--neutral-700) 50%, var(--neutral-800) 70%);
+  background-size: 220% 100%;
+  animation: rf-shimmer 1.25s ease-in-out infinite;
+}
+body.rf-shop .rf-skel__line--cat { width: 38%; margin-top: 14px; }
+body.rf-shop .rf-skel__line--title { width: 84%; }
+body.rf-shop .rf-skel__line--price { width: 30%; height: 13px; }
+@keyframes rf-shimmer {
+  0% { background-position: 180% 0; }
+  100% { background-position: -80% 0; }
+}
+
+/* ─────────────────────────────────────────
+   EMPTY STATE — when a filter yields nothing.
+   ───────────────────────────────────────── */
+body.rf-shop .rf-empty {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 72px 24px;
+  gap: 14px;
+}
+body.rf-shop .rf-empty__icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-default);
+  color: var(--text-tertiary);
+}
+body.rf-shop .rf-empty__icon svg { width: 22px; height: 22px; }
+body.rf-shop .rf-empty__title {
+  font-family: var(--font-cjk-display);
+  font-size: 15px;
+  font-weight: var(--fw-bold);
+  color: var(--text-secondary);
+}
+body.rf-shop .rf-empty__desc {
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+
+/* ─────────────────────────────────────────
+   ADD-TO-CART TOAST — bottom-center confirmation. Single instance,
+   driven by shop-render.js. Slides up + fades.
+   ───────────────────────────────────────── */
+body.rf-shop .rf-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: min(92vw, 420px);
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: rgba(20,20,20,0.92);
+  border: 1px solid var(--white-alpha-16);
+  box-shadow: 0 16px 44px -18px rgba(0,0,0,0.9);
+  backdrop-filter: blur(10px);
+  color: var(--text-primary);
+  font-family: var(--font-cjk-text);
+  font-size: 13.5px;
+  opacity: 0;
+  transform: translate(-50%, 16px);
+  pointer-events: none;
+  transition: opacity 220ms var(--ease-out, ease), transform 220ms var(--ease-out, ease);
+}
+body.rf-shop .rf-toast.is-open { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+body.rf-shop .rf-toast__dot {
+  width: 22px; height: 22px; flex-shrink: 0;
+  border-radius: 999px;
+  display: grid; place-items: center;
+  background: var(--yellow-500); color: var(--yellow-ink);
+}
+body.rf-shop .rf-toast__dot svg { width: 13px; height: 13px; }
+body.rf-shop .rf-toast b { font-weight: var(--fw-bold); }
+body.rf-shop .rf-toast__link {
+  margin-left: 6px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  color: var(--yellow-500);
+  font-weight: var(--fw-bold);
+  white-space: nowrap;
+}
+body.rf-shop .rf-toast__link:focus-visible {
+  outline: 2px solid var(--yellow-500);
+  outline-offset: 2px;
+  border-radius: var(--radius-xs, 4px);
+}
+
+/* Phones: lift the toast above the floating bottom-nav pill (43-bottom-nav.css). */
+@media (max-width: 767.98px) {
+  body.rf-shop .rf-toast { bottom: var(--botnav-clearance); }
+}
+
+/* -----------------------------------------
+   AUCTION CARD — MOVED to components.css (shared component layer, 2026-06-16).
+   Was body.rf-shop-keyed here, so it only styled the shop pages; the creator
+   商店›拍賣 reused the markup but got no CSS. Now keyed to .shop-card--auction in
+   the shared layer, so it renders on every page that has the component.
+   ----------------------------------------- */
+/* ─────────────────────────────────────────
+   POPCORN redeem card — make the 兌換 affordance a real button-ish chip
+   and clarify affordability via the same hover lift.
+   ───────────────────────────────────────── */
+body.rf-shop .shop-card__redeem {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid var(--white-alpha-16);
+  color: var(--yellow-500);
+  transition: background 140ms ease, color 140ms ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  body.rf-shop .shop-card:hover .shop-card__redeem { background: var(--yellow-500); color: var(--yellow-ink); border-color: var(--yellow-500); }
+}
+
+/* ─────────────────────────────────────────
+   CREATOR directory card — hover lift parity with product cards.
+   ───────────────────────────────────────── */
+body.rf-shop .creator-card__media { border-radius: 14px; transition: transform 380ms var(--ease-out, ease), box-shadow 380ms var(--ease-out, ease); }
+body.rf-shop .creator-card__media img { transition: transform 600ms var(--ease-out, ease); }
+@media (hover: hover) and (pointer: fine) {
+  body.rf-shop .creator-card:hover .creator-card__media { transform: translateY(-4px); box-shadow: 0 18px 40px -22px rgba(0,0,0,0.9); }
+  body.rf-shop .creator-card:hover .creator-card__media img { transform: scale(1.045); }
+}
+body.rf-shop .creator-card:focus-visible { outline: none; }
+body.rf-shop .creator-card:focus-visible .creator-card__media { outline: 2px solid var(--yellow-500); outline-offset: 3px; }
+
+/* ─────────────────────────────────────────
+   REDUCED MOTION — kill all non-essential motion.
+   ───────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  body.rf-shop .shop-card__media,
+  body.rf-shop .shop-card__media img,
+  body.rf-shop .creator-card__media,
+  body.rf-shop .creator-card__media img,
+  body.rf-shop .rf-wish,  body.rf-shop .rf-bid,
+  body.rf-shop .rf-toast,
+  body.rf-shop .shop-count { transition: none !important; }
+  body.rf-shop .rf-skel__media,
+  body.rf-shop .rf-skel__line,
+  body.rf-shop .rf-auc-pill__tick,
+  body.rf-shop .rf-wish.rf-wish--pop { animation: none !important; }
+  /* without hover-reveal motion, keep affordances visible */  body.rf-shop .rf-bid,
+  body.rf-shop .rf-wish { opacity: 1; transform: none; }
+}
+
+/* ─────────────────────────────────────────
+   POPCORN — redemption-history link on the tab-nav row.
+   Balance + top-up already live in the top-right header
+   (.popcorn-section--logged-in), so the old balance card was
+   redundant and was removed. Only 兌換紀錄 remains, pinned to the
+   right edge of the .glass-tabs row, login-gated as the card was.
+   ───────────────────────────────────────── */
+body.rf-shop .popcorn-navrow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  /* Tabs sit FLUSH under .shop-head, matching every other shop page (where the
+     .tabstick has no top margin). Was `12px 0 24px`, which pushed the popcorn
+     nav-bar area 12px lower than shop / auction / creators / events. */
+  margin: 0 0 24px;
+}
+body.rf-shop .popcorn-navrow .glass-tabs { margin: 0; }
+/* Centring of the type-nav pill (full line, 兌換紀錄 wraps below) is handled generically by
+   `.tabstick-host > .tabstick:has(> .glass-tabs)` in 45-sticky-tabs.css — see that file. */
+
+body.rf-shop .popcorn-history-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 18px;
+  margin-left: auto;          /* hug the right edge even when tabs wrap */
+  border-radius: var(--radius-pill);
+  background: var(--white-alpha-4);
+  border: 1px solid var(--border-default);
+  color: var(--text-secondary);
+  font-family: var(--font-cjk-text);
+  font-size: var(--fs-body-sm);
+  font-weight: var(--fw-medium);
+  white-space: nowrap;
+  transition: color 150ms var(--ease-out),
+              background 150ms var(--ease-out),
+              border-color 150ms var(--ease-out);
+}
+body.rf-shop .popcorn-history-link:hover {
+  color: var(--text-primary);
+  background: var(--white-alpha-8);
+  border-color: var(--border-strong);
+}
+body.rf-shop .popcorn-history-link:focus-visible {
+  outline: 2px solid var(--yellow-500);
+  outline-offset: 2px;
+}
+/* Dependency-free right-chevron (CSS caret). */
+body.rf-shop .popcorn-history-link__chevron {
+  width: 6px;
+  height: 6px;
+  flex: 0 0 auto;
+  border-top: 1.5px solid currentColor;
+  border-right: 1.5px solid currentColor;
+  transform: rotate(45deg);
+  opacity: 0.7;
+}

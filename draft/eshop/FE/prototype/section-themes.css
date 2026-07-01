@@ -1,0 +1,193 @@
+/* ════════════════════════════════════════════════════════════════════════
+   SECTION THEMES  ·  Ztor 2.0
+   ════════════════════════════════════════════════════════════════════════
+   The single home for SECTION BACKGROUND COLOUR and the matching TEXT colour.
+
+   The page is a black ↔ yellow "zebra". ds.js (the `zebra` module) assigns
+   each <section> its BACKGROUND class from DOM order; this file owns the two
+   background definitions AND every FOREGROUND override needed so text stays
+   legible when a section flips colour.
+
+   ── Load order ──────────────────────────────────────────────────────────
+   Linked AFTER components.css on every page, so these overrides layer on top
+   of component defaults (they also win on specificity, so order is a safety
+   net, not a dependency).
+
+   ── The two stripes ─────────────────────────────────────────────────────
+   ⬛  .section-bg-page     → dark  (var(--bg-primary))   · the page default
+   🟨  .section-bg-surface  → yellow (var(--yellow-500))  · brand stripe
+
+   ── Contract for the BLACK stripe ───────────────────────────────────────
+   Needs NO foreground rules — the global :root tokens already ARE the dark
+   theme (light text on dark). Listed here only so the contract is explicit.
+
+   ── Contract for the YELLOW stripe ──────────────────────────────────────
+   Light text vanishes on yellow, so every element whose text sits DIRECTLY
+   on the stripe gets an ink colour below. Self-contained DARK cards
+   (cocreation / news-hero / community — they carry their own --bg-card) keep
+   their white text and are deliberately NOT listed.
+
+   ── MAINTENANCE RULE (read before editing) ──────────────────────────────
+   Add a component that paints text straight onto a stripe? Add its selector
+   to the YELLOW list below — nowhere else. Do NOT scatter `.section-bg-*`
+   overrides across component files.
+   (Why not flip the --text-* tokens on .section-bg-surface instead? Most of
+   these elements INHERIT `color` rather than reading var(--text-*), so a
+   token override never reaches them. Explicit selectors are the contract.)
+   ════════════════════════════════════════════════════════════════════════ */
+
+
+/* ── BACKGROUNDS ─────────────────────────────────────────────────────────── */
+.section-bg-page    { background: var(--bg-primary); }    /* ⬛ neutral-900   */
+.section-bg-surface { background: var(--yellow-500); }    /* 🟨 brand-yellow  */
+
+/* ════════════════════════════════════════════════════════════════════════
+   PREMIUM SHARP SURFACE — .theme-sharp  (reusable theme variant, NOT a page hack)
+   Squares every card / thumbnail radius in its scope for a gallery-premium look.
+   Apply to a page/section container: <body class="… theme-sharp">.
+   Token-driven first — overrides the radius scale + the shop's --rf-radius var, so
+   everything that reads a radius token squares automatically. The scoped block then
+   squares the few thumbnail medias whose radius is a LEGACY HARDCODE in a page-keyed
+   refine-*.css (those should be tokens; !important bridges them until migrated).
+   Pills / dots / buttons keep their shape — only cards + media are squared. */
+.theme-sharp {
+  /* squares card/media radii only — NOT --radius-pill, so nav pills, buttons and
+     badges keep their shape (per L: don't sharpen the nav). */
+  --radius-xs: 0; --radius-sm: 0; --radius-md: 0; --radius-lg: 0;
+  --radius-xl: 0; --radius-2xl: 0; --rf-radius: 0;
+}
+/* Thumbnail medias whose radius is a legacy hardcode (page-keyed refine-*.css /
+   component literals) don't read tokens — square just the cards + their image
+   medias. Nav (.glass-tabs), buttons and pills are deliberately left rounded. */
+body.theme-sharp .shop-card, body.theme-sharp .shop-card__media, body.theme-sharp .shop-card__media img,
+body.theme-sharp .creator-card, body.theme-sharp .creator-card__media, body.theme-sharp .creator-card__media img,
+body.theme-sharp .shop-card--auction, body.theme-sharp .shop-card--auction .shop-card__media,
+body.theme-sharp .shop-card--auction .shop-card__media img, body.theme-sharp .ig-cell {
+  border-radius: 0 !important;
+}
+
+
+/* ════════════════════════════════════════════════════════════════════════
+   🟨 YELLOW STRIPE — ink foregrounds for text sitting directly on yellow
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* Section header: title + the "查看更多 →" link sit directly on yellow → ink. */
+.section-bg-surface .section-header__title,
+.section-bg-surface .section-link {
+  color: var(--yellow-ink);
+}
+
+/* ── Section eyebrow = INVERTED brand pill on BOTH stripes (Dolly 2026-06-18).
+   Each pill flips its section's background for maximum pop:
+     • dark stripe   → brand-orange pill + black text
+     • yellow stripe → black pill + brand-orange text
+   Replaces the old colour-coded category pills (.section-eyebrow--tag) and the
+   plain ink-on-yellow text. Lives here so every page stays consistent. */
+.section-bg-page .section-eyebrow,
+.section-bg-surface .section-eyebrow {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  max-width: 100%;
+  padding: 5px 12px;
+  border-radius: var(--radius-pill);
+}
+.section-bg-page .section-eyebrow {        /* ⬛ dark → amber pill, black text */
+  background: var(--yellow-500);
+  color: var(--neutral-900);
+}
+.section-bg-surface .section-eyebrow {     /* 🟨 yellow → black pill, brand-orange text */
+  background: var(--neutral-900);
+  color: var(--yellow-500);
+}
+/* The arrow is now a plain currentColor glyph, so it follows the surface link
+   colour (--yellow-ink) automatically — no ink-variant image needed. */
+.section-bg-surface .section-header__sub {
+  color: rgba(26, 23, 0, 0.72);
+}
+
+/* Films-rail tabs: unselected → dark translucent; selected → solid ink + underline */
+.section-bg-surface .films-rail__tab { color: rgba(26, 23, 0, 0.55); }
+.section-bg-surface .films-rail__tab:hover { color: rgba(26, 23, 0, 0.8); }
+.section-bg-surface .films-rail__tab[aria-selected="true"] {
+  color: var(--yellow-ink);
+  border-bottom-color: var(--yellow-ink);
+}
+.section-bg-surface .films-rail__tabs { border-bottom-color: rgba(26, 23, 0, 0.18); }
+
+/* Film cards have no card bg — title/meta sit directly on yellow */
+.section-bg-surface .film-card__title { color: var(--yellow-ink); }
+.section-bg-surface .film-card__meta-text { color: rgba(26, 23, 0, 0.62); }
+.section-bg-surface .film-card__meta-tag {
+  background: rgba(26, 23, 0, 0.08);
+  color: rgba(26, 23, 0, 0.78);
+}
+.section-bg-surface .film-card__rank {
+  -webkit-text-stroke-color: rgba(26, 23, 0, 0.26);
+          text-stroke-color: rgba(26, 23, 0, 0.26);
+}
+
+/* Card edges on a yellow stripe (Dolly 2026-06-18, ported from web build).
+   The cards carry a 1px white-4% (--border-subtle) border + a dark body/poster
+   bg. On yellow the white border is invisible, so the dark bg bleeds to the
+   edge and reads as a hard near-black line. Fix = a FAINT INK line (18%) +
+   background-clip:padding-box so the dark bg stops at the border instead of
+   painting under the semi-transparent line (which would re-darken it). */
+.section-bg-surface .film-card__poster,
+.section-bg-surface .cocreation-card,
+.section-bg-surface .community-card,
+.section-bg-surface .activity-card,
+.section-bg-surface .ai-mosaic__tile {
+  background-clip: padding-box;
+  border-color: rgba(26, 23, 0, 0.18);
+}
+/* The poster's bottom darken-gradient also softens to ink-8% on yellow. */
+.section-bg-surface .film-card__poster::after {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.08) 100%);
+  opacity: 1;
+}
+/* Filled score orbs back their numeral with opaque black liquid, so they read
+   on yellow already. The EMPTY orb ("--") has only a faint disc → its white
+   placeholder washes out. Ink it on the yellow stripe. */
+.section-bg-surface .ztor-score--empty .ztor-score__value { color: var(--yellow-ink); }
+
+/* Resume rail is a yellow stripe on the logged-in home; its cards have no
+   card bg, so the title (inherits white) + remaining (--text-secondary white)
+   sit straight on yellow and must go ink.
+   The extra .resume-card class raises specificity over refine-home.css's
+   `body.rf-home .resume-card__remaining` (0,2,1) so the ink wins. */
+.section-bg-surface .resume-card .resume-card__title    { color: var(--yellow-ink); }
+.section-bg-surface .resume-card .resume-card__remaining { color: rgba(26, 23, 0, 0.66); }
+
+/* News LIST cards: no card bg, so title/excerpt/meta sit on yellow (the news
+   section became a yellow stripe under the auto-zebra). The HERO card keeps
+   white text on its dark cover image and is deliberately untouched. */
+.section-bg-surface .news-card--list .news-card__title       { color: var(--yellow-ink); }
+
+/* Classics cards: image + title only, title sits straight on the stripe.
+   (Pinned dark today, but per the maintenance rule any text-on-stripe gets
+   its yellow ink defined here so a future re-order can't strand it white.) */
+.section-bg-surface .classic-card__title { color: var(--yellow-ink); }
+.section-bg-surface .news-card--list .news-card__excerpt     { color: rgba(26, 23, 0, 0.72); }
+.section-bg-surface .news-card--list .news-card__meta        { color: rgba(26, 23, 0, 0.60); }
+.section-bg-surface .news-card--list .news-card__meta-source { color: rgba(26, 23, 0, 0.82); }
+.section-bg-surface .news-card--list:hover .news-card__title { color: rgba(26, 23, 0, 0.60); }
+.section-bg-surface .news-list > .news-card--list:not(:last-child) { border-bottom-color: rgba(26, 23, 0, 0.14); }
+
+/* Category tag on a yellow stripe. On black it's a dark-glass pill with
+   brand-yellow text (correct); on yellow that glass goes muddy/olive and the
+   text washes out. Swap to a SOLID ink pill + saturated brand-yellow text —
+   same colour code, far higher contrast. (Scoped to the list cards so it never
+   touches a tag/badge sitting on a dark card inside a yellow section.) */
+.section-bg-surface .news-card--list .news-card__tag {
+  background: var(--yellow-ink);
+  border-color: transparent;
+  color: var(--yellow-500);
+}
+
+/* Text selection on a yellow stripe. The global brand-yellow highlight
+   (tokens.css) vanishes on yellow → flip to a black highlight + brand-yellow
+   text (keeps the brand colour on the glyphs). */
+.section-bg-surface ::selection      { background: var(--neutral-900); color: var(--yellow-500); }
+.section-bg-surface ::-moz-selection { background: var(--neutral-900); color: var(--yellow-500); }

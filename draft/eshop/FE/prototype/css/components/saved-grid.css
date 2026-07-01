@@ -1,0 +1,56 @@
+/* ════════════════════════════════════════════════════════════════════════
+   SAVED GRID · "My List" 收藏  (.rf-saved-grid)                  [COMPONENT]
+   ════════════════════════════════════════════════════════════════════════
+   Poster grid with remove-on-hover. Reuses .film-card; container-scoped to
+   .rf-saved-grid so it travels to ANY page that drops the markup.
+   Consolidated 2026-06-16 out of refine-library.css (was body.rf-library-keyed
+   split-brain — verified zero-diff: .rf-saved-grid renders only inside the grid,
+   so dropping the body prefix selects the identical elements).
+   ════════════════════════════════════════════════════════════════════════ */
+.rf-saved-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: clamp(var(--space-4), 2vw, var(--space-6));
+  margin-top: var(--space-2);
+}
+.rf-saved-grid .film-card { width: auto; flex: initial; }
+
+.rf-saved__remove {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 3;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--text-primary);
+  cursor: pointer;
+  opacity: 0;
+  transform: scale(0.85);
+  transition: opacity 160ms var(--ease-out), transform 160ms var(--ease-out), background-color 160ms var(--ease-out);
+}
+.film-card:hover .rf-saved__remove,
+.rf-saved__remove:focus-visible {
+  opacity: 1;
+  transform: scale(1);
+}
+.rf-saved__remove:hover { background: var(--error-500); }
+.rf-saved__remove:focus-visible {
+  outline: 2px solid var(--yellow-500);
+  outline-offset: 2px;
+}
+.rf-saved__remove svg { width: 15px; height: 15px; display: block; }
+
+/* A removed card collapses out with a quiet fade (JS toggles .is-removing) */
+.rf-saved-grid .film-card.is-removing {
+  opacity: 0;
+  transform: scale(0.94);
+  transition: opacity 200ms var(--ease-out), transform 200ms var(--ease-out);
+  pointer-events: none;
+}

@@ -1,0 +1,45 @@
+/* ─────────────────────────────────────────
+   FAB — floating action button
+   Circular ghost-glass action anchored to the
+   viewport corner (e.g. 發表貼文 on 社群).
+   Reuses the .btn--ghost glass treatment but is
+   a perfect circle with a centred icon, lifted
+   off the page with a soft drop-shadow.
+   Markup: <button class="fab btn btn--ghost">
+   ───────────────────────────────────────── */
+.fab {
+  position: fixed;
+  right: 32px;
+  bottom: 32px;
+  z-index: var(--z-fab);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  padding: 0;
+  border-radius: var(--radius-circle, 50%);
+  /* drop-shadow (not box-shadow) so it composes with the ghost
+     edge-highlight box-shadow instead of overriding it. */
+  filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.45));
+  transition: filter 150ms ease, transform 150ms ease,
+              background 150ms ease, box-shadow 150ms ease;
+}
+
+.fab:hover:not(:disabled) {
+  transform: translateY(-2px);
+  filter: drop-shadow(0 10px 26px rgba(0, 0, 0, 0.5));
+}
+
+.fab:active:not(:disabled) {
+  transform: translateY(0);
+  filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.45));
+}
+
+.fab__icon {
+  width: 26px;
+  height: 26px;
+  background-color: currentColor;
+  -webkit-mask: var(--icon) center / contain no-repeat;
+  mask: var(--icon) center / contain no-repeat;
+}

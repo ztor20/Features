@@ -1,0 +1,70 @@
+/* ─────────────────────────────────────────
+   TOP-10 RANKING — two fixed rows of five
+   Scoped to the homepage ranking section only; other ranked
+   rails (library 現正熱播) keep their horizontal scroll.
+   ───────────────────────────────────────── */
+section[data-screen-label="ranking"] .films-rail__track--ranked {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  row-gap: var(--space-10);                 /* room for the oversized rank digits */
+  overflow: visible;             /* rank "1" overhang no longer clipped */
+  scroll-snap-type: none;
+  margin-left: 0;
+  padding-left: var(--space-6);            /* keep the #1 digit clear of the edge */
+}
+
+section[data-screen-label="ranking"] .film-card {
+  width: auto;                   /* grid cell sizes the card, not --card-w */
+  flex: none;
+}
+
+/* Rail arrows are pointless on a non-scrolling grid */
+section[data-screen-label="ranking"] .films-rail__nav { display: none !important; }
+
+@media (max-width: 767.98px) {
+  section[data-screen-label="ranking"] .films-rail__track--ranked {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ─────────────────────────────────────────
+   TOP-10 RANKING — RESPONSIVE
+   Phone  : max-width 767.98px
+   Tablet : 768px – 1023.98px
+   ───────────────────────────────────────── */
+
+/* ── Tablet (768px – 1023.98px) ─────────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  section[data-screen-label="ranking"] .films-rail__track--ranked {
+    /* 3 columns on tablet: 5 is too tight, 2 is too sparse */
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    row-gap: var(--space-8);
+    padding-left: var(--space-4);
+  }
+}
+
+/* ── Phone (≤767.98px) ──────────────────────────────────────────────────── */
+@media (max-width: 767.98px) {
+  section[data-screen-label="ranking"] .films-rail__track--ranked {
+    /* 2 columns on phone: cards share the viewport evenly */
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: var(--space-8);
+    /* Reduce left padding: rank digit is smaller at this size */
+    padding-left: var(--space-5);
+    /* Rank digits are cqi-based and shrink with the card; overhang stays in-grid */
+    overflow: visible;
+  }
+
+  /* Rank-section header: tighten margin for phone */
+  section[data-screen-label="ranking"] .section-header {
+    margin-bottom: var(--space-4);
+  }
+}
+
+/* ── Small phone (≤479.98px) ────────────────────────────────────────────── */
+@media (max-width: 479.98px) {
+  section[data-screen-label="ranking"] .films-rail__track--ranked {
+    row-gap: var(--space-6);
+    padding-left: var(--space-4);
+  }
+}

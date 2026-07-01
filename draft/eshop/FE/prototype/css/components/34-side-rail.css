@@ -1,0 +1,294 @@
+/* ─────────────────────────────────────────
+   SIDE RAIL — 主導覽 (board variant, 2026-06-11)
+   Replaces the horizontal header nav. A fixed near-black rail on the
+   left: wordmark up top, seven destinations as icon + 2-character
+   label, nothing else. The header stays as a slim utility bar
+   (search / language / login) with its nav links hidden.
+   Motion per Animation Director spec: zero entrance animation (a rail
+   seen 100+ times/day renders in place), opacity-only hover, static
+   active state, instant focus. Icons are the existing house set via
+   mask — no foreign icon family.
+   ───────────────────────────────────────── */
+
+:root { --rail-w: 78px; }
+
+body.has-rail { padding-left: var(--rail-w); }
+
+/* Header is the full-width top deck: identity (left), persistent
+   search (center), utilities (right). Nav links stay hidden — the rail
+   below owns navigation. The negative margin cancels the body's rail
+   offset so the bar spans edge to edge. */
+body.has-rail .header__nav-links { display: none; }
+body.has-rail .header { margin-left: calc(-1 * var(--rail-w)); }
+body.has-rail .header__logo,
+body.has-rail .header__logo-img { height: 32px; }  /* identity reads at deck width */
+/* The wordmark's z sits flush over the rail icons' left edge.
+   Icon edge = (rail 84 − item 64)/2 + (item 64 − icon 22)/2 = 31px from
+   the viewport; subtract the container padding the header applies. */
+body.has-rail .header__logo {
+  /* Icon edge = (rail-w − item-w)/2 + (item-w − icon-w)/2 from viewport left.
+     With rail 78, item 62, icon 22: (78−62)/2 + (62−22)/2 = 8 + 20 = 28px.
+     Original calc((rail-w − 72)/2 + 23) stays correct — at 78px: (6/2)+23=26px.
+     Keeping the formula as-is; it auto-derives from --rail-w. */
+  margin-left: calc((var(--rail-w) - 72px) / 2 + 23px - var(--container-padding-x));
+}
+/* The icon-button search is absorbed by the persistent field. Target it by
+   DOM position, not aria-label — the label is localised ("搜尋" / "Search"),
+   so an attribute selector silently stopped matching in English and the
+   duplicate magnifier reappeared on top of the field. The search button is the
+   only direct .header__icon-btn child of .header__actions (lang sits inside
+   .header__popover-anchor; history/notif inside .header__buttons). */
+body.has-rail .header__actions > .header__icon-btn { display: none; }
+
+/* Persistent search — an important feature deserves a field, not an
+   icon. Long on purpose: it owns the header's center. */
+.header-search {
+  /* The field scales with the window: grows to 820px on wide decks,
+     shrinks before anything else hides. min-width is the floor where
+     a search field stops being usable. */
+  flex: 1 1 160px;
+  min-width: 130px;
+  max-width: 720px;   /* 配合社群頁下滑時搜尋欄的置中感(Dolly sidebar 版) */
+  height: 40px;
+  margin: 0 clamp(12px, 3vw, 56px);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 18px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--white-alpha-16);
+  transition: border-color 150ms cubic-bezier(0.23, 1, 0.32, 1),
+              background-color 150ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.header-search:focus-within {
+  border-color: var(--yellow-500);
+  background: rgba(255, 255, 255, 0.12);
+}
+.header-search__icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  background: var(--neutral-400);
+  -webkit-mask: url('data:image/svg+xml,%3Csvg%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20d%3D%22M11.44%204.6C7.66238%204.6%204.60001%207.66237%204.60001%2011.44C4.60001%2015.2176%207.66238%2018.28%2011.44%2018.28C13.3026%2018.28%2014.9913%2017.5355%2016.2248%2016.3279C16.2264%2016.3263%2016.2281%2016.3246%2016.2298%2016.323C17.4951%2015.0817%2018.28%2013.3525%2018.28%2011.44C18.28%207.66237%2015.2176%204.6%2011.44%204.6ZM18.3177%2016.9941C19.545%2015.4763%2020.28%2013.544%2020.28%2011.44C20.28%206.5578%2016.3222%202.6%2011.44%202.6C6.55781%202.6%202.60001%206.5578%202.60001%2011.44C2.60001%2016.3222%206.55781%2020.28%2011.44%2020.28C13.4974%2020.28%2015.3907%2019.5771%2016.8928%2018.3984L19.7047%2021.1187C20.1016%2021.5027%2020.7347%2021.4922%2021.1187%2021.0953C21.5027%2020.6984%2021.4922%2020.0653%2021.0953%2019.6813L18.3177%2016.9941Z%22%20fill%3D%22white%22%2F%3E%3C%2Fsvg%3E') center / contain no-repeat;
+          mask: url('data:image/svg+xml,%3Csvg%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20d%3D%22M11.44%204.6C7.66238%204.6%204.60001%207.66237%204.60001%2011.44C4.60001%2015.2176%207.66238%2018.28%2011.44%2018.28C13.3026%2018.28%2014.9913%2017.5355%2016.2248%2016.3279C16.2264%2016.3263%2016.2281%2016.3246%2016.2298%2016.323C17.4951%2015.0817%2018.28%2013.3525%2018.28%2011.44C18.28%207.66237%2015.2176%204.6%2011.44%204.6ZM18.3177%2016.9941C19.545%2015.4763%2020.28%2013.544%2020.28%2011.44C20.28%206.5578%2016.3222%202.6%2011.44%202.6C6.55781%202.6%202.60001%206.5578%202.60001%2011.44C2.60001%2016.3222%206.55781%2020.28%2011.44%2020.28C13.4974%2020.28%2015.3907%2019.5771%2016.8928%2018.3984L19.7047%2021.1187C20.1016%2021.5027%2020.7347%2021.4922%2021.1187%2021.0953C21.5027%2020.6984%2021.4922%2020.0653%2021.0953%2019.6813L18.3177%2016.9941Z%22%20fill%3D%22white%22%2F%3E%3C%2Fsvg%3E') center / contain no-repeat;
+}
+.header-search:focus-within .header-search__icon { background: var(--yellow-500); }
+.header-search__input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--neutral-white);
+  /* Display tier — search bar is header chrome (Nav/Item family), so CJK
+     renders in LINE Seed like the web/sidebar build (was --font-cjk-text=Noto).
+     Token, not a hardcoded 'LINE Seed TW' string: Latin/numbers stay Proxima. */
+  font-family: var(--font-cjk-display);
+  font-size: 16px;
+}
+.header-search__input::placeholder { color: var(--neutral-400); }
+.header-search__input::-webkit-search-cancel-button { display: none; }
+
+/* Search field sits IN FLOW between the nav cluster (left) and the utility
+   cluster (right), flexing to fill whatever space is left. Auto-width by
+   construction: it grows to the 720 cap on wide decks and shrinks first on
+   laptops, and because flex items can't overlap their siblings it can NEVER
+   collide with the right-hand actions.
+
+   (Was: absolute-centred on the content axis with a hard-coded width budget,
+   width = min(720, 100vw − 910). The 910 assumed a ~322px utility cluster,
+   but the logged-in / English cluster is ~409px wide, so the centred field
+   ran under the action icons at laptop widths. Auto-flex removes the magic
+   numbers entirely.) */
+body.has-rail .header-search {
+  flex: 1 1 auto;
+  min-width: 130px;
+  max-width: 720px;
+  margin: 0 clamp(16px, 4vw, 56px);
+}
+
+.side-rail {
+  position: fixed;
+  inset: var(--header-height) auto 0 0;
+  width: var(--rail-w);
+  z-index: var(--z-siderail);  /* beneath the full-width header (100) */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 0;   /* --space-4; rail items start level with the 放映廳 toggle */
+  background: var(--neutral-900);
+  border-right: 1px solid var(--border-subtle);  /* same token as the header hairline — one line, not two */
+}
+
+/* Logo lives in the header now — the rail is navigation only. */
+.side-rail__logo { display: none; }
+
+.side-rail__nav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;  /* --space-2 */
+  width: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+.side-rail__nav::-webkit-scrollbar { display: none; }
+
+.side-rail__item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  width: 62px;
+  padding: 8px 0;
+  border-radius: var(--radius-md);  /* 8px */
+  color: var(--neutral-white);
+  opacity: 0.64;
+  text-decoration: none;
+  transition: opacity 100ms cubic-bezier(0.23, 1, 0.32, 1),
+              transform 120ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .side-rail__item:hover {
+    opacity: 1;
+    transition-duration: 150ms, 120ms; /* enter 150ms, exit (above) 100ms */
+  }
+}
+
+.side-rail__item:active { transform: scale(0.96); }
+
+.side-rail__item:focus-visible {
+  outline: 2px solid var(--yellow-500);
+  outline-offset: -2px;
+  border-radius: 8px;
+}
+
+/* Active destination: brand ink on a soft pill behind the glyph (per
+   L's mock, 2026-06-11 — replaces the earlier edge bar). Static on
+   purpose — each page load is fresh; animating it would be an entrance
+   animation by the back door. */
+.side-rail__item[aria-current="page"] {
+  color: var(--yellow-500);
+  opacity: 1;
+}
+.side-rail__item[aria-current="page"]::before {
+  content: '';
+  position: absolute;
+  left: -8px;              /* item is inset (78−62)/2 = 8px; bar hugs the rail edge */
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 36px;
+  border-radius: 0 2px 2px 0;
+  background: var(--yellow-500);
+}
+
+.side-rail__icon {
+  /* --icon-size: optical correction hook. The filled play glyph (焦點)
+     carries more ink than its stroke siblings; it renders at 19px so
+     the seven icons share one visual weight. */
+  width: var(--icon-size, 22px);
+  height: var(--icon-size, 22px);
+  background: currentColor;
+  -webkit-mask: var(--icon) center / contain no-repeat;
+          mask: var(--icon) center / contain no-repeat;
+}
+
+.side-rail__label {
+  font-family: var(--font-cjk-display);
+  font-size: 12px;   /* Chinese (base) — CJK reads smaller per glyph, so it's larger than the English label, which is pinned to 11px below (decoupled from the global Afacad +2 per L). */
+  line-height: 1;
+  letter-spacing: 0.04em;
+  white-space: nowrap;  /* prevent wrap on English labels like "Co-Create" */
+}
+
+/* Full program names return on hover — the two flagship programs
+   (影視共創計畫 / AI 原力創作計畫) compress to 共創 / 創作 in the rail,
+   so the flyout restores the differentiator. Only items with a
+   data-tip carry one. */
+.side-rail__item[data-tip]::after {
+  content: attr(data-tip);
+  position: absolute;
+  left: calc(100% + 14px);
+  top: 50%;
+  transform: translate(-4px, -50%);
+  padding: 7px 12px;
+  border-radius: var(--radius-pill);
+  background: rgba(10, 10, 10, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--neutral-white);
+  font-family: var(--font-cjk-display);
+  font-size: 12px;
+  line-height: 1;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms cubic-bezier(0.23, 1, 0.32, 1),
+              transform 150ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+@media (hover: hover) and (pointer: fine) {
+  .side-rail__item[data-tip]:hover::after {
+    opacity: 1;
+    transform: translate(0, -50%);
+  }
+}
+
+/* Rail foot — divider + 發表 button after the nav items (ported from
+   Dolly's sidebar build). The + reuses the glass FAB language at rail scale. */
+.side-rail__foot {
+  margin-top: 12px;
+  width: calc(100% - 20px);
+  display: flex;
+  justify-content: center;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.10);
+}
+.side-rail__post {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.side-rail__post .fab__icon { width: 16px; height: 16px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .side-rail__item { transition-duration: 100ms; }
+  .side-rail__item:active { transform: none; }
+  .side-rail__item[data-tip]::after { transition: opacity 100ms ease; transform: translate(0, -50%); }
+}
+
+/* ── Phone (<768): the side-rail steps aside for the floating bottom nav
+   (43-bottom-nav.css). Placed at end of file so it overrides the base
+   .side-rail display above (equal specificity → later wins). Content
+   reclaims full width; the header drops its rail offset. ── */
+@media (max-width: 767.98px) {
+  .side-rail { display: none; }
+  body.has-rail { padding-left: 0; }
+  body.has-rail .header { margin-left: 0; }
+}
+
+/* ── Tablet (768–1023): collapse to an icon-only rail (labels hidden,
+   narrower track). Desktop-class nav, not phone chrome. ── */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  :root { --rail-w: 62px; }
+  .side-rail { width: var(--rail-w); padding-left: 0; padding-right: 0; }
+  .side-rail__label { display: none; }
+  .side-rail__item { padding-left: 0; padding-right: 0; }
+  .side-rail__item[data-tip]::after { display: none; }   /* tooltips off; labels return ≥1024 */
+}
+
+/* ── Afacad size compensation (English locale)
+   Afacad reads optically smaller than Proxima Nova / Satoshi at the same
+   font-size. Rule: wherever Afacad is the rendered family in html[lang="en"],
+   add 2px. For the rail label this means 11px base → 13px in English.
+   Scoped to html[lang="en"] so CJK (LINE Seed / Proxima) is untouched. ── */
+html[lang="en"] .side-rail__label {
+  font-size: 11px;   /* English pinned at 11px (stays put); Chinese base is larger at 12px */
+}

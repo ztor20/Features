@@ -1,0 +1,304 @@
+/* ─────────────────────────────────────────
+   SHOP v2 — 商店 (hub / 爆米花商店 / 創作者商店 / 活動)
+   Rebuilt 2026-06-11 on luxury-PLP research (SSENSE / Net-a-Porter /
+   Mr Porter / Farfetch / END live-render audit):
+   · cards are chromeless — no border, no panel, no radius, no shadow,
+     no hover lift. The image IS the card, locked 2:3 on one matte field.
+   · text block: stacked left-aligned lines at ONE size; hierarchy from
+     case + color only.
+   · grid: 4 columns, tight column gap / wide row gap (editorial bands).
+   · filters: plain text links + quiet result count over a hairline.
+   Creator storefront re-ordered per Weverse/Fourthwall patterns;
+   leaderboard per podium→table→my-rank canon.
+   ───────────────────────────────────────── */
+
+/* .glass-tabs--push margin removed 2026-06-23: it added ~36px above the tab bar
+   on top of the section's own padding-top, opening the void above the tabs on the
+   creator/leaderboard pages. The section padding-top is the single owner of that
+   gap now. Class kept on the markup (inert) so ~13 pages need no edit. */
+.glass-tabs--push { margin-top: 0; }
+
+/* PLP head — quiet, never a hero */
+.shop-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-4);
+  margin-top: var(--space-2);
+}
+.shop-head__title {
+  font-family: var(--font-cjk-display);
+  font-size: var(--fs-page-title);   /* was 20px literal — now the canonical token */
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.02em;
+}
+.shop-head__desc {
+  font-size: var(--fs-page-desc);    /* was 13px literal */
+  color: var(--text-tertiary);
+}
+
+/* Toolbar — text-link filters left, count right, one hairline below */
+.shop-toolbar {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-6);
+  margin-top: 30px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.shop-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 22px;
+}
+.shop-filter__item {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--font-cjk-text);
+  font-size: 13px;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: color 150ms var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .shop-filter__item:hover { color: var(--neutral-white); }
+}
+.shop-filter__item--active {
+  color: var(--neutral-white);
+  text-decoration: underline;
+  text-decoration-color: var(--yellow-500);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 8px;
+}
+.shop-count {
+  font-family: var(--font-latin);
+  font-size: 12px;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* The grid — editorial bands */
+.shop-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: var(--space-4);
+  row-gap: 44px;
+  margin-top: 36px;
+}
+@media (max-width: 1180px) { .shop-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+/* Chromeless product card */
+.shop-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+.shop-card__media {
+  position: relative;
+  aspect-ratio: 2 / 3;
+  background: var(--bg-secondary);   /* one matte field for every image */
+  overflow: hidden;
+}
+.shop-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.shop-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding-top: var(--space-3);
+}
+.shop-card__flag {
+  font-family: var(--font-latin);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--yellow-500);
+}
+.shop-card__cat {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--text-tertiary);
+}
+.shop-card__title {
+  font-family: var(--font-cjk-text);
+  font-size: 13px;
+  font-weight: var(--fw-regular);
+  line-height: 1.5;
+  color: var(--neutral-white);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.shop-card__price {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: 2px;
+  font-family: var(--font-latin);
+  font-size: 13px;
+  font-weight: var(--fw-medium);
+  color: var(--neutral-white);
+  font-variant-numeric: tabular-nums;
+}
+.shop-card__price-sub {
+  font-weight: var(--fw-regular);
+  color: var(--text-tertiary);
+}
+.shop-card__price-pop-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  background: var(--yellow-500);
+  -webkit-mask: url('assets/icons/popcorn_single.svg') center / contain no-repeat;
+          mask: url('assets/icons/popcorn_single.svg') center / contain no-repeat;
+}
+.shop-card__note {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  line-height: 1.5;
+}
+.shop-card__redeem {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--yellow-500);
+}
+/* Sold out: honest dimming, a word instead of a price */
+.shop-card--soldout .shop-card__media img,
+.shop-card--soldout .brand-tile { filter: grayscale(1) brightness(0.5); }
+.shop-card--soldout .shop-card__title { color: var(--text-tertiary); }
+
+/* Brand voucher tiles — typographic gradient tiles, never hotlinked logos */
+.brand-tile {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  text-align: center;
+  font-family: var(--font-cjk-display);
+  font-weight: var(--fw-bold);
+  font-size: 18px;
+  line-height: 1.4;
+  color: var(--neutral-white);
+}
+.brand-tile--1 { background: linear-gradient(135deg, var(--neutral-700), var(--neutral-900)); }
+.brand-tile--2 { background: linear-gradient(135deg, var(--yellow-800), var(--neutral-900)); }
+.brand-tile--3 { background: linear-gradient(135deg, var(--neutral-600), var(--neutral-800)); }
+.brand-tile--4 { background: linear-gradient(160deg, var(--yellow-900), var(--neutral-800)); }
+.brand-tile--5 { background: linear-gradient(135deg, var(--neutral-800), var(--yellow-900)); }
+.brand-tile--6 { background: linear-gradient(160deg, var(--neutral-700), var(--yellow-800)); }
+
+/* ─────────────────────────────────────────
+   RESPONSIVE — shop hub
+   ───────────────────────────────────────── */
+
+/* ── Tablet: 768–1023px ── */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .shop-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: var(--space-3);
+    row-gap: var(--space-10);
+  }
+
+  .shop-toolbar {
+    gap: var(--space-4);
+  }
+
+  .shop-filter {
+    gap: var(--space-4);
+  }
+}
+
+/* ── Phone: ≤767px ── */
+@media (max-width: 767.98px) {
+  /* Head */
+  .shop-head {
+    flex-direction: column;
+    gap: var(--space-1);
+    align-items: flex-start;
+  }
+
+  /* Toolbar: filters wrap below count */
+  .shop-toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+    margin-top: var(--space-5);
+    padding-bottom: var(--space-3);
+  }
+
+  .shop-filter {
+    gap: var(--space-4);
+    flex-wrap: wrap;
+  }
+
+  /* Touch targets: ensure filter buttons are at least 44px tall */
+  .shop-filter__item {
+    padding-block: 10px;
+    font-size: var(--fs-body-sm);
+  }
+
+  /* Grid: 2-up on phone */
+  .shop-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--space-3);
+    row-gap: var(--space-8);
+    margin-top: var(--space-6);
+  }
+
+  /* Card body: tighter but legible */
+  .shop-card__body {
+    gap: var(--space-1);
+    padding-top: var(--space-2);
+  }
+
+  .shop-card__title {
+    font-size: var(--fs-caption);
+  }
+
+  .shop-card__price {
+    font-size: var(--fs-caption);
+    flex-wrap: wrap;
+    gap: var(--space-1);
+    margin-top: var(--space-1);
+  }
+
+  .shop-card__price-sub {
+    white-space: nowrap;
+  }
+
+  .shop-card__flag,
+  .shop-card__cat {
+    font-size: 10px;
+  }
+
+  .shop-card__note {
+    font-size: 11px;
+  }
+
+  /* Brand tiles: reduce internal padding so text fits narrow cards */
+  .brand-tile {
+    font-size: var(--fs-body-sm);
+    padding: var(--space-3);
+  }
+}
+
+/* ── Small phone: ≤480px — 1-up for content-rich cards ── */
+@media (max-width: 480px) {
+  .shop-grid {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: var(--space-8);
+  }
+
+  /* Single-column: image can be shorter; preserve 2:3 or switch to 3:4 */
+  .shop-card__media {
+    aspect-ratio: 3 / 4;
+  }
+}

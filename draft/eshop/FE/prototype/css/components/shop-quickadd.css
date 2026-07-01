@@ -1,0 +1,77 @@
+/* ════════════════════════════════════════════════════════════════
+   shop-quickadd.css — PLP add-to-cart, relocated out of the media frame.
+
+   The old quick-add lived INSIDE .shop-card__media (aspect-ratio:2/3;
+   overflow:hidden). On touch, refine-shop.css flipped it to position:static
+   but it stayed inside that clip box → clipped to zero → invisible AND
+   untappable on phones. It now lives in the card FOOTER beside the price:
+   quiet + hover-revealed on desktop (keeps the grid editorial), and always
+   visible + a real tap target on touch. Add behaviour stays cart.js's
+   delegated [data-add]; this file is presentation only. Tokens only.
+   ════════════════════════════════════════════════════════════════ */
+
+.shop-card__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+.shop-card__foot .shop-card__price { min-width: 0; }   /* price takes the row's left */
+
+.shop-card__qa {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  background: var(--white-alpha-4);
+  color: var(--yellow-500);
+  cursor: pointer;
+  transition: opacity 200ms var(--ease-out), transform 160ms var(--ease-out),
+              background 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+.shop-card__qa-icon { width: 18px; height: 18px; display: grid; place-items: center; }
+.shop-card__qa-icon svg { width: 100%; height: 100%; display: block; }
+
+.shop-card__qa:hover { background: var(--yellow-500); color: var(--yellow-ink); border-color: var(--yellow-500); }
+.shop-card__qa:active { transform: scale(0.92); }
+.shop-card__qa:focus-visible { outline: 2px solid var(--yellow-500); outline-offset: 2px; }
+
+/* added confirmation — brief success swap (cart.js + shop-render drive the timing) */
+.shop-card__qa.is-added {
+  background: var(--success-500);
+  border-color: var(--success-500);
+  color: var(--neutral-white);
+}
+
+/* Desktop (hover-capable, WIDE): quiet — revealed on card hover / keyboard
+   focus, so the resting grid stays editorial. NEVER display:none (keeps it
+   focusable); opacity + transform only. */
+@media (hover: hover) and (pointer: fine) {
+  .shop-card__qa { opacity: 0; transform: translateY(4px); }
+  .shop-card:hover .shop-card__qa,
+  .shop-card:focus-within .shop-card__qa { opacity: 1; transform: translateY(0); }
+}
+
+/* Touch OR narrow viewport: always visible — THIS is the mobile fix. Declared
+   AFTER the desktop rule so it wins wherever both could match (a real phone is
+   pointer:coarse; a narrow window is ≤767.98px even with a fine pointer). The
+   site's mobile breakpoint is 767.98px. */
+@media (hover: none), (pointer: coarse), (max-width: 767.98px) {
+  .shop-card__qa { opacity: 1; transform: none; }
+}
+
+/* Reduced motion on a wide desktop: never trap the control behind a reveal
+   transition. (Narrow/touch already force it visible above.) */
+@media (prefers-reduced-motion: reduce) and (hover: hover) and (pointer: fine) and (min-width: 768px) {
+  .shop-card__qa {
+    opacity: 1;
+    transform: none;
+    transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
+  }
+}

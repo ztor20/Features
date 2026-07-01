@@ -1,0 +1,42 @@
+/* ════════════════════════════════════════════════════════════════
+   48-order-tracker.css — the "我的訂單" surface (orders / tickets / bids /
+   rentals) in my-library.html, rendered by my-orders.js. Cards + ticket-QR
+   placeholder. The mini order-tracker lives in 47-checkout.css and is reused.
+   Tokens only.
+   ════════════════════════════════════════════════════════════════ */
+
+.orders-tabs { margin-bottom: var(--space-6); }
+.orders-list { display: grid; grid-template-columns: 1fr; gap: var(--space-4); }
+@media (min-width: 768px) { .orders-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5); } }
+
+.orders-card {
+  display: flex; flex-direction: column; gap: var(--space-3);
+  padding: var(--space-5);
+  border: 1px solid var(--border-subtle); border-radius: var(--radius-xl);
+  background: var(--bg-secondary);
+}
+.orders-card__head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3); }
+.orders-card__id { font-family: var(--font-latin); font-size: var(--fs-body-sm); font-weight: var(--fw-bold); color: var(--text-primary); letter-spacing: 0.03em; }
+.orders-card__title { font-family: var(--font-cjk-display); font-size: var(--fs-body); font-weight: var(--fw-bold); color: var(--text-primary); min-width: 0; }
+.orders-card__date { font-family: var(--font-cjk-text); font-size: var(--fs-caption); color: var(--text-tertiary); white-space: nowrap; flex: none; }
+.orders-card__meta { font-family: var(--font-cjk-text); font-size: var(--fs-body-sm); color: var(--text-secondary); }
+
+.orders-card__thumbs { display: flex; align-items: center; gap: var(--space-2); }
+.orders-card__thumb { width: 44px; height: 44px; flex: none; border-radius: var(--radius-sm); overflow: hidden; background: var(--bg-tertiary); }
+.orders-card__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.orders-card__count { font-family: var(--font-cjk-text); font-size: var(--fs-caption); color: var(--text-tertiary); margin-left: var(--space-1); }
+
+.orders-card__foot { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin-top: var(--space-1); }
+.orders-card__total { font-family: var(--font-latin); font-size: var(--fs-body); font-weight: var(--fw-bold); color: var(--text-primary); font-variant-numeric: tabular-nums; }
+.orders-card__sim { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+
+/* ticket card — QR left, details right */
+.orders-card--ticket { flex-direction: row; align-items: stretch; gap: var(--space-4); }
+.orders-card__qr { flex: none; }
+.orders-card__main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: var(--space-2); justify-content: space-between; }
+.ticket-qr { display: flex; flex-direction: column; align-items: center; gap: var(--space-1); padding: var(--space-2); background: var(--neutral-white); border-radius: var(--radius-md); }
+.ticket-qr__svg { width: 84px; height: 84px; display: block; image-rendering: pixelated; }
+.ticket-qr__svg rect { fill: var(--neutral-900); }
+.ticket-qr__code { font-family: var(--font-latin); font-size: 9px; color: var(--neutral-900); letter-spacing: 0.03em; }
+
+.orders-empty { grid-column: 1 / -1; padding-block: var(--space-16); gap: var(--space-4); }

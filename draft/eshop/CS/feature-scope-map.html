@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ztor eShop · Feature Scope Map — Phase 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f3eee2; --paper2:#ece5d4; --card:#fffdf8; --ink:#241f18; --muted:#6f675a;
+    --gold:#b0894f; --gold-soft:#cbb085; --rule:#ddd4c0;
+    --p1:#1f7a4d; --p1-bg:#e4f1e7; --p1-edge:#3aa06a;
+    --nx:#2563a8; --nx-bg:#e2ecf7; --nx-edge:#4d8bd0;
+    --tb:#8a8073; --tb-bg:#ede8dd; --tb-edge:#b9ae9c;
+    --grp:#cfc6b2;
+    --shadow:0 1px 0 rgba(0,0,0,.04),0 14px 40px -22px rgba(60,45,20,.45);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:"Noto Sans TC",system-ui,sans-serif;
+    color:var(--ink); line-height:1.5;
+    background:
+      radial-gradient(120% 80% at 100% -10%, #fbf7ec 0%, transparent 55%),
+      radial-gradient(120% 80% at -10% 110%, #f0e7d3 0%, transparent 50%),
+      var(--paper);
+    -webkit-font-smoothing:antialiased;
+  }
+  /* faint paper grain */
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.5;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");}
+  .wrap{position:relative;z-index:1;max-width:1120px;margin:0 auto;padding:46px 26px 90px}
+
+  /* ---- Header ---- */
+  .eyebrow{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--gold);font-weight:700}
+  h1{font-family:"Fraunces",serif;font-weight:900;font-size:clamp(34px,5.4vw,60px);line-height:.98;letter-spacing:-.015em;margin:.28em 0 .12em;max-width:16ch}
+  h1 em{font-style:italic;color:var(--gold)}
+  .sub{font-size:15px;color:var(--muted);max-width:62ch}
+  .meta{font-family:"JetBrains Mono",monospace;font-size:11.5px;color:var(--muted);margin-top:14px;display:flex;flex-wrap:wrap;gap:6px 18px}
+  .meta b{color:var(--ink);font-weight:700}
+  .goldrule{height:2px;margin:26px 0 0;background:linear-gradient(90deg,var(--gold),transparent 70%)}
+
+  /* ---- Toolbar ---- */
+  .toolbar{position:sticky;top:0;z-index:5;margin-top:22px;padding:14px 16px;border:1px solid var(--rule);border-radius:14px;
+    background:rgba(255,253,248,.86);backdrop-filter:blur(10px);box-shadow:var(--shadow);
+    display:flex;flex-wrap:wrap;align-items:center;gap:14px 22px}
+  .legend{display:flex;flex-wrap:wrap;gap:8px}
+  .lg{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:var(--ink);padding:5px 11px;border-radius:999px;border:1px solid var(--rule);background:#fff;cursor:pointer;transition:.18s;user-select:none}
+  .lg .dot{width:11px;height:11px;border-radius:3px;flex:none}
+  .lg .ct{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:11px;color:var(--muted)}
+  .lg[data-f="all"] .dot{background:linear-gradient(135deg,var(--p1-edge),var(--nx-edge),var(--tb-edge))}
+  .lg[data-f="p1"] .dot{background:var(--p1-edge)}
+  .lg[data-f="next"] .dot{background:var(--nx-edge)}
+  .lg[data-f="tbd"] .dot{background:var(--tb-edge)}
+  .lg.active{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink) inset}
+  .spacer{flex:1 1 auto}
+  .btn{font-family:"JetBrains Mono",monospace;font-size:11.5px;font-weight:700;letter-spacing:.04em;color:var(--ink);background:#fff;border:1px solid var(--rule);border-radius:999px;padding:7px 14px;cursor:pointer;transition:.18s}
+  .btn:hover{border-color:var(--gold);color:var(--gold)}
+
+  /* ---- Pillars ---- */
+  .pillar{margin-top:30px;border:1px solid var(--rule);border-radius:18px;background:var(--card);box-shadow:var(--shadow);overflow:hidden;position:relative}
+  .phead{display:flex;align-items:baseline;gap:14px;padding:20px 24px 16px;border-bottom:1px solid var(--rule);position:relative}
+  .pno{font-family:"Fraunces",serif;font-weight:900;font-size:40px;line-height:1;color:var(--gold-soft)}
+  .ptitle{font-family:"Fraunces",serif;font-weight:600;font-size:23px;letter-spacing:-.01em}
+  .pen{font-size:13px;color:var(--muted);font-weight:500}
+  .ptag{font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--muted);margin-left:auto;text-align:right;line-height:1.5}
+  .rows{padding:8px 0 12px}
+
+  /* ---- Rows ---- */
+  .row{display:flex;align-items:flex-start;gap:12px;padding:6px 24px 6px 0;transition:opacity .22s,background .15s;position:relative}
+  .row:hover{background:var(--paper2)}
+  .row .indent{flex:none}
+  .edge{align-self:stretch;width:3px;border-radius:3px;flex:none;margin-top:2px;margin-bottom:2px}
+  .scope-p1 .edge{background:var(--p1-edge)} .scope-next .edge{background:var(--nx-edge)}
+  .scope-tbd .edge{background:var(--tb-edge)} .scope-group .edge{background:var(--grp)}
+  .id{font-family:"JetBrains Mono",monospace;font-size:12px;font-weight:700;color:var(--gold);min-width:40px;padding-top:2px;flex:none;letter-spacing:.03em}
+  .body{flex:1 1 auto;min-width:0}
+  .cn{font-weight:500;font-size:15px}
+  .scope-group .cn{font-weight:700}
+  .en{font-size:12px;color:var(--muted);margin-left:8px;font-weight:400}
+  .note{display:block;font-size:11.5px;color:var(--nx);margin-top:2px;font-style:italic}
+  .scope-tbd .note{color:var(--tb)}
+  .chip{flex:none;align-self:flex-start;font-family:"JetBrains Mono",monospace;font-size:10px;font-weight:700;letter-spacing:.04em;padding:3px 9px;border-radius:999px;white-space:nowrap;margin-top:1px}
+  .scope-p1 .chip{background:var(--p1-bg);color:var(--p1)}
+  .scope-next .chip{background:var(--nx-bg);color:var(--nx)}
+  .scope-tbd .chip{background:var(--tb-bg);color:var(--tb)}
+  .scope-group>.chip{display:none}
+  .scope-group .cn{font-size:14.5px}
+
+  /* ---- Build-status overlay ---- */
+  .bchip{display:none;flex:none;align-self:flex-start;font-family:"JetBrains Mono",monospace;font-size:10px;font-weight:700;letter-spacing:.03em;padding:3px 8px;border-radius:999px;white-space:nowrap;margin-top:1px;margin-left:6px}
+  body.show-build .bchip{display:inline-block}
+  body.show-build .scope-group .bchip{display:none}
+  .b-built .bchip{background:#e4f1e7;color:#1f7a4d}
+  .b-partial .bchip{background:#fbe9d0;color:#b06b14}
+  .b-missing .bchip{background:#f7e0df;color:#b0322c}
+  .b-ahead .bchip{background:#e2ecf7;color:#2563a8}
+  .b-deferred .bchip{background:#ede8dd;color:#8a8073}
+  /* in build mode, the left edge reflects build status instead of scope */
+  body.show-build .row.b-built .edge{background:#3aa06a}
+  body.show-build .row.b-partial .edge{background:#d2962f}
+  body.show-build .row.b-missing .edge{background:#cf5b53}
+  body.show-build .row.b-ahead .edge{background:#4d8bd0}
+  body.show-build .row.b-deferred .edge{background:#b9ae9c}
+  /* gaps-only: dim everything that isn't an open gap */
+  body.show-gaps .row.b-built,body.show-gaps .row.b-ahead,body.show-gaps .row.b-deferred,body.show-gaps .row.scope-group{opacity:.16}
+  .btn.on{border-color:var(--ink);color:var(--ink);box-shadow:0 0 0 1px var(--ink) inset}
+
+  /* depth styling */
+  .d1>.body>.cn{font-size:16px}
+  .d3 .cn,.d4 .cn{font-size:14px} .d4 .cn{color:#3a342a}
+
+  /* filtering (dim, keep map intact) */
+  body.f-p1 .row.scope-next,body.f-p1 .row.scope-tbd,
+  body.f-next .row.scope-p1,body.f-next .row.scope-tbd,
+  body.f-tbd .row.scope-p1,body.f-tbd .row.scope-next{opacity:.16}
+
+  /* source flag */
+  .src{font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--gold);border:1px dashed var(--gold-soft);border-radius:6px;padding:2px 7px;margin-left:10px;vertical-align:middle}
+
+  footer{margin-top:36px;font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--muted);text-align:center;line-height:1.8}
+
+  @media (max-width:640px){
+    .id{min-width:46px;font-size:10px}.en{display:block;margin-left:0}
+    .ptag{display:none}.pno{font-size:30px}
+  }
+  @media print{
+    .toolbar{display:none}body{background:#fff}body::before{display:none}
+    .pillar{break-inside:avoid;box-shadow:none}.row{opacity:1!important}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">Ztor 2.0 · Creator Studio × eShop</div>
+  <h1>Feature Scope Map — <em>Phase 1</em></h1>
+  <p class="sub">The full Ztor eShop feature surface, numbered for reference, with every node scoped into one of three tiers. Everything not in Phase 1 is documented here for the business team to prioritize.</p>
+  <div class="meta">
+    <span><b>Date</b> 2026-06-29</span>
+    <span><b>Source</b> Ztor功能点.md + Phase 1 handoff</span>
+    <span><b>Scope</b> internal use only</span>
+    <span><b>Total</b> <span id="t-all">–</span> features</span>
+  </div>
+  <div class="goldrule"></div>
+
+  <div class="toolbar">
+    <div class="legend">
+      <span class="lg active" data-f="all">Show all <span class="ct" id="c-all">0</span></span>
+      <span class="lg" data-f="p1"><span class="dot"></span>🟢 Phase 1 <span class="ct" id="c-p1">0</span></span>
+      <span class="lg" data-f="next"><span class="dot"></span>🔵 Next · follow-up <span class="ct" id="c-next">0</span></span>
+      <span class="lg" data-f="tbd"><span class="dot"></span>⚪ TBD · biz decides <span class="ct" id="c-tbd">0</span></span>
+    </div>
+    <span class="spacer"></span>
+    <button class="btn" id="t-build">◉ Build status</button>
+    <button class="btn" id="t-gaps">⚑ Gaps only</button>
+    <button class="btn" onclick="window.print()">⎙ Print / PDF</button>
+  </div>
+
+  <div id="tree"></div>
+
+  <footer>
+    🟢 Phase 1 — build now (internal) &nbsp;·&nbsp; 🔵 Next — planned follow-up phase &nbsp;·&nbsp; ⚪ TBD — business team to decide<br>
+    Feature IDs — <b>S</b> Shop · <b>O</b> Orders · <b>E</b> Earnings · <b>B</b> Buyer storefront (e.g. “E07”) · stable for cross-team reference.
+  </footer>
+</div>
+
+<script>
+/* scope: p1 | next | tbd | group(structural).  d = depth (1..4) */
+const DATA = [
+ {n:"1", cn:"商店管理", en:"Shop Management", s:"group", d:0},
+  {n:"1.1", cn:"通用功能", en:"Common", s:"group", d:1},
+   {n:"1.1.1", cn:"顶部库存预警提示条", en:"Low-stock alert bar", s:"p1", d:2},
+   {n:"1.1.2", cn:"筛选", en:"Filter", s:"p1", d:2},
+   {n:"1.1.3", cn:"商店设置", en:"Store settings", s:"p1", d:2},
+    {n:"1.1.3.1", cn:"编辑封面 / 头像 / 名称 / 链接 / 描述 / 币种", en:"Edit cover/avatar/name/URL/desc/currency", s:"p1", d:3},
+    {n:"1.1.3.2", cn:"付款设置", en:"Payment settings", s:"next", d:3, note:"Stripe status read-only; details TBD"},
+    {n:"1.1.3.3", cn:"出货设置（出货地址、免运门槛）", en:"Shipping defaults (address, free-ship threshold)", s:"next", d:3, note:"config fields only — no carrier integration"},
+    {n:"1.1.3.4", cn:"粉丝预览视角", en:"See-as-fan preview", s:"p1", d:3},
+   {n:"1.1.4", cn:"商店预览页面", en:"Store preview", s:"p1", d:2},
+   {n:"1.1.5", cn:"创建 商品 / 组合 / 拍卖", en:"Create product / bundle / auction", s:"group", d:2},
+    {n:"1.1.5.1", cn:"创建商品（入口）", en:"Create product entry", s:"p1", d:3},
+    {n:"1.1.5.2", cn:"创建组合（入口）", en:"Create bundle entry", s:"p1", d:3},
+    {n:"1.1.5.3", cn:"创建拍卖（入口）", en:"Create auction entry", s:"tbd", d:3, note:"auctions deferred"},
+  {n:"1.2", cn:"商品", en:"Products", s:"group", d:1},
+   {n:"1.2.1", cn:"商品列表", en:"Product list", s:"p1", d:2},
+    {n:"1.2.1.1", cn:"排序", en:"Sort", s:"p1", d:3},
+    {n:"1.2.1.2", cn:"字段（图片/名称/分类/价格/状态/库存）", en:"Columns", s:"p1", d:3},
+    {n:"1.2.1.3", cn:"状态", en:"Statuses", s:"group", d:3},
+     {n:"1.2.1.3.1", cn:"已上架（上架开关、编辑）", en:"Live (toggle, edit)", s:"p1", d:4},
+     {n:"1.2.1.3.2", cn:"已隐藏", en:"Hidden", s:"p1", d:4},
+     {n:"1.2.1.3.3", cn:"库存过低", en:"Low stock", s:"p1", d:4},
+     {n:"1.2.1.3.4", cn:"补货流程（数量/供应商/到货日/备注/确认）", en:"Restock flow", s:"p1", d:4},
+     {n:"1.2.1.3.5", cn:"已售完", en:"Sold out", s:"p1", d:4, note:"status shown; exact UI TBD"},
+     {n:"1.2.1.3.6", cn:"草稿", en:"Draft", s:"p1", d:4},
+    {n:"1.2.1.4", cn:"商品详情 / 编辑", en:"Product detail / edit", s:"p1", d:3},
+     {n:"1.2.1.4.1", cn:"显示状态 / 分类", en:"Show status/category", s:"p1", d:4},
+     {n:"1.2.1.4.2", cn:"销售摘要（件数/毛收/净利 → 收入管理）", en:"Sales summary", s:"p1", d:4, note:"reads from Earnings minimum"},
+     {n:"1.2.1.4.3", cn:"被专案引用（引用列表 / 前往专案）", en:"Referenced by project", s:"tbd", d:4, note:"needs project/crowdfund module"},
+     {n:"1.2.1.4.4", cn:"以粉丝身份预览", en:"See-as-fan preview", s:"p1", d:4},
+   {n:"1.2.2", cn:"创建商品", en:"Create product", s:"p1", d:2},
+    {n:"1.2.2.1", cn:"展示图（主图 / 副图）", en:"Media (main/sub)", s:"p1", d:3},
+    {n:"1.2.2.2", cn:"商品资讯（名称/描述/分类/规格）", en:"Info", s:"p1", d:3},
+    {n:"1.2.2.3", cn:"商品规格（单一 / 多规格）", en:"Variants (single/multi)", s:"p1", d:3},
+    {n:"1.2.2.4", cn:"定价（价格 / 原价 + 爆米花价）", en:"Pricing + POPCORN price", s:"p1", d:3, note:"POPCORN price is net-new"},
+    {n:"1.2.2.5", cn:"库存（不限量 / 限量 + 低库存提醒）", en:"Inventory", s:"p1", d:3},
+    {n:"1.2.2.6", cn:"多规格价格与库存（SKU / 成本）", en:"Variant matrix (SKU/cost)", s:"p1", d:3},
+    {n:"1.2.2.7", cn:"取货方式", en:"Fulfillment method", s:"group", d:3},
+     {n:"1.2.2.7.1", cn:"物流配送（重量/分类/尺寸/寄件地）", en:"Logistics fields", s:"p1", d:4, note:"data entry only — no carrier API"},
+     {n:"1.2.2.7.2", cn:"现场 QR 领取（领取说明）", en:"On-site QR pickup", s:"p1", d:4},
+    {n:"1.2.2.8", cn:"购买限制与标签（每人限购 / 标签）", en:"Purchase limit & tags", s:"p1", d:3},
+    {n:"1.2.2.9", cn:"预览 / 上架开卖", en:"Preview & publish", s:"p1", d:3},
+    {n:"1.2.2.10", cn:"稍后再存（草稿）", en:"Save draft", s:"p1", d:3},
+    {n:"1.2.2.11", cn:"开始售卖", en:"Start selling", s:"p1", d:3},
+     {n:"1.2.2.11.1", cn:"发布贴文（标题/内容/收件对象/排程）", en:"Product-drop social post", s:"p1", d:4, note:"reuses Ztor's existing social-post feature — no new build"},
+  {n:"1.3", cn:"组合", en:"Bundles", s:"group", d:1},
+   {n:"1.3.1", cn:"组合包列表（字段 / 状态）", en:"Bundle list", s:"p1", d:2},
+   {n:"1.3.2", cn:"创建组合包", en:"Create bundle", s:"p1", d:2},
+    {n:"1.3.2.1", cn:"组合包名称", en:"Name", s:"p1", d:3},
+    {n:"1.3.2.2", cn:"商品（新增 / 近期预览）", en:"Items", s:"p1", d:3},
+    {n:"1.3.2.3", cn:"定价（固定价 / 折扣价）", en:"Pricing (fixed/% off)", s:"p1", d:3},
+    {n:"1.3.2.4", cn:"限量", en:"Quantity limit", s:"tbd", d:3},
+    {n:"1.3.2.5", cn:"发布贴文", en:"Publish post", s:"p1", d:3, note:"reuses Ztor's existing social-post feature"},
+   {n:"1.3.3", cn:"组合包详情 / 编辑", en:"Bundle detail / edit", s:"p1", d:2},
+    {n:"1.3.3.1", cn:"销售摘要", en:"Sales summary", s:"p1", d:3, note:"reads from Earnings"},
+    {n:"1.3.3.2", cn:"库存与成员影响（= 最少成员）", en:"Stock = min(member)", s:"p1", d:3},
+    {n:"1.3.3.3", cn:"以粉丝身份预览", en:"See-as-fan preview", s:"p1", d:3},
+
+ {n:"2", cn:"订单管理", en:"Order Management", s:"group", d:0},
+  {n:"2.1", cn:"数据统计", en:"KPI stats", s:"p1", d:1},
+   {n:"2.1.1", cn:"待出货", en:"To ship", s:"p1", d:2},
+   {n:"2.1.2", cn:"待处理", en:"Pending", s:"p1", d:2},
+   {n:"2.1.3", cn:"退款 / 争议", en:"Refund / dispute", s:"tbd", d:2, note:"refunds deferred"},
+   {n:"2.1.4", cn:"已完成 · 30天", en:"Completed · 30d", s:"p1", d:2},
+  {n:"2.2", cn:"汇出", en:"Export", s:"p1", d:1},
+  {n:"2.3", cn:"搜索订单", en:"Search orders", s:"p1", d:1},
+  {n:"2.4", cn:"状态栏", en:"Status filter", s:"group", d:1},
+   {n:"2.4.1", cn:"全部 / 代付款 / 已付款 / 待出货 / 已出货 / 已完成", en:"All → Completed", s:"p1", d:2},
+   {n:"2.4.2", cn:"退款 / 争议", en:"Refund / dispute", s:"tbd", d:2},
+  {n:"2.5", cn:"订单列表字段", en:"Order list fields", s:"p1", d:1},
+  {n:"2.6", cn:"订单详情", en:"Order detail", s:"p1", d:1},
+   {n:"2.6.1", cn:"内容", en:"Content", s:"group", d:2},
+    {n:"2.6.1.1", cn:"状态 / 收入结算", en:"Status / settlement", s:"p1", d:3},
+    {n:"2.6.1.2", cn:"订单商品列表", en:"Line items", s:"p1", d:3},
+    {n:"2.6.1.3", cn:"金额（商品 / 运费 / 平台费 / 支付费 / 净额）", en:"Amounts incl. platform fee", s:"p1", d:3},
+    {n:"2.6.1.4", cn:"在收入管理查看", en:"View in Earnings", s:"p1", d:3, note:"link to Earnings minimum"},
+    {n:"2.6.1.5", cn:"买家信息（名称 / 地址 / 联系方式）", en:"Buyer info", s:"p1", d:3},
+    {n:"2.6.1.6", cn:"查看粉丝记录", en:"View fan record", s:"next", d:3, note:"Fans CRM module out of scope"},
+   {n:"2.6.2", cn:"功能", en:"Actions", s:"group", d:2},
+    {n:"2.6.2.1", cn:"退款", en:"Refund", s:"tbd", d:3, note:"no in-system refunds in Phase 1"},
+    {n:"2.6.2.2", cn:"标记出货 / 履约", en:"Mark shipped / fulfillment", s:"p1", d:3},
+     {n:"2.6.2.2.1", cn:"物流配送（物流商 / 追踪码 / 标记出货）", en:"Logistics (manual)", s:"p1", d:4, note:"manual entry — no carrier API"},
+     {n:"2.6.2.2.2", cn:"QR 领取（二维码 / 标记已领取）", en:"QR pickup", s:"p1", d:4},
+     {n:"2.6.2.2.3", cn:"数位（下载）", en:"Digital download", s:"next", d:4, note:"digital goods deferred"},
+    {n:"2.6.2.3", cn:"退款与争议（部分 / 整单退款）", en:"Refund & dispute", s:"next", d:3},
+
+ {n:"3", cn:"收入管理", en:"Earnings / Income", s:"group", d:0},
+  {n:"3.1", cn:"数据统计", en:"KPI stats", s:"p1", d:1, note:"minimal slice only"},
+   {n:"3.1.1", cn:"总输入", en:"Gross", s:"p1", d:2},
+   {n:"3.1.2", cn:"净利（→ 收益拆分）", en:"Net (→ breakdown)", s:"p1", d:2, note:"net p1; waterfall later"},
+   {n:"3.1.3", cn:"待结算", en:"Pending settlement", s:"p1", d:2},
+   {n:"3.1.4", cn:"可提领", en:"Available", s:"p1", d:2, note:"display p1; payout later"},
+  {n:"3.2", cn:"筛选（本月 / 季 / 年）", en:"Filter (month/qtr/year)", s:"p1", d:1},
+  {n:"3.3", cn:"汇出", en:"Export", s:"p1", d:1},
+  {n:"3.4", cn:"申请提款", en:"Request payout", s:"next", d:1, note:"payout mechanics deferred"},
+  {n:"3.5", cn:"栏目", en:"Tabs", s:"group", d:1},
+   {n:"3.5.1", cn:"总览（趋势图 / 近期交易 / 来源分布）", en:"Overview", s:"next", d:2, note:"charts deferred"},
+   {n:"3.5.2", cn:"交易明细", en:"Transactions", s:"p1", d:2},
+    {n:"3.5.2.1", cn:"全部（字段 + 展开详情）", en:"All (fields + expand)", s:"p1", d:3},
+    {n:"3.5.2.2", cn:"电子商店", en:"E-Shop tab", s:"p1", d:3},
+    {n:"3.5.2.3", cn:"电子票券", en:"E-Tickets", s:"tbd", d:3},
+    {n:"3.5.2.4", cn:"IP 版税", en:"IP royalty", s:"tbd", d:3},
+    {n:"3.5.2.5", cn:"授权", en:"Licensing", s:"tbd", d:3},
+    {n:"3.5.2.6", cn:"平台 / 串流版税", en:"Streaming royalty", s:"tbd", d:3},
+    {n:"3.5.2.7", cn:"专案支持", en:"Project support", s:"tbd", d:3},
+    {n:"3.5.2.8", cn:"提款与退款", en:"Payout & refund", s:"next", d:3},
+    {n:"3.5.2.9", cn:"载入更多", en:"Load more", s:"p1", d:3},
+    {n:"3.5.2.10", cn:"手动补登", en:"Manual entry", s:"next", d:3},
+    {n:"3.5.2.11", cn:"汇出 CSV", en:"Export CSV", s:"p1", d:3},
+   {n:"3.5.3", cn:"收益拆解（瀑布图 / 依专案 · Ztor抽成·创作者·EFT）", en:"Revenue breakdown waterfall", s:"tbd", d:2, note:"'Follow the Money' split — blocked on platform-cut decision"},
+   {n:"3.5.4", cn:"提款", en:"Payout", s:"next", d:2},
+   {n:"3.5.5", cn:"税务文件", en:"Tax documents", s:"tbd", d:2},
+
+ {n:"4", cn:"买家店面（Ztor eShop）", en:"Buyer Storefront", s:"group", d:0, src:"from Phase 1 handoff (not in 功能点.md)"},
+  {n:"4.1", cn:"创作者商店页", en:"Creator shop page", s:"p1", d:1},
+  {n:"4.2", cn:"商品详情页 (PDP)", en:"Product detail page", s:"p1", d:1, note:"net-new — designer proto has none"},
+  {n:"4.3", cn:"购物车", en:"Cart", s:"p1", d:1},
+  {n:"4.4", cn:"结帐", en:"Checkout", s:"p1", d:1},
+   {n:"4.4.1", cn:"Apple Pay / 信用卡 (Stripe)", en:"Apple Pay / card", s:"p1", d:2},
+   {n:"4.4.2", cn:"爆米花付款 (Pay by POPCORN)", en:"Pay by POPCORN", s:"p1", d:2, note:"net-new payment option"},
+   {n:"4.4.3", cn:"货到付款 (COD)", en:"Cash on delivery", s:"tbd", d:2, note:"removed from Phase 1"},
+  {n:"4.5", cn:"订单确认", en:"Order confirmation", s:"p1", d:1},
+  {n:"4.6", cn:"取货 QR（email + 订单详情，静态）", en:"Pickup QR (static, email + order)", s:"p1", d:1},
+  {n:"4.7", cn:"公开探索栏（/shops、首页商品栏）", en:"Public discovery rails", s:"next", d:1, note:"internal-only Phase 1 — no public discovery"},
+];
+
+const LABEL={p1:"🟢 PHASE 1",next:"🔵 NEXT",tbd:"⚪ TBD"};
+/* Build status vs the two prototypes (2026-06-29). Default = built; only exceptions listed. */
+const BUILD={
+  S13:'partial',S30:'partial',O18:'partial',O23:'partial',B06:'partial',B09:'partial',
+  S11:'ahead',S24:'ahead',S45:'ahead',O04:'ahead',O09:'ahead',O17:'ahead',O22:'ahead',
+  E08:'ahead',E09:'ahead',E13:'ahead',E14:'ahead',E15:'ahead',E16:'ahead',E17:'ahead',
+  E18:'ahead',E20:'ahead',E22:'ahead',E23:'ahead',E24:'ahead',
+  B07:'deferred',B10:'deferred',
+};
+const BLABEL={built:"✅ built",partial:"🟡 gap",missing:"❌ missing",ahead:"✅⬆ ahead",deferred:"⏳ deferred"};
+const PMAP={'1':'S','2':'O','3':'E','4':'B'};
+const tree=document.getElementById('tree');
+let cur=null, counts={p1:0,next:0,tbd:0,all:0};
+let bcounts={built:0,partial:0,missing:0,ahead:0,deferred:0};
+let prefix='', seq=0;
+
+DATA.forEach(it=>{
+  if(it.d===0){
+    prefix=PMAP[it.n]; seq=0;
+    cur=document.createElement('section');cur.className='pillar';
+    const tags={};DATA.filter(x=>x.n.split('.')[0]===it.n&&x.s!=='group').forEach(x=>tags[x.s]=(tags[x.s]||0)+1);
+    cur.innerHTML=`<div class="phead"><span class="pno">${prefix}</span>
+      <div><div class="ptitle">${it.cn}${it.src?`<span class="src">${it.src}</span>`:''}</div><div class="pen">${it.en} · IDs “${prefix}01…”</div></div>
+      <div class="ptag">🟢 ${tags.p1||0} &nbsp; 🔵 ${tags.next||0} &nbsp; ⚪ ${tags.tbd||0}</div></div>
+      <div class="rows"></div>`;
+    tree.appendChild(cur);return;
+  }
+  const isGroup=it.s==='group';
+  const id=isGroup?'':prefix+String(++seq).padStart(2,'0');
+  const bstat=isGroup?null:(BUILD[id]||'built');
+  const r=document.createElement('div');
+  r.className=`row scope-${it.s} d${it.d}${bstat?' b-'+bstat:''}`;
+  const chip=isGroup?'':`<span class="chip">${LABEL[it.s]}</span>`;
+  const bchip=isGroup?'':`<span class="bchip">${BLABEL[bstat]}</span>`;
+  const note=it.note?`<span class="note">↳ ${it.note}</span>`:'';
+  r.innerHTML=`<span class="indent" style="width:${(it.d-1)*22}px"></span>
+     <span class="edge"></span>
+     <span class="id">${id}</span>
+     <span class="body"><span class="cn">${it.cn}</span><span class="en">${it.en}</span>${note}</span>
+     ${chip}${bchip}`;
+  cur.querySelector('.rows').appendChild(r);
+  if(!isGroup){counts[it.s]++;counts.all++;bcounts[bstat]++;}
+});
+
+document.getElementById('t-all').textContent=counts.all;
+['all','p1','next','tbd'].forEach(k=>document.getElementById('c-'+k).textContent=counts[k]);
+
+document.querySelectorAll('.lg').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lg').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  document.body.classList.remove('f-p1','f-next','f-tbd');
+  if(b.dataset.f!=='all') document.body.classList.add('f-'+b.dataset.f);
+}));
+
+/* build-status overlay toggles */
+const gapN=bcounts.partial+bcounts.missing;
+const buildBtn=document.getElementById('t-build'), gapsBtn=document.getElementById('t-gaps');
+gapsBtn.textContent=`⚑ Gaps only (${gapN})`;
+buildBtn.title=`✅ ${bcounts.built} built · 🟡 ${bcounts.partial} gap · ✅⬆ ${bcounts.ahead} built-ahead · ⏳ ${bcounts.deferred} deferred`;
+buildBtn.addEventListener('click',()=>{
+  const on=document.body.classList.toggle('show-build');
+  buildBtn.classList.toggle('on',on);
+  if(!on){document.body.classList.remove('show-gaps');gapsBtn.classList.remove('on');}
+});
+gapsBtn.addEventListener('click',()=>{
+  const on=document.body.classList.toggle('show-gaps');
+  gapsBtn.classList.toggle('on',on);
+  if(on&&!document.body.classList.contains('show-build')) buildBtn.click();
+});
+
+/* staggered reveal */
+document.querySelectorAll('.row').forEach((r,i)=>{r.style.opacity=0;r.style.transform='translateY(4px)';
+  setTimeout(()=>{r.style.transition='.3s';r.style.opacity='';r.style.transform='';},Math.min(i*8,500));});
+</script>
+</body>
+</html>

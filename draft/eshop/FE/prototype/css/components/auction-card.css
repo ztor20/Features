@@ -1,0 +1,196 @@
+/* AUCTION CARD (.shop-card--auction + .rf-auc-* + .rf-bid). [COMPONENT] */
+/* ════════════════════════════════════════════════════════════════════════
+   AUCTION CARD  ·  .shop-card--auction + .rf-auc-* + .rf-bid   [SHARED]
+   ════════════════════════════════════════════════════════════════════════
+   Rarible/Foundation timed-auction card: live countdown pill, current bid as
+   the price line, bid count, leading/outbid/ending-soon state, hover 出價 CTA.
+   Built on the shared .shop-card base.
+
+   MOVED here from refine-shop.css (2026-06-16). It was keyed `body.rf-shop`,
+   so it ONLY styled the shop pages — the creator 商店›拍賣 reused the markup but
+   got none of the CSS (bid row collapsed). Keyed to the COMPONENT CLASS now, so
+   it renders on EVERY page with .shop-card--auction: shop-auction.html, all 12
+   creator pages, and anything built later. See COMPONENTS.md usage map.
+   ════════════════════════════════════════════════════════════════════════ */
+.shop-card--auction .shop-card__media::after {
+  /* soft bottom scrim so the live pill always reads on busy art */
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 46%;
+  background: linear-gradient(to top, rgba(10,10,10,0.66), transparent);
+  pointer-events: none;
+  border-radius: 0 0 14px 14px;
+}
+/* live / status pill — bottom-left over the media */
+.rf-auc-pill {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-family: var(--font-latin);
+  font-size: 11px;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.04em;
+  background: rgba(10,10,10,0.66);
+  border: 1px solid var(--white-alpha-16);
+  color: var(--text-primary);
+  backdrop-filter: blur(4px);
+  font-variant-numeric: tabular-nums;
+  transition: opacity 180ms ease;
+}
+.rf-auc-pill__tick {
+  width: 6px; height: 6px; border-radius: 999px;
+  background: var(--success-500);
+  box-shadow: 0 0 0 0 rgba(34,197,94,0.55);
+  animation: rf-ping 1.6s ease-out infinite;
+}
+@keyframes rf-ping {
+  0% { box-shadow: 0 0 0 0 rgba(34,197,94,0.5); }
+  70%,100% { box-shadow: 0 0 0 7px rgba(34,197,94,0); }
+}
+.rf-auc-pill--soon { color: var(--yellow-500); }
+.rf-auc-pill--soon .rf-auc-pill__tick { background: var(--yellow-500); animation: none; box-shadow: none; }
+.rf-auc-pill--ended { color: var(--text-tertiary); }
+.rf-auc-pill--ended .rf-auc-pill__tick { background: var(--text-tertiary); animation: none; box-shadow: none; }
+
+/* status row under the title: 目前出價 left, bid-count + state right */
+.rf-auc-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 2px;
+}
+.rf-auc-bid { display: flex; flex-direction: column; gap: 1px; }
+.rf-auc-bid__label { font-size: 11px; letter-spacing: 0.04em; color: var(--text-tertiary); }
+.rf-auc-bid__val {
+  font-family: var(--font-latin);
+  font-size: 16px;
+  font-weight: var(--fw-bold);
+  color: var(--neutral-white);
+  font-variant-numeric: tabular-nums;
+}
+.rf-auc-meta { text-align: right; display: flex; flex-direction: column; gap: 2px; }
+.rf-auc-meta__bids {
+  font-family: var(--font-latin);
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+.rf-auc-state { font-family: var(--font-cjk-text); font-size: 11px; font-weight: var(--fw-bold); }
+.rf-auc-state--leading { color: var(--success-500); }
+.rf-auc-state--outbid { color: var(--error-500); }
+
+/* bid CTA — appears on hover like the storefront quick-add */
+.rf-bid {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  z-index: 2;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: none;
+  border-radius: 10px;
+  font-family: var(--font-cjk-text);
+  font-size: 13px;
+  font-weight: var(--fw-bold);
+  color: var(--yellow-ink);
+  background: var(--yellow-500);
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 200ms var(--ease-out, ease), transform 200ms var(--ease-out, ease), background 140ms ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .shop-card--auction:hover .rf-bid { opacity: 1; transform: translateY(0); }
+  .shop-card--auction:hover .rf-auc-pill { opacity: 0; }
+}
+/* The gavel glyph had NO sizing rule anywhere (only .rf-wish/.rf-quickadd svgs
+   were sized), so an unconstrained <svg> ballooned to ~200px on every auction
+   card — latent on shop-auction (hover-only), visible once reused. Size it here. */
+.rf-bid svg { width: 16px; height: 16px; flex: 0 0 auto; display: block; }
+.rf-bid:hover { background: var(--yellow-400); }
+.rf-bid:focus-visible { opacity: 1; transform: translateY(0); outline: 2px solid var(--neutral-white); outline-offset: 2px; }
+.rf-bid--ended { background: var(--neutral-700); color: var(--text-tertiary); cursor: default; }
+@media (hover: none), (pointer: coarse) {
+  .rf-bid { position: static; opacity: 1; transform: none; margin-top: 10px; width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rf-bid { transition: none !important; opacity: 1; transform: none; }
+  .rf-auc-pill__tick { animation: none !important; }
+}
+
+/* ─────────────────────────────────────────
+   RESPONSIVE — auction card
+   ───────────────────────────────────────── */
+
+/* ── Tablet: 768–1023px ── */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  /* Bid value can be slightly smaller so label doesn't crowd */
+  .rf-auc-bid__val {
+    font-size: var(--fs-body);
+  }
+}
+
+/* ── Phone: ≤767px ── */
+@media (max-width: 767.98px) {
+  /* Status row: allow wrapping so bid + meta don't collide */
+  .rf-auc-row {
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    align-items: flex-start;
+  }
+
+  /* Bid val: step down one notch on narrow */
+  .rf-auc-bid__val {
+    font-size: var(--fs-body-sm);
+  }
+
+  .rf-auc-meta {
+    text-align: left;
+  }
+
+  /* Pill: ensure it never overflows the card image */
+  .rf-auc-pill {
+    max-width: calc(100% - 20px);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Bid CTA: already handled by (hover: none) rule above,
+     but enforce full width and adequate height on phone */
+  .rf-bid {
+    height: 44px;
+    font-size: var(--fs-body-sm);
+  }
+}
+
+/* ── Small phone: ≤480px ── */
+@media (max-width: 480px) {
+  /* Pill text: abbreviate by letting ellipsis kick in sooner */
+  .rf-auc-pill {
+    max-width: calc(100% - 12px);
+    font-size: 10px;
+  }
+
+  .rf-auc-bid__label {
+    font-size: 10px;
+  }
+
+  .rf-auc-meta__bids,
+  .rf-auc-state {
+    font-size: 10px;
+  }
+}

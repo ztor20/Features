@@ -1,0 +1,90 @@
+/* main.css — generated manifest. Build: node tools/build-css.mjs
+   @import order == cascade order. Numeric prefix == cascade position.
+   Edit a component file or add a new @import here, then rebuild. */
+
+/* ── sections / components (cascade-ordered) ── */
+@import 'components/01-base-preamble.css';
+@import 'components/02-button.css';
+@import 'components/03-icon-button.css';
+@import 'components/04-fab.css';
+@import 'components/05-ai-mosaic.css';
+@import 'components/06-classics.css';
+@import 'components/07-cocreation-grid.css';
+@import 'components/08-header.css';
+@import 'components/09-header-dropdowns.css';
+@import 'components/10-drawer.css';
+@import 'components/11-drawer-2.css';
+@import 'components/12-profile-header.css';
+@import 'components/13-dev-state-toggle.css';
+@import 'components/14-films-rail.css';
+@import 'components/15-film-card.css';
+@import 'components/16-ztor-score.css';
+@import 'components/17-community.css';
+@import 'components/18-community-page.css';
+@import 'components/19-news.css';
+@import 'components/20-activity.css';
+@import 'components/21-site-footer.css';
+@import 'components/22-auth-gating.css';
+@import 'components/23-popcorn.css';
+@import 'components/24-page-head.css';
+@import 'components/25-glass-tabs.css';
+@import 'components/26-scroll-reveal.css';
+@import 'components/27-cocreation-lifecycle.css';
+@import 'components/28-zorigin-ai-lobby.css';
+@import 'components/29-movie-library.css';
+@import 'components/30-widescreen-tweaks.css';
+@import 'components/31-material-fallbacks.css';
+@import 'components/32-top10-ranking.css';
+@import 'components/33-mobile-tweaks.css';
+@import 'components/34-side-rail.css';
+@import 'components/35-header-content-switcher.css';
+
+/* ── EndGame feature sections (shop, creators, leaderboard) ── */
+@import 'components/36-shop-hub.css';
+/* relocated, non-clipped PLP add-to-cart (overrides 36-shop-hub card defaults) */
+@import 'components/shop-quickadd.css';
+@import 'components/37-creator-directory.css';
+@import 'components/38-creator-storefront.css';
+@import 'components/39-top-fans-strip.css';
+@import 'components/40-leaderboard.css';
+@import 'components/41-creator-tabs.css';
+@import 'components/42-creator-subpages.css';
+@import 'components/43-bottom-nav.css';
+@import 'components/44-mobile-drawer.css';
+
+/* ── hand-extracted single-source components ── */
+@import 'components/cocreation-card.css';
+@import 'components/media-glass.css';
+@import 'components/ds-actionbar.css';
+@import 'components/ds-drawer.css';
+@import 'components/ds-toast.css';
+@import 'components/ds-success-tick.css';
+@import 'components/ds-zoom.css';
+@import 'components/package-tier.css';
+@import 'components/cocreate-detail.css';
+@import 'components/feed-tabs.css';
+@import 'components/45-sticky-tabs.css';
+@import 'components/badge-shelf.css';
+@import 'components/section-eyebrow-pill.css';
+@import 'components/auction-card.css';
+@import 'components/shop-detail.css';
+@import 'components/shop-buybar.css';
+@import 'components/ds-skeleton.css';
+@import 'components/saved-grid.css';
+@import 'components/list-banner.css';
+@import 'components/auth-gate.css';
+
+/* ── shop mobile nav restructure — MUST load last (overrides 45-sticky-tabs) ── */
+@import 'components/46-shop-filter-sheet.css';
+@import 'components/47-checkout.css';
+@import 'components/48-order-tracker.css';
+@import 'components/49-completions.css';
+
+/* ── cross-document page transition (shared, all pages) ── */
+@import 'components/51-page-transition.css';
+
+/* ── progressive liquid-glass refraction (Chromium-only, frost fallback) ── */
+@import 'components/52-liquid-glass-refraction.css';
+
+/* ── temporary feature flags — load LAST so they win ── */
+@import 'components/50-feature-flags.css';

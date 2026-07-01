@@ -1,0 +1,283 @@
+/* ─────────────────────────────────────────
+   CREATOR STOREFRONT — fan destination, one scroll
+   identity header → pickup slot → product grid → events rows →
+   top-fans strip → about. No anchor tabs.
+   ───────────────────────────────────────── */
+.creator-hero {
+  position: relative;
+  min-height: 300px;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+}
+.creator-hero__bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center 25%;
+}
+.creator-hero__bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, var(--bg-primary) 2%, rgba(10, 10, 10, 0.45) 50%, rgba(10, 10, 10, 0.1));
+}
+.creator-hero__copy {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-bottom: 26px;
+}
+.creator-hero__name {
+  font-family: var(--font-cjk-display);
+  font-size: 40px;
+  font-weight: var(--fw-extrabold);
+  line-height: 1.15;
+  letter-spacing: 0.02em;
+}
+.creator-hero__tagline {
+  font-size: var(--fs-body-sm);
+  color: var(--text-secondary);
+}
+.creator-hero__row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: var(--space-1);
+}
+.creator-hero__social { display: inline-flex; gap: var(--space-2); }
+.creator-hero__social a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--glass-bg-default);
+  border: 1px solid var(--glass-stroke-default);
+  color: var(--neutral-white);
+  font-family: var(--font-latin);
+  font-size: 10px;
+  font-weight: var(--fw-bold);
+  text-decoration: none;
+  transition: background 200ms var(--ease-out);
+}
+.creator-hero__social a:hover { background: var(--glass-bg-hover); }
+/* Real brand marks, monochrome white (premium > original colours on a dark brand).
+   fill:currentColor → the chip's white colour drives them. */
+.creator-hero__social a svg { width: 18px; height: 18px; display: block; }
+/* 小紅書 = the 红 glyph lifted from the real logo (recoloured white) — a single
+   character, so it sits in a normal circle chip exactly like the other icons. */
+.creator-hero__social a.creator-hero__social-word img { width: 18px; height: 18px; object-fit: contain; display: block; }
+
+/* Quiet section heading inside the storefront */
+.creator-sec {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-top: var(--space-8);   /* 32px — single owner of the tabs→title gap (was 64px, which stacked with the tabs' own 24px) */
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.creator-sec__title {
+  font-family: var(--font-cjk-display);
+  font-size: 16px;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.04em;
+  margin: 0;   /* kill the UA <h2> margin (~13px each side) so rhythm comes only from the parent gap */
+}
+.creator-sec__aside {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+.creator-sec__link {
+  font-size: 13px;
+  color: var(--yellow-500);
+  text-decoration: none;
+}
+.creator-sec__link:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+/* Pickup slot — one featured drop, Weverse-style */
+.creator-pickup {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin-top: 28px;
+  padding: 22px 0;
+  border-top: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.creator-pickup__media {
+  width: 180px;
+  aspect-ratio: 1 / 1;
+  flex-shrink: 0;
+  background: var(--bg-secondary);
+  overflow: hidden;
+}
+.creator-pickup__media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.creator-pickup__copy { display: flex; flex-direction: column; gap: var(--space-2); min-width: 0; }
+.creator-pickup__eyebrow {
+  font-family: var(--font-latin);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--yellow-500);
+}
+.creator-pickup__name {
+  font-family: var(--font-cjk-text);
+  font-size: 17px;
+  font-weight: var(--fw-bold);
+  line-height: 1.4;
+}
+.creator-pickup__price {
+  font-family: var(--font-latin);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+.creator-pickup .btn { margin-top: 6px; align-self: flex-start; }
+
+/* Events as quiet rows, not boxes */
+.creator-events { margin-top: var(--space-3); }
+.creator-event {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-6);
+  padding: var(--space-4) 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.creator-event__date {
+  font-family: var(--font-latin);
+  font-size: 13px;
+  color: var(--yellow-500);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+  width: 150px;
+}
+.creator-event__title {
+  font-family: var(--font-cjk-text);
+  font-size: 14px;
+  font-weight: var(--fw-medium);
+  flex: 1;
+  min-width: 0;
+}
+.creator-event__venue {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+/* About */
+.creator-about {
+  max-width: 680px;
+  margin-top: var(--space-5);
+  color: var(--text-secondary);
+  line-height: 1.9;
+  font-size: var(--fs-body-sm);
+}
+
+/* ─────────────────────────────────────────
+   RESPONSIVE — creator storefront
+   ───────────────────────────────────────── */
+
+/* ── Tablet: 768–1023px ── */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .creator-hero {
+    min-height: 240px;
+  }
+
+  .creator-hero__name {
+    font-size: clamp(28px, 4vw, 36px);
+  }
+
+  .creator-pickup {
+    gap: var(--space-5);
+  }
+
+  .creator-pickup__media {
+    width: 140px;
+  }
+}
+
+/* ── Phone: ≤767px ── */
+@media (max-width: 767.98px) {
+  /* Hero: shrink, let bg breathe less */
+  .creator-hero {
+    min-height: 200px;
+  }
+
+  .creator-hero__name {
+    font-size: clamp(24px, 7vw, 32px);
+  }
+
+  .creator-hero__copy {
+    padding-bottom: var(--space-5);
+    gap: var(--space-2);
+  }
+
+  .creator-hero__row {
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
+  }
+
+  /* Social icons: 44px touch targets */
+  .creator-hero__social a {
+    width: 40px;
+    height: 40px;
+  }
+
+  /* Section heading */
+  .creator-sec {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+    margin-top: var(--space-6);   /* 32 → 24 on phone: tighten the heading gap */
+  }
+
+  /* Pickup slot: stack image above copy */
+  .creator-pickup {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+    padding: var(--space-4) 0;
+  }
+
+  .creator-pickup__media {
+    width: 100%;
+    max-width: 260px;
+    aspect-ratio: 1 / 1;
+  }
+
+  .creator-pickup .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Events rows: date and title stack */
+  .creator-event {
+    flex-direction: column;
+    gap: var(--space-1);
+    padding: var(--space-4) 0;
+    align-items: flex-start;
+  }
+
+  .creator-event__date {
+    width: auto;
+    font-size: var(--fs-caption);
+  }
+
+  .creator-event__title {
+    font-size: var(--fs-body-sm);
+  }
+}
+
+/* ── Small phone: ≤480px ── */
+@media (max-width: 480px) {
+  .creator-pickup__media {
+    max-width: 100%;
+  }
+
+  .creator-hero__name {
+    font-size: clamp(22px, 7vw, 28px);
+  }
+}

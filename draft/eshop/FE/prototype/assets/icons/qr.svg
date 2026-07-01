@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="#0a0a0a" role="img" aria-label="QR code">
+  <!-- finder patterns (3 corners) -->
+  <path d="M4 4h24v24H4zM10 10v12h12V10z" fill-rule="evenodd"/>
+  <rect x="13" y="13" width="6" height="6"/>
+  <path d="M72 4h24v24H72zM78 10v12h12V10z" fill-rule="evenodd"/>
+  <rect x="81" y="13" width="6" height="6"/>
+  <path d="M4 72h24v24H4zM10 78v12h12V78z" fill-rule="evenodd"/>
+  <rect x="13" y="81" width="6" height="6"/>
+  <!-- timing + data modules -->
+  <rect x="34" y="6" width="4" height="4"/><rect x="42" y="6" width="4" height="4"/><rect x="54" y="6" width="4" height="4"/><rect x="62" y="6" width="4" height="4"/>
+  <rect x="34" y="14" width="4" height="4"/><rect x="46" y="14" width="4" height="4"/><rect x="58" y="14" width="4" height="4"/><rect x="66" y="14" width="4" height="4"/>
+  <rect x="38" y="22" width="4" height="4"/><rect x="50" y="22" width="4" height="4"/><rect x="62" y="22" width="4" height="4"/>
+  <rect x="6" y="34" width="4" height="4"/><rect x="14" y="34" width="4" height="4"/><rect x="22" y="34" width="4" height="4"/><rect x="34" y="34" width="4" height="4"/><rect x="46" y="34" width="4" height="4"/><rect x="58" y="34" width="4" height="4"/><rect x="70" y="34" width="4" height="4"/><rect x="82" y="34" width="4" height="4"/><rect x="90" y="34" width="4" height="4"/>
+  <rect x="10" y="42" width="4" height="4"/><rect x="26" y="42" width="4" height="4"/><rect x="38" y="42" width="4" height="4"/><rect x="50" y="42" width="4" height="4"/><rect x="66" y="42" width="4" height="4"/><rect x="78" y="42" width="4" height="4"/><rect x="86" y="42" width="4" height="4"/>
+  <rect x="6" y="50" width="4" height="4"/><rect x="18" y="50" width="4" height="4"/><rect x="34" y="50" width="4" height="4"/><rect x="42" y="50" width="4" height="4"/><rect x="54" y="50" width="4" height="4"/><rect x="62" y="50" width="4" height="4"/><rect x="74" y="50" width="4" height="4"/><rect x="90" y="50" width="4" height="4"/>
+  <rect x="14" y="58" width="4" height="4"/><rect x="30" y="58" width="4" height="4"/><rect x="46" y="58" width="4" height="4"/><rect x="58" y="58" width="4" height="4"/><rect x="70" y="58" width="4" height="4"/><rect x="82" y="58" width="4" height="4"/>
+  <rect x="6" y="66" width="4" height="4"/><rect x="22" y="66" width="4" height="4"/><rect x="38" y="66" width="4" height="4"/><rect x="50" y="66" width="4" height="4"/><rect x="66" y="66" width="4" height="4"/><rect x="78" y="66" width="4" height="4"/><rect x="90" y="66" width="4" height="4"/>
+  <rect x="34" y="74" width="4" height="4"/><rect x="46" y="74" width="4" height="4"/><rect x="62" y="74" width="4" height="4"/><rect x="74" y="74" width="4" height="4"/><rect x="86" y="74" width="4" height="4"/>
+  <rect x="38" y="82" width="4" height="4"/><rect x="50" y="82" width="4" height="4"/><rect x="58" y="82" width="4" height="4"/><rect x="70" y="82" width="4" height="4"/><rect x="82" y="82" width="4" height="4"/><rect x="90" y="82" width="4" height="4"/>
+  <rect x="34" y="90" width="4" height="4"/><rect x="46" y="90" width="4" height="4"/><rect x="54" y="90" width="4" height="4"/><rect x="66" y="90" width="4" height="4"/><rect x="78" y="90" width="4" height="4"/><rect x="86" y="90" width="4" height="4"/>
+</svg>

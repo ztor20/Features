@@ -1,0 +1,385 @@
+/* ─────────────────────────────────────────
+   CREATOR SUB-PAGES — 活動 timeline + 貼文 IG grid
+   Each storefront section is its own page; the tab row navigates
+   between real pages. Timeline: one hairline spine, upcoming events
+   lit, past events dimmed below. Posts: profile head + 3-column
+   square grid, likes on hover.
+   ───────────────────────────────────────── */
+
+/* 活動 — vertical roadmap */
+.timeline {
+  position: relative;
+  margin-top: var(--space-8);
+  padding-left: 28px;
+  max-width: 860px;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 8px;
+  bottom: 8px;
+  width: 1px;
+  background: var(--border-default);
+}
+.timeline-item {
+  position: relative;
+  display: flex;
+  gap: var(--space-6);
+  padding: var(--space-6) 0;
+}
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -28px;
+  top: 34px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--bg-primary);
+  border: 2px solid var(--text-tertiary);
+}
+.timeline-item--live::before {
+  background: var(--yellow-500);
+  border-color: var(--yellow-500);
+}
+.timeline-item--past { opacity: 0.5; }
+.timeline-item__poster {
+  width: 110px;
+  aspect-ratio: 2 / 3;
+  flex-shrink: 0;
+  background: var(--bg-secondary);
+  overflow: hidden;
+}
+.timeline-item__poster img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.timeline-item__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  padding-top: 6px;
+}
+.timeline-item__date {
+  font-family: var(--font-latin);
+  font-size: 13px;
+  color: var(--yellow-500);
+  font-variant-numeric: tabular-nums;
+}
+.timeline-item--past .timeline-item__date { color: var(--text-tertiary); }
+.timeline-item__title {
+  font-family: var(--font-cjk-text);
+  font-size: 16px;
+  font-weight: var(--fw-bold);
+  line-height: 1.45;
+}
+.timeline-item__meta {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+.timeline-item__status {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.timeline-item__status--onsale { color: var(--yellow-500); }
+.timeline-item .btn { margin-top: var(--space-2); align-self: flex-start; }
+
+/* 貼文 — profile head + square grid */
+.ig-head {
+  display: flex;
+  align-items: center;
+  gap: 36px;
+  margin-top: 36px;
+  padding-bottom: 30px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.ig-head__avatar {
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+}
+.ig-head__avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ig-head__info { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.ig-head__name {
+  font-family: var(--font-cjk-display);
+  font-size: 19px;
+  font-weight: var(--fw-bold);
+}
+.ig-stats { display: flex; gap: 28px; }
+.ig-stat { font-size: 13px; color: var(--text-tertiary); }
+.ig-stat b {
+  font-family: var(--font-latin);
+  font-weight: var(--fw-bold);
+  color: var(--neutral-white);
+  margin-right: 5px;
+  font-variant-numeric: tabular-nums;
+}
+.ig-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-1);
+  margin-top: 28px;
+}
+.ig-cell {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  background: var(--bg-secondary);
+  overflow: hidden;
+}
+.ig-cell img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ig-cell__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: var(--space-4);
+  text-align: center;
+  background: rgba(10, 10, 10, 0.6);
+  opacity: 0;
+  transition: opacity 150ms var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .ig-cell:hover .ig-cell__overlay { opacity: 1; }
+}
+.ig-cell__likes {
+  font-family: var(--font-latin);
+  font-size: 14px;
+  font-weight: var(--fw-bold);
+  font-variant-numeric: tabular-nums;
+}
+.ig-cell__caption {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ─────────────────────────────────────────
+   CREATOR SUB-PAGES — RESPONSIVE
+   ───────────────────────────────────────── */
+
+/* Tablet (768–1023): minor timeline + ig-head refinements. */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .timeline {
+    max-width: 100%;
+  }
+
+  .ig-head {
+    gap: var(--space-6);
+  }
+
+  .list-banner {
+    gap: var(--space-10);
+  }
+
+  .list-banner__title {
+    font-size: clamp(36px, 4vw, var(--fs-display));
+  }
+}
+
+/* Phone ≤767.98px */
+@media (max-width: 767.98px) {
+  /* Timeline: keep row layout but shrink poster; reduce spine gap. */
+  .timeline {
+    padding-left: var(--space-6);
+    margin-top: var(--space-6);
+  }
+
+  .timeline-item {
+    flex-direction: row;
+    gap: var(--space-4);
+    padding: var(--space-5) 0;
+  }
+
+  .timeline-item__poster {
+    width: 80px;
+    /* Maintain 2:3 aspect-ratio — flex-shrink:0 already set on base. */
+  }
+
+  .timeline-item__copy {
+    padding-top: var(--space-1);
+    gap: var(--space-1);
+  }
+
+  .timeline-item__title {
+    font-size: var(--fs-body-sm);
+  }
+
+  /* IG profile head: compress gap. */
+  .ig-head {
+    gap: var(--space-5);
+    margin-top: var(--space-6);
+    padding-bottom: var(--space-5);
+  }
+
+  .ig-head__avatar {
+    width: 68px;
+    height: 68px;
+  }
+
+  .ig-head__name {
+    font-size: var(--fs-h5);
+  }
+
+  .ig-stats {
+    gap: var(--space-5);
+    flex-wrap: wrap;
+  }
+
+  /* IG grid: tighter gap — already 3-col, keep it. */
+  .ig-grid {
+    gap: 2px;
+    margin-top: var(--space-5);
+  }
+
+  /* List banner: single-col, title clamp pulled in from existing 768 rule. */
+  .list-banner {
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+  }
+
+  .list-banner__title {
+    font-size: clamp(28px, 7vw, 36px);
+    line-height: 1.3;
+  }
+
+  .list-banner__sub {
+    margin-top: var(--space-3);
+  }
+
+  .list-banner__cta {
+    margin-top: var(--space-6);
+  }
+}
+
+/* Small phone ≤480px: further compress timeline poster + ig-head. */
+@media (max-width: 480px) {
+  .timeline {
+    padding-left: var(--space-5);
+  }
+
+  .timeline-item__poster {
+    width: 64px;
+  }
+
+  /* IG head: stack avatar above stats on very narrow screens. */
+  .ig-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+  }
+
+  .ig-stats {
+    gap: var(--space-5);
+  }
+
+  /* IG grid → 2-col on smallest phones. */
+  .ig-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* 項目 — the creator's working register (IMDb-style groups) */
+.reg-group { margin-top: 36px; }
+.reg-group__title {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--text-tertiary);
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+/* ── 片單推薦 · 探索愛情 list-banner（ported from dolly 2.0）──────── */
+/* Double-class beats index.html's inline `.section-bg-surface
+   { background: var(--yellow-500) }`, whose shorthand would otherwise
+   reset this background-image (same specificity, later source order). */
+.section.section--list-banner {
+  background-image: url('assets/images/gradient/gradient-2.webp');
+  background-size: cover;
+  background-position: center;
+}
+
+.list-banner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 600px);
+  align-items: center;
+  gap: var(--space-16);
+}
+
+.list-banner__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  /* Stretch to the media column's height; space-between pins the title
+     to the image's top edge, the CTA to its bottom edge, and floats the
+     description midway between them. */
+  align-self: stretch;
+  justify-content: space-between;
+}
+
+.list-banner__title {
+  margin: 0;  /* kill the h2 UA margin (0.83em ≈ 63px per side at 76px) */
+  padding-top: var(--space-2);  /* 視覺微調:字面比圖頂多壓 8px */
+  font-family: var(--font-cjk-display);
+  font-size: var(--fs-display);
+  line-height: var(--lh-display);
+  letter-spacing: var(--ls-display);
+  font-weight: var(--fw-bold);
+  color: var(--text-primary);
+}
+
+.list-banner__sub {
+  margin: 0;  /* clear p UA margins; spacing comes from space-between */
+  font-family: var(--font-cjk-text);
+  font-size: var(--fs-body-lg);
+  line-height: var(--lh-body-lg);
+  color: var(--neutral-100);
+}
+
+/* Ink-filled CTA — yellow primary has no contrast on the warm gradient. */
+.list-banner__cta {
+  background: var(--yellow-ink);
+  color: var(--text-primary);
+  border-color: transparent;
+}
+
+.list-banner__cta:hover:not(:disabled) {
+  box-shadow: 0 8px 24px rgba(26, 23, 0, 0.35);
+}
+
+.list-banner__media {
+  display: block;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: 0 24px 48px rgba(26, 23, 0, 0.18);
+}
+
+.list-banner__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 300ms ease;
+}
+
+.list-banner__media:hover img { transform: scale(1.03); }
+
+@media (max-width: 767.98px) {
+  .list-banner {
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+  }
+  .list-banner__title { font-size: clamp(28px, 7vw, 36px); line-height: 1.3; }
+  /* Single column: copy height is natural, so space-between collapses —
+     restore fixed gaps instead. */
+  .list-banner__sub { margin-top: var(--space-3); }
+  .list-banner__cta { margin-top: var(--space-6); }
+}

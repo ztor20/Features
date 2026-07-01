@@ -1,0 +1,25 @@
+/* ─────────────────────────────────────────
+   SCROLL-REVEAL FOUC GUARD  (content index pages: cocreate / news / activity)
+   Pre-hide reveal targets so they don't flash before the reveal script runs.
+   Active ONLY when <html> has .js-reveal-ready — added by the page's reveal
+   IIFE and ONLY when GSAP is live + motion is allowed. If GSAP fails to load
+   or the user prefers reduced motion, the class is never set and everything
+   shows immediately. Distinct from index.html's .js-motion-ready so the two
+   reveal systems never interfere.
+   ───────────────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  .js-reveal-ready [data-reveal-section] .page-head__title,
+  .js-reveal-ready [data-reveal-section] .page-head__desc,
+  .js-reveal-ready [data-reveal-section] .page-head__info,
+  .js-reveal-ready [data-reveal-section] .glass-tabs,
+  .js-reveal-ready [data-reveal-section] .section-eyebrow,
+  .js-reveal-ready [data-reveal-section] .section-header__title,
+  .js-reveal-ready [data-reveal-section] .section-header__sub,
+  .js-reveal-ready [data-reveal-section] .section-link,
+  .js-reveal-ready [data-reveal-section] .popcorn-page__heading,
+  .js-reveal-ready [data-reveal-section] .popcorn-balance-card,
+  .js-reveal-ready [data-reveal-section] .popcorn-guide,
+  .js-reveal-ready [data-reveal-stack] > * {
+    opacity: 0;
+  }
+}

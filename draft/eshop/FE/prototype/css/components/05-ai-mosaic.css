@@ -1,0 +1,218 @@
+/* ─────────────────────────────────────────
+   AI MOSAIC
+   AI 原力創作計畫 section: 2-col layout — copy + CTA on left, mosaic on right.
+   Mosaic = 1 big tile (top, full row) + 4 small tiles (2×2 below).
+   ───────────────────────────────────────── */
+
+.ai-mosaic {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-20);
+  align-items: center;
+}
+
+.ai-mosaic__copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.ai-mosaic__ctas {
+  display: flex;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.ai-mosaic__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+/* Each tile is 16:9 (matches 1.0 image spec 1056×594).
+   Big tile spans both columns; small tiles fill 1 col each. */
+.ai-mosaic__tile {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  overflow: hidden;
+  background: var(--bg-tertiary);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 220ms var(--ease-out), border-color 220ms var(--ease-out);
+}
+
+.ai-mosaic__tile:hover {
+  transform: scale(1.02);
+  border-color: var(--border-default);
+}
+
+.ai-mosaic__tile-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+/* Same frosted "text on photo" treatment as .media-glass, fitted to the tile:
+   a progressive backdrop-blur + ink tint, masked to fade up off the image so
+   the status badge + title stay legible over ANY photo. (This ::before already
+   paints above the img, so backdrop-filter blurs the photo behind it.) */
+.ai-mosaic__tile::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  -webkit-backdrop-filter: blur(22px) saturate(1.35);
+          backdrop-filter: blur(22px) saturate(1.35);
+  background: linear-gradient(to bottom, transparent 0%, rgba(10, 10, 10, 0.30) 55%, rgba(10, 10, 10, 0.62) 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.5) 52%, #000 76%);
+          mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.5) 52%, #000 76%);
+  pointer-events: none;
+}
+/* No backdrop-filter (old engines): a stronger tint carries legibility. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .ai-mosaic__tile::before {
+    background: linear-gradient(to bottom, transparent 0%, rgba(10, 10, 10, 0.62) 40%, rgba(10, 10, 10, 0.88) 100%);
+  }
+}
+
+.ai-mosaic__tile--big {
+  grid-column: 1 / -1;
+  border-radius: var(--radius-lg);
+}
+
+.ai-mosaic__tile-meta {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 14px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.ai-mosaic__tile-status {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.ai-mosaic__tile-title {
+  font-family: var(--font-cjk-display);
+  font-weight: var(--fw-bold);
+  font-size: 14px;
+  line-height: 1.3;
+  color: var(--text-primary);
+  letter-spacing: -0.005em;
+  text-wrap: balance;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
+}
+
+.ai-mosaic__tile--big .ai-mosaic__tile-title {
+  font-size: 22px;
+  letter-spacing: -0.01em;
+}
+
+/* AI campaign row — standard section layout (header on top + one row of cards),
+   matching the other homepage sections. Reuses .ai-mosaic__tile visuals but
+   lays all campaigns out as equal 16:9 cards in a single row. */
+.ai-campaign-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-6);
+}
+/* Larger cards in a 3-up row → bump the overlaid title for legibility. */
+.ai-campaign-row .ai-mosaic__tile-title { font-size: 17px; }
+@media (max-width: 900px) { .ai-campaign-row { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .ai-campaign-row { grid-template-columns: 1fr; } }
+
+/* ─────────────────────────────────────────
+   AI MOSAIC — RESPONSIVE
+   Phone  : max-width 767.98px
+   Tablet : 768px – 1023.98px
+   ───────────────────────────────────────── */
+
+/* ── Tablet (768px – 1023.98px) ─────────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  /* Tighten the two-column gap on tablet */
+  .ai-mosaic { gap: var(--space-10); }
+
+  /* Mosaic grid: tighter inner gap */
+  .ai-mosaic__grid { gap: var(--space-2); }
+
+  /* Big tile title slightly smaller */
+  .ai-mosaic__tile--big .ai-mosaic__tile-title { font-size: 18px; }
+
+  /* Campaign row: 2-up on tablet */
+  .ai-campaign-row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-5);
+  }
+  .ai-campaign-row .ai-mosaic__tile-title { font-size: 15px; }
+}
+
+/* ── Phone (≤767.98px) ──────────────────────────────────────────────────── */
+@media (max-width: 767.98px) {
+  /* Stack copy above mosaic: single column, copy first */
+  .ai-mosaic {
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+  }
+
+  /* Mosaic grid stays 2-col internally — good use of phone width */
+  .ai-mosaic__grid { gap: var(--space-2); }
+
+  /* Big tile title: legible on phone */
+  .ai-mosaic__tile--big .ai-mosaic__tile-title { font-size: 16px; }
+  .ai-mosaic__tile-title { font-size: 13px; }
+
+  /* Tile meta: tighter positioning on phone */
+  .ai-mosaic__tile-meta {
+    left: var(--space-3);
+    right: var(--space-3);
+    bottom: var(--space-3);
+    gap: var(--space-1);
+  }
+
+  /* CTAs: stack on small screens */
+  .ai-mosaic__ctas {
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  /* Campaign row: single column on phone */
+  .ai-campaign-row {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+  .ai-campaign-row .ai-mosaic__tile-title { font-size: 15px; }
+}
+
+/* ── Small phone (≤479.98px) ────────────────────────────────────────────── */
+@media (max-width: 479.98px) {
+  .ai-mosaic__grid { gap: var(--space-1); }
+  .ai-mosaic__tile--big .ai-mosaic__tile-title { font-size: 14px; }
+  .ai-mosaic__tile-title { font-size: 12px; }
+  .ai-mosaic__tile-meta {
+    left: var(--space-2);
+    right: var(--space-2);
+    bottom: var(--space-2);
+  }
+}
+
+/* ── Touch: remove hover scale transform ─────────────────────────────────── */
+@media (hover: none) {
+  .ai-mosaic__tile:active { transform: none; }
+}
+
+/* ── Reduced-motion ─────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .ai-mosaic__tile { transition: none; }
+}

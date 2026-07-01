@@ -1,0 +1,56 @@
+/* DS-ACTIONBAR — bottom-pinned action region for overlays. [COMPONENT]
+   ════════════════════════════════════════════════════════════════════════
+   A bar that pins an overlay's primary CTA to the bottom so it is ALWAYS
+   reachable: it sits as a flex-shrink:0 sibling BELOW a scrollable body — the
+   body takes the remaining height and scrolls, this bar never does. Values are
+   the proven .ztor-cart__foot recipe (assets/cart.css), tokenised. Adopted by
+   .ds-drawer__foot (ds-drawer.css) and the non-drawer modals. The cart + shop
+   filter sheet keep their own equivalent feet — do NOT refactor those.
+
+   Host anatomy (the panel/dialog is a flex column):
+     [ head ]                         ← fixed
+     [ body  flex:1; overflow:auto ]  ← scrolls
+     [ foot  .ds-actionbar ]          ← pinned, this file
+
+   Honours the variant convention (data-size → --ds-scale). On phones the bar is
+   compact and capped at 20svh so it can never eat more than ~20% of the (small)
+   viewport — ≥80% stays for content — and it clears the iOS home indicator via
+   env(safe-area-inset-bottom). Search-before-create: no shared action-bar
+   existed (only per-component .ztor-cart__foot / .shop-sheet__apply /
+   .cc-stepview__foot / .mdrawer__foot); this consolidates them.
+   ──────────────────────────────────────────────────────────────────────── */
+.ds-actionbar {
+  flex-shrink: 0;                       /* never shrinks — the body scrolls, not this */
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding:
+    calc(var(--space-5) * var(--ds-scale, 1))
+    calc(var(--space-6) * var(--ds-scale, 1))
+    max(calc(var(--space-6) * var(--ds-scale, 1)), env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--border-default);
+  background: var(--bg-secondary);      /* matches the panel; the top border delineates it */
+}
+
+/* The relocated CTA row (.cc-stepview__foot / .completion-foot) carries its own
+   top margin for in-flow layout; inside the bar the bar owns the spacing, so
+   cancel it to avoid a double gap. */
+.ds-actionbar > .cc-stepview__foot,
+.ds-actionbar > .completion-foot { margin-top: 0; }
+
+/* A hidden bar must truly hide — .ds-actionbar{display:flex} would otherwise win
+   over the [hidden] UA rule and leave an empty bar visible. */
+.ds-actionbar[hidden] { display: none; }
+
+/* ── Phone — tight + hard-capped so the bar can't crowd the content ── */
+@media (max-width: 767.98px) {
+  .ds-actionbar {
+    gap: var(--space-2);
+    padding:
+      calc(var(--space-3) * var(--ds-scale, 1))
+      calc(var(--space-4) * var(--ds-scale, 1))
+      max(calc(var(--space-4) * var(--ds-scale, 1)), env(safe-area-inset-bottom, 0px));
+    max-block-size: 20svh;              /* ≤20% of the small viewport height (the ceiling) */
+    overflow-y: auto;                   /* enforce the cap WITHOUT ever clipping the CTA */
+  }
+}

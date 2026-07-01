@@ -1,0 +1,102 @@
+/* ─────────────────────────────────────────
+   ZTOR SCORE — 評分 ring (Metacritic-style conic arc)
+   Restored from the web build's ring (replaces the liquid glass orb).
+   Arc length = score%; the tier sets the colour:
+     --gold   → 85–100  iridescent rainbow arc + glow (premium "光")
+     --green  → 70–84   success
+     --orange → 50–69   warning
+     --red    → 0–49    error
+     --empty  → 評分不足 → faint full track + "--"
+   Markup (unchanged): <span class="ztor-score ztor-score--green" style="--score:77">
+                         <span class="ztor-score__value">77</span></span>
+   Animation: index.html §3.5 counts BOTH --score (arc) AND the numeral
+   from 0 → target on viewport entry (replayable). Without JS the inline
+   --score renders the ring filled — the count-up is enhancement only.
+   ───────────────────────────────────────── */
+
+.ztor-score {
+  --score: 0;
+  --ring-color: var(--neutral-500);
+  --track-color: rgba(255, 255, 255, 0.10);
+  --inner-bg: var(--bg-primary);   /* matches the section bg behind the ring */
+  position: relative;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background:
+    conic-gradient(var(--ring-color) calc(var(--score) * 1%), var(--track-color) 0);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Inner cut-out — leaves a 2px ring of the conic showing. */
+.ztor-score::before {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  background: var(--inner-bg);
+  border-radius: 50%;
+}
+
+.ztor-score__value {
+  position: relative;
+  z-index: 1;
+  /* Afacad (main's score numeral face, decision 2026-06-11) — taller,
+     slightly condensed digits that read as a "score". */
+  font-family: 'Afacad', var(--font-latin);
+  font-size: 12px;
+  font-weight: var(--fw-bold);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.ztor-score--green  { --ring-color: var(--success-500); }
+.ztor-score--orange { --ring-color: var(--warning-500); }
+.ztor-score--red    { --ring-color: var(--error-500); }
+
+/* ── Top tier (85–100) · iridescent rainbow arc + glow ──────────────────
+   Two stacked conics: the full rainbow sits underneath; a track conic ON
+   TOP turns transparent up to the score% (revealing the rainbow along the
+   filled arc) then paints --track-color over the remainder — so it works
+   at any score. A slow hue rotation (--ztor-spin, registered so it can
+   interpolate) gives the living "光" shimmer; a soft two-colour glow adds
+   the premium feel. Falls back to a static rainbow where @property is
+   unsupported; reduced-motion freezes the shimmer. */
+@property --ztor-spin { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+
+.ztor-score--gold {
+  background:
+    conic-gradient(transparent calc(var(--score) * 1%), var(--track-color) 0),
+    conic-gradient(from var(--ztor-spin, 0deg),
+      #ff4d6d, #ff9a3d, #ffe14d, #4dffa1, #36d1ff, #9b6bff, #ff4d8d, #ff4d6d);
+  box-shadow:
+    0 0 6px rgba(255, 140, 90, 0.45),
+    0 0 13px rgba(140, 100, 255, 0.28);
+}
+/* The shimmer only runs while the orb is in view (index.html adds .is-live
+   on viewport entry, removes it on exit) — static rainbow everywhere else,
+   so a long page never spins a dozen off-screen conics. */
+.ztor-score--gold.is-live { animation: ztor-spin 5s linear infinite; }
+@keyframes ztor-spin { to { --ztor-spin: 360deg; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .ztor-score--gold.is-live { animation: none; }
+}
+
+.ztor-score--empty {
+  --score: 100;
+  --ring-color: rgba(255, 255, 255, 0.10);
+}
+.ztor-score--empty .ztor-score__value {
+  color: var(--text-disabled);
+  font-size: 12px;
+  letter-spacing: -0.05em;
+}
+
+/* On a yellow surface stripe, a dark inner disc keeps the white numeral
+   legible (the ring still reads via its tier colour). */
+.section-bg-surface .ztor-score { --inner-bg: var(--bg-secondary); }

@@ -1,0 +1,253 @@
+/* ─────────────────────────────────────────
+   FILMS RAIL — 第三章·電影庫預覽
+   橫向 rail with 3 tabs (最新影片 / 現正熱播 / Ztor. 精選).
+   Each panel = a horizontally scrollable track of .film-card.
+   Nav arrows reuse hero-carousel glass style: hover-to-show.
+   ───────────────────────────────────────── */
+
+.films-rail {
+  position: relative;
+}
+
+/* Tabs row — sits between section header and the rail */
+.films-rail__tabs {
+  display: flex;
+  gap: var(--space-1);
+  margin-top: calc(var(--space-10) * -1 + var(--space-5));
+  margin-bottom: var(--space-8);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.films-rail__tab {
+  position: relative;
+  padding: var(--space-3) 18px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  color: var(--text-tertiary);
+  font-family: var(--font-cjk-text);
+  font-size: 14px;
+  font-weight: var(--fw-medium);
+  cursor: pointer;
+  transition: color 200ms ease, border-color 200ms ease;
+}
+
+.films-rail__tab:hover { color: var(--text-secondary); }
+
+.films-rail__tab[aria-selected="true"] {
+  color: var(--yellow-500);
+  border-bottom-color: var(--yellow-500);
+}
+
+/* Panel — only the selected one renders the track. Fade-in on switch
+   so tab activations feel responsive. */
+.films-rail__panel { display: none; }
+.films-rail__panel.is-active {
+  display: block;
+  animation: filmsRailFade 260ms ease both;
+}
+
+@keyframes filmsRailFade {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Track — horizontal scroll container, snap to start.
+   --rail-cols controls how many cards perfectly fill the row at the
+   default desktop width. Card width uses calc() so the row always
+   spans flush from the section's left edge to the right.
+   Modifier .films-rail__track--ranked drops cols to 5 (Top 5 shelf). */
+.films-rail__track {
+  --rail-cols: 6;
+  --rail-gap: 20px;
+  display: flex;
+  gap: var(--rail-gap);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none; /* Firefox */
+  padding: var(--space-1) 2px var(--space-4);
+  margin: -4px -2px 0;   /* offset padding so cards align with section edges */
+}
+.films-rail__track::-webkit-scrollbar { display: none; }
+
+/* Ranked rails reserve extra left room so the first card's huge "1" (which
+   sits at left:-8px) clears the track's overflow clip instead of being cut.
+   The matching negative margin keeps the cards aligned to the section edge. */
+.films-rail__track--ranked {
+  --rail-cols: 5;
+  /* The #1 digit overhangs the first card's left edge (rank is at left:-8px),
+     and the track's overflow-x clip would cut it. Plain padding-left doesn't
+     help — scroll-snap (mandatory + align:start) snaps the first card to the
+     scrollport edge and eats the padding. So:
+       margin-left:-24  → move the clip edge var(--space-6) left of the container content
+       scroll-padding-left:24 → snap the first card back to the content edge
+                                (cards stay aligned with the section header)
+     Net: the clip sits left of the digit's overhang, so it's no longer cut,
+     and the row is still aligned. -24 stays within the container padding, so
+     no horizontal overflow on ≤1440 screens. */
+  margin-left: -24px;
+  padding-left: var(--space-6);
+  scroll-padding-left: 24px;
+}
+
+/* Nav arrows — same glass + hover-to-show as hero carousel.
+   Vertical position is set dynamically via JS to align with the poster's
+   vertical center (the active panel's first card). The .is-enabled class
+   is toggled by JS based on whether scrolling further in that direction
+   is still possible — only enabled buttons reveal on hover. */
+.films-rail__nav {
+  position: absolute;
+  /* `top` is set inline by JS once the rail mounts / on resize / on tab change. */
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-pill);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  background: linear-gradient(0deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.18) 2.45%,
+    rgba(255, 255, 255, 0) 126.14%);
+  box-shadow:
+    rgba(255, 255, 255, 0.9) 1.1px 2.2px 0.5px -1.8px inset,
+    rgba(255, 255, 255, 0.9) -1px -2.2px 0.5px -1.8px inset,
+    rgba(0, 0, 0, 0.10) 2px 3px 2px 0 inset;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  transition: opacity 250ms ease, background 200ms ease;
+}
+
+.films-rail:hover .films-rail__nav.is-enabled,
+.films-rail__nav.is-enabled:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.films-rail__nav.is-enabled:hover {
+  background: linear-gradient(0deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.30) 2.45%,
+    rgba(255, 255, 255, 0) 126.14%);
+}
+
+.films-rail__nav--prev { left: -22px; }
+.films-rail__nav--next { right: -22px; }
+
+.films-rail__nav img {
+  width: 22px;
+  height: 22px;
+  display: block;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.5));
+}
+
+/* ─────────────────────────────────────────
+   FILMS RAIL — RESPONSIVE
+   Phone  : max-width 767.98px
+   Tablet : 768px – 1023.98px
+   ───────────────────────────────────────── */
+
+/* ── Touch devices: hide nav arrows (swipe is the paradigm) ─────────────── */
+@media (hover: none) {
+  .films-rail__nav { display: none; }
+}
+
+/* ── Tablet (768px – 1023.98px) ─────────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  /* Tabs: tighten horizontal padding slightly */
+  .films-rail__tab { padding: 10px 14px; }
+
+  /* Track: tighter gap on tablet */
+  .films-rail__track { --rail-gap: 16px; }
+
+  /* Nav arrows: stay in but pull in slightly — 1024 container is narrower */
+  .films-rail__nav--prev { left: -16px; }
+  .films-rail__nav--next { right: -16px; }
+}
+
+/* ── Phone (≤767.98px) ──────────────────────────────────────────────────── */
+@media (max-width: 767.98px) {
+  /* Tabs row: scroll horizontally if tabs overflow (many tabs, narrow viewport).
+     Bottom border stays full-width via negative margin compensation. */
+  .films-rail__tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    /* Pull flush with the container edges so active border reads full-width */
+    margin-left: calc(var(--container-padding-x) * -1);
+    margin-right: calc(var(--container-padding-x) * -1);
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+    margin-top: calc(var(--space-8) * -1 + var(--space-4));
+    margin-bottom: var(--space-5);
+  }
+  .films-rail__tabs::-webkit-scrollbar { display: none; }
+
+  /* Tab items: smaller text, tighter padding; keep 44px touch target height */
+  .films-rail__tab {
+    padding: 11px 14px;
+    font-size: 13px;
+    white-space: nowrap;
+    /* Explicit min height so border-box includes the tap target */
+    min-height: 44px;
+  }
+
+  /* Track: tighter gap; smaller cards from film-card responsive rules */
+  .films-rail__track {
+    --rail-gap: 12px;
+    /* Pull the track flush with section edges for immersive edge-to-edge scroll */
+    margin-left: calc(var(--container-padding-x) * -1);
+    margin-right: calc(var(--container-padding-x) * -1);
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+    /* Add right padding so the last card doesn't clip at the edge */
+    scroll-padding-left: var(--space-4);
+  }
+
+  /* Ranked track on phone: adjust the ranked overhang offset */
+  .films-rail__track--ranked {
+    margin-left: calc(var(--container-padding-x) * -1);
+    padding-left: var(--space-8);
+    scroll-padding-left: var(--space-8);
+  }
+
+  /* Panel fade-in: reduce the translate so it feels snappier on phone */
+  .films-rail__panel.is-active {
+    animation: filmsRailFadeMobile 200ms ease both;
+  }
+}
+
+@keyframes filmsRailFadeMobile {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Small phone (≤479.98px) ────────────────────────────────────────────── */
+@media (max-width: 479.98px) {
+  .films-rail__tabs { padding-left: var(--space-3); }
+  .films-rail__track {
+    --rail-gap: 10px;
+    padding-left: var(--space-3);
+    padding-right: var(--space-3);
+    scroll-padding-left: var(--space-3);
+  }
+  .films-rail__track--ranked {
+    padding-left: var(--space-6);
+    scroll-padding-left: var(--space-6);
+  }
+}
+
+/* ── Reduced-motion ─────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .films-rail__panel.is-active { animation: none; opacity: 1; }
+  @keyframes filmsRailFadeMobile { from { opacity: 1; } to { opacity: 1; } }
+}

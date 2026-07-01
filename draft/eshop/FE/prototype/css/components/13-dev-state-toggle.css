@@ -1,0 +1,121 @@
+/* ─────────────────────────────────────────
+   DEV-ONLY: header state toggle
+   切換 body[data-auth] 控制顯示 Before/After Login header
+   出貨前移除（這支 class 與底部 button）
+   ───────────────────────────────────────── */
+
+body[data-auth="logged-out"] .header[data-state="after-login"],
+body[data-auth="logged-in"]  .header[data-state="before-login"] {
+  display: none;
+}
+
+/* ─── DEV-ONLY · 出貨前整段移除 ─────────────────────────
+   Header auth-state toggle styles. Pairs with the
+   [data-dev-only] button in index.html and the matching JS
+   IIFE. Remove all three together. */
+.dev-toggle {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: var(--z-dev);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 40px;
+  padding: 0 var(--space-4);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-pill);
+  background: rgba(20, 20, 20, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--text-primary);
+  font-family: var(--font-cjk-text);
+  font-size: 13px;
+  font-weight: var(--fw-medium);
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.dev-toggle::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background: var(--neutral-400);
+}
+
+body[data-auth="logged-in"] .dev-toggle::before { background: var(--yellow-500); }
+
+.dev-toggle:hover { background: rgba(30, 30, 30, 0.9); }
+
+/* Phone: keep the dev toggle available (same users as desktop) but relocate
+   it to the top-right under the compact header, so it never collides with the
+   floating bottom nav. Compact size; below the drawer, above page content. */
+@media (max-width: 767.98px) {
+  /* the top-right corner now belongs to the sticky filter nav, and the bottom centre to
+     the floating bottom nav — park the dev toggle on the right edge ABOVE the bottom-nav
+     reserve, where it collides with neither. (DEV-ONLY — removed before shipping anyway.) */
+  .dev-toggle {
+    top: auto;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 112px);
+    right: 12px;
+    height: 32px;
+    padding: 0 var(--space-3);
+    font-size: 12px;
+    z-index: 950;
+  }
+}
+/* ─── DEV-ONLY · 3-chip state bar (dev-state.js) ───────────
+   auth · saved address · saved card. Same parking + glass as .dev-toggle. */
+.dev-bar {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: var(--z-dev);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-pill);
+  background: rgba(20, 20, 20, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+.dev-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 32px;
+  padding: 0 var(--space-3);
+  border: none;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--text-tertiary);
+  font-family: var(--font-cjk-text);
+  font-size: 12px;
+  font-weight: var(--fw-medium);
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease;
+}
+.dev-chip__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-pill);
+  background: var(--neutral-400);
+  transition: background 160ms ease;
+}
+.dev-chip.is-on { color: var(--text-primary); background: rgba(255, 255, 255, 0.07); }
+.dev-chip.is-on .dev-chip__dot { background: var(--yellow-500); }
+.dev-chip:hover { color: var(--text-primary); }
+
+@media (max-width: 767.98px) {
+  .dev-bar {
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 112px);
+    right: 12px;
+    z-index: 950;
+  }
+  .dev-chip { height: 30px; padding: 0 var(--space-2); font-size: 11px; }
+}
+/* ─── /DEV-ONLY ─────────────────────────────────────────── */

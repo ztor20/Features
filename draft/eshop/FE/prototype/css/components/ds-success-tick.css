@@ -1,0 +1,80 @@
+/* ════════════════════════════════════════════════════════════════
+   ds-success-tick.css — ONE reusable animated success tick.
+
+   Drop-in for any SUCCESS confirmation (not selection / status).
+   Plays on mount: the glyph pops in with a slight overshoot, then the
+   checkmark strokes itself on in one confident pass. No loop, no
+   confetti — a small celebration, then stillness.
+
+   ── Markup contract ──────────────────────────────────────────────
+   Host owns the disc (background + colour, from the success-green
+   token). Drop this SVG INSIDE the host element:
+
+     <span class="cc-success__check ds-success-tick" aria-hidden="true">
+       <svg class="ds-success-tick__svg" viewBox="0 0 36 36">
+         <path class="ds-success-tick__check" fill="none"
+               d="M10 18.5 l5 5 l11 -12"/>
+       </svg>
+     </span>
+
+   The check stroke inherits the host's `color` (currentColor) so it
+   matches whatever disc it sits on — green ✓ on the cc-success tinted
+   disc, dark ✓ on the toast's solid dot. Override with --ds-tick-check
+   if a specific contrast colour is needed.
+
+   GPU-safe: animates transform / opacity / stroke-dashoffset only —
+   never layout. Reduced-motion → fully visible, no pop, no draw.
+   ════════════════════════════════════════════════════════════════ */
+
+.ds-success-tick {
+  /* glyph pop: scale in 0→1 with a slight overshoot, on mount */
+  transform: scale(0);
+  transform-origin: center;
+  animation: ds-tick-pop 260ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  /* opacity rides in fast so nothing flashes at scale 0 */
+  opacity: 0;
+}
+
+.ds-success-tick__svg {
+  width: 62%;
+  height: 62%;
+  display: block;
+  overflow: visible;
+}
+
+/* The checkmark — strokes on via dashoffset after the pop settles.
+   pathLength is normalised to 1 in markup so the dash math is
+   resolution-independent. */
+.ds-success-tick__check {
+  stroke: var(--ds-tick-check, currentColor);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: ds-tick-draw 300ms var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1)) 240ms forwards;
+}
+
+@keyframes ds-tick-pop {
+  0%   { transform: scale(0);   opacity: 0; }
+  60%  { opacity: 1; }
+  100% { transform: scale(1);   opacity: 1; }
+}
+
+@keyframes ds-tick-draw {
+  from { stroke-dashoffset: 1; }
+  to   { stroke-dashoffset: 0; }
+}
+
+/* Reduced motion — appear statically, fully visible, no pop / no draw. */
+@media (prefers-reduced-motion: reduce) {
+  .ds-success-tick {
+    transform: none;
+    opacity: 1;
+    animation: none;
+  }
+  .ds-success-tick__check {
+    stroke-dashoffset: 0;
+    animation: none;
+  }
+}

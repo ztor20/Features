@@ -1,0 +1,464 @@
+/* ─────────────────────────────────────────
+   HEADER
+   Mirrors Figma node 485:1139 (State=Before Login | After Login)
+   Structure:
+     header
+       header/nav   (gap 40)  → header/logo + header/nav-links (gap 36)
+       header/actions (gap 24) → search-icon + lang-icon + buttons-cluster
+   ───────────────────────────────────────── */
+
+.header {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-header);
+  height: var(--header-height);
+  background: rgba(10, 10, 10, 0.72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+/* ── Artlist-style soft veil (ported from Dolly's sidebar build, 2026-06) ──
+   has-rail pages drop the flat fill + hairline; a tint+blur layer extends
+   24px below the bar, fades out via mask (no seam), and only fades in once
+   scrolled — page-top stays fully crisp. Pinned-tabbar pages use a flat
+   material matching the tabbar so bar + tabbar read as one shelf. */
+body.has-rail .header {
+  background: none;
+  /* Blur on the ELEMENT (not the masked ::before) — Safari does NOT reliably
+     render backdrop-filter on a masked pseudo, which made the header look
+     un-frosted on iOS. The ::before below now only carries the gradient tint+fade.
+     Frost weight restored to the original origin/L value (12px); the heavy-frost
+     pass had pushed it to 16px. */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: none;
+}
+body.has-rail .header::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 -24px 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(23, 23, 23, 0.7) 0%, rgba(23, 23, 23, 0) 100%);
+  /* blur lives on the .header element (above); this pseudo is gradient tint + fade only.
+     Tint colour restored to the original origin/L veil (was darkened to 18/0.78 by the
+     heavy-frost pass). */
+  -webkit-mask-image: linear-gradient(180deg,
+    rgba(0,0,0,1) 0%, rgba(0,0,0,1) 66%,
+    rgba(0,0,0,0.96) 74%, rgba(0,0,0,0.82) 81%,
+    rgba(0,0,0,0.58) 88%, rgba(0,0,0,0.28) 94%, rgba(0,0,0,0) 100%);
+          mask-image: linear-gradient(180deg,
+    rgba(0,0,0,1) 0%, rgba(0,0,0,1) 66%,
+    rgba(0,0,0,0.96) 74%, rgba(0,0,0,0.82) 81%,
+    rgba(0,0,0,0.58) 88%, rgba(0,0,0,0.28) 94%, rgba(0,0,0,0) 100%);
+}
+/* Veil is STATIC — always on, never scroll-revealed. The old scroll-timeline
+   fade (header-veil-in: opacity 0→1 over the first 120px) meant a fresh page
+   loaded at scroll-0 with the veil hidden while the page you navigated FROM had
+   it shown; the cross-document View Transition then snapped between those two
+   header states, which read as the nav-bar "flash". Killing the reveal makes
+   the header identical at every scroll position and across every navigation —
+   the chrome never animates. (L, 2026-06-26: "remove all scroll reveal of nav bar".) */
+body.has-rail:has(.community-tabbar) .header::before {
+  inset: 0;
+  background: rgba(10, 10, 10, 0.82);
+  /* blur is on the .header element; this just sets the flat community tint */
+  -webkit-mask-image: none;
+          mask-image: none;
+}
+
+.header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;   /* hard floor between nav cluster and actions when space runs out */
+  height: 100%;
+  padding: 0 var(--container-padding-x);
+}
+
+.header__nav {
+  display: flex;
+  align-items: center;
+  gap: clamp(20px, 2.8vw, 40px);   /* fluid: 40px at ≥1430, shrinks with viewport */
+  min-width: 0;   /* allow the left cluster to shrink — see .header__nav-links note */
+}
+
+.header__logo {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  height: 30px;
+}
+
+.header__logo-img {
+  height: 30px;
+  width: auto;
+  display: block;
+}
+
+.header__nav-links {
+  display: flex;
+  align-items: center;
+  /* Fluid gap + fluid link font (below) keep all 7 links genuinely fitting
+     down to ~800px wide, so the overflow rail is a last-resort safety net,
+     not the normal state — a rail that clips mid-glyph reads as a bug. */
+  gap: clamp(12px, 2.5vw, 36px);
+  /* Responsive guard: without min-width:0 a flex child refuses to shrink
+     below its content width, so at narrow viewports the nav plows into
+     .header__actions (the two clusters overlap instead of compressing).
+     With it, the nav shrinks and overflows into a swipeable rail. */
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;          /* Firefox */
+}
+.header__nav-links::-webkit-scrollbar { display: none; }
+
+.header__nav-link {
+  position: relative;
+  padding: 8px 4px;
+  font-family: var(--font-cjk-display);
+  font-size: clamp(13px, 1.15vw, 16px);   /* 16px at ≥1390 → 13px floor on small screens */
+  line-height: 24px;
+  font-weight: var(--fw-regular);
+  color: var(--neutral-400);
+  white-space: nowrap;
+  transition: color 200ms ease;
+}
+
+.header__nav-link:hover { color: var(--neutral-white); }
+
+.header__nav-link.is-active {
+  color: var(--neutral-white);
+  /* Weight stays regular on purpose: bolding the active item changes its
+     width, which shifts the neighbouring links and makes the nav "jump"
+     when the active page changes. Active is signalled by colour + the
+     glowing underline below instead. */
+}
+
+.header__nav-link.is-active::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  bottom: 0;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--yellow-500);
+  box-shadow: 0 0 8px rgba(255, 163, 63, 0.55);
+}
+
+.header__actions {
+  display: flex;
+  align-items: center;
+  gap: clamp(12px, 1.6vw, 24px);   /* fluid, matches nav cluster scaling */
+  flex-shrink: 0;
+}
+
+/* Bare 24×24 icon button (search / language) — no glass pill
+   Uses mask-image so the SVG (white-fill) can be recolored on hover.
+   Set the icon via inline style: style="--icon: url(<icon>.svg);" (search/
+   language are inlined as data-URIs by tools/_inline-header-icons.mjs). */
+.header__icon-btn {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  background-color: var(--neutral-300);
+  -webkit-mask: var(--icon) center / 24px 24px no-repeat;
+          mask: var(--icon) center / 24px 24px no-repeat;
+  transition: background-color 200ms ease;
+}
+
+.header__icon-btn:hover { background-color: var(--neutral-white); }
+
+/* Buttons cluster (right of icons) */
+.header__buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* (The cart-slot margin RESERVE that used to live here is gone: the cart icon now
+   ships in the static HTML — see each page's .header__actions — so it's present at
+   first paint and held across navigations by the view-transition. No JS injection
+   ⇒ no pop-in, no layout shift, so no reserve is needed.) */
+
+/* ── Header responsive condensation ──
+   Gaps and nav type scale fluidly via clamp() (see rules above). The
+   nav must FIT at every width ≥768 — the overflow rail clips mid-glyph
+   and reads as a bug, so it stays a last-resort safety net only.
+   ≤1200px: 計畫與價格 pill collapses to its popcorn icon (aria-label
+            keeps it accessible), tighter login padding. The pill label
+            is the single widest flexible item — collapsing it early is
+            what buys the nav its room.
+   ≤1024px: gap floors.
+   ≤860px:  smallest nav type (12px).
+   ≤768px:  nav links hidden entirely (MOBILE TWEAKS block at end of
+            file) — desktop pages have mobile-*.html counterparts. */
+@media (max-width: 1200px) {
+  /* Doubled class selectors: the chevron's base rule is defined LATER in
+     this file, so equal specificity would lose by source order. */
+  .popcorn-section .popcorn-section__label,
+  .popcorn-section .popcorn-section__chevron { display: none; }
+  .header__login-btn { padding: 0 14px; }
+}
+
+@media (max-width: 1024px) {
+  .header__nav { gap: 16px; }
+  .header__nav-links { gap: 12px; }
+  .header__actions { gap: 12px; }
+  .header__inner { padding: 0 20px; }
+}
+
+@media (max-width: 900px) {
+  .header__nav-link { font-size: 12px; }
+  .header__nav-links {
+    gap: 10px;
+    /* Below ~830px the 7 CJK labels can't physically fit — the rail
+       scrolls. The mask fades the cut edge so it reads as "more to
+       scroll", never as a glyph sliced in half. padding-right keeps
+       the last link clear of the fade when scrolled to the end. */
+    padding-right: 28px;
+    -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent);
+            mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent);
+  }
+}
+
+@media (max-width: 768px) {
+  .header__inner { padding: 0 16px; }
+}
+
+.header__buttons--logged-in { gap: 12px; }
+
+/* PopcornSection — Before Login (計畫與價格 pill) — same 21st.dev .btn-liquid glass
+   as .btn--ghost: white-5% lens on ::before (z-index:-1) + the 10-layer specular
+   box-shadow + blur(8px) url(#liquid-glass) saturate(150%) [url() added in 52-…].
+   NO sheen, NO rim. Hover scale(1.03) / press scale(0.96), exactly theirs. */
+.popcorn-section {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 16px;
+  border: none;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--neutral-white);
+  background: transparent;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.30);
+  transition: transform 300ms var(--ease-out);
+}
+.popcorn-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--glass-fill);                 /* white 5% — no sheen */
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: var(--glass-backdrop);
+  -webkit-backdrop-filter: var(--glass-backdrop);
+  transition: background-color 400ms cubic-bezier(1, 0, 0.4, 1),
+              box-shadow        400ms cubic-bezier(1, 0, 0.4, 1);
+}
+
+.popcorn-section:hover  { transform: scale(1.03); }
+.popcorn-section:active { transform: scale(0.96); }
+
+.popcorn-section__balance {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.popcorn-section__label {
+  font-family: var(--font-cjk-display);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: var(--fw-regular);
+  color: var(--neutral-white);
+  white-space: nowrap;
+}
+
+.popcorn-section__icon {
+  width: 20px;
+  height: 20px;
+  display: block;
+  flex-shrink: 0;
+}
+
+.popcorn-section__chevron {
+  width: 18px;
+  height: 18px;
+  display: block;
+  flex-shrink: 0;
+}
+
+/* PopcornSection — After Login (popcorn + balance + deposit) */
+.popcorn-section--logged-in {
+  gap: 6px;
+  padding: 0 4px 0 12px;
+}
+
+.popcorn-section__amount {
+  font-family: var(--font-latin);
+  font-size: 14px;
+  line-height: 1;
+  font-weight: var(--fw-medium);
+  color: #eae9f7;
+  text-align: right;
+  /* Reserve a stable column wide enough for 5 digits + thousands separator
+     ("99,999") so the pill doesn't grow/jump as the balance changes.
+     tabular-nums keeps every digit the same width. */
+  min-width: 3.6em;
+  font-variant-numeric: tabular-nums;
+}
+
+.popcorn-section__deposit {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-pill);
+  background: var(--yellow-500);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: filter 150ms ease;
+}
+
+.popcorn-section__deposit:hover { filter: brightness(1.04); }
+
+/* plus.svg is white-fill → recolor to yellow-ink via mask on ::before */
+.popcorn-section__deposit::before {
+  content: '';
+  display: block;
+  width: 16px;
+  height: 16px;
+  background-color: var(--yellow-ink);
+  -webkit-mask: url('assets/icons/plus.svg') center / contain no-repeat;
+          mask: url('assets/icons/plus.svg') center / contain no-repeat;
+}
+
+/* btn-login-signup — yellow pill */
+.header__login-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  padding: 0 20px;
+  background: var(--yellow-500);
+  color: var(--yellow-ink);
+  border: none;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-cjk-text);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: var(--fw-medium);
+  cursor: pointer;
+  box-shadow: inset 0 1px 4px rgba(255, 255, 255, 0.9);
+  transition: background 120ms var(--ease-out),
+              box-shadow 120ms var(--ease-out);
+}
+
+.header__login-btn:hover {
+  background: var(--yellow-400);
+}
+
+.header__login-btn:active {
+  background: var(--yellow-600);
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.16);
+}
+
+/* btn-notification (After Login) — plain 24px icon matching search / language:
+   the bell is a recolorable mask (Neutral/300 → White on hover), the unread
+   red-dot is a fixed ::after circle so it never recolors with the bell. The
+   baked-in <img> is hidden — bell shape comes from notification_regular.svg. */
+.header__notification-btn {
+  position: relative;
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.header__notification-btn img { display: none; }
+
+/* Match the 語言↔通知 spacing (header__actions 24px); buttons group gap is 12px
+   so add 12px to reach 24px before the popcorn pill — avatar gap stays 12px. */
+.header__notification-btn { margin-right: 12px; }
+
+.header__notification-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: var(--neutral-300);
+  /* 兩層 mask 相交:鈴鐺形狀 ∩「紅點周圍挖空圈」— 縫隙是真透明,
+     不用深色 ring 模擬(透明 header 下 ring 會在亮背景現形)。*/
+  -webkit-mask-image: url('assets/icons/notification_regular.svg'),
+    radial-gradient(circle at calc(100% - 4px) 4px, transparent 6px, #000 6.5px);
+  -webkit-mask-size: 24px 24px, 100% 100%;
+  -webkit-mask-position: center, center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-composite: source-in;
+          mask-image: url('assets/icons/notification_regular.svg'),
+    radial-gradient(circle at calc(100% - 4px) 4px, transparent 6px, #000 6.5px);
+          mask-size: 24px 24px, 100% 100%;
+          mask-position: center, center;
+          mask-repeat: no-repeat;
+          mask-composite: intersect;
+  transition: background-color 200ms ease;
+}
+.header__notification-btn:hover::before { background-color: var(--neutral-white); }
+
+/* Unread red dot — matches the SVG's circle (cx20 cy4 r4 in a 24 grid). The
+   dark ring (header bg colour) recreates the gap the original baked-in icon had
+   between the dot and the bell outline. */
+.header__notification-btn::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #EF4444;
+}
+/* 全部已讀後隱藏 bell 紅點 */
+.header__notification-btn.is-read::after { display: none; }
+
+/* Avatar (After Login) — 40×40 圓形容器，內含用戶頭照
+   未上傳時 fallback 到 assets/icons/avatar.svg */
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-pill);
+  border: none;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.avatar__img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  border-radius: inherit;
+}

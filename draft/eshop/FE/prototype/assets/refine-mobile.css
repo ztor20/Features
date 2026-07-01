@@ -1,0 +1,349 @@
+/* ============================================================
+   refine-mobile.css  —  Ztor. 2.0 mobile rework (Mobbin-benchmarked)
+   ------------------------------------------------------------
+   Loaded AFTER components.css AND after each page's inline <style>,
+   so equal-specificity rules here win by source order. Every rule is
+   scoped under body.rf-mobile so desktop pages are never touched.
+
+   Mobbin references that shaped this pass (iOS):
+     · Apple TV    — flat bottom tab bar, full-pill primary CTA,
+                     large-title header, edge-to-edge hero
+     · Netflix     — bottom-nav active state (filled accent),
+                     2-up poster library grid
+     · HBO Max     — large-title + sticky condensed header
+     · Beli / Fi   — social feed card rhythm, comfortable tap rows
+     · Instagram   — saved/library 2-col grid
+
+   Brand skin preserved verbatim: dark #0a0a0a canvas, amber #ffa33f,
+   all tokens.css variables, components.css vocabulary. tokens.css and
+   components.css are NOT edited — needs that belong there are FLAGGED
+   in the delivery notes, not made here.
+
+   Scope tags used:
+     body.rf-mobile                 every mobile page
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   0 · GLOBAL ERGONOMICS
+   iOS-converged: honour safe areas, lift content clear of the
+   home indicator, guarantee 44px touch targets, kill tap-flash.
+   ------------------------------------------------------------ */
+body.rf-mobile {
+  /* iOS Safari shrinks 100vh on scroll; dvh keeps the page stable.
+     Inline CSS already sets min-height:100vh — upgrade it here. */
+  min-height: 100dvh;
+  /* content clears the floating bottom nav + the home indicator.
+     Inline sets a flat 96px; add the safe-area inset on top so tall
+     phones (notch + indicator) don't clip the last card. */
+  padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+  /* stop the grey iOS tap highlight on every link/button */
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Remove the blue text-selection flash on interactive chrome only
+   (reading text keeps the brand-yellow ::selection from tokens.css). */
+body.rf-mobile .m-bottomnav__item,
+body.rf-mobile .m-menu-btn,
+body.rf-mobile .header__icon-btn,
+body.rf-mobile .m-drawer__link,
+body.rf-mobile .films-rail__tab {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Universal focus ring — keyboard / switch-control users get a clear
+   brand-yellow outline; pointer taps stay clean (:focus-visible only).
+   Touch targets below all meet the 44px minimum. */
+body.rf-mobile a:focus-visible,
+body.rf-mobile button:focus-visible,
+body.rf-mobile [tabindex]:focus-visible {
+  outline: 2px solid var(--yellow-500);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+
+/* ------------------------------------------------------------
+   1 · STICKY HEADER — condense + hairline on scroll
+   Mobbin (Apple TV / HBO Max): the top bar is quiet at rest and
+   firms up to a thin frosted divider once content scrolls under it.
+   The inline header is already sticky + frosted; this only sharpens
+   the divider so the brand wordmark always sits on a clean edge.
+   ------------------------------------------------------------ */
+body.rf-mobile .header {
+  /* slightly denser frost so poster art never bleeds through the bar */
+  background: rgba(10, 10, 10, 0.78);
+  transition: background 200ms var(--ease-out),
+              border-color 200ms var(--ease-out);
+}
+/* JS adds .is-scrolled past the first screen (see per-page note);
+   if JS is absent the header still works — this is enhancement only. */
+body.rf-mobile .header.is-scrolled {
+  background: rgba(10, 10, 10, 0.92);
+  border-bottom-color: var(--border-default);
+}
+
+
+/* ------------------------------------------------------------
+   2 · BOTTOM TAB BAR — iOS-converged refinement
+   Mobbin (Apple TV / Netflix / HBO Max): 5 equal items, generous
+   thumb-reachable height, an unmistakable active state. Ztor keeps
+   its on-brand floating-pill (premium > flat slab), but we:
+     · raise each item to a true 44px tap target
+     · give the active item a crisper amber lens + soft glow
+     · add a press state (scale) for tactile feedback
+     · animate the icon, not the whole pill
+   ------------------------------------------------------------ */
+body.rf-mobile .m-bottomnav {
+  /* a hair more vertical padding so each item clears 44px */
+  padding: 7px;
+  gap: 2px;
+}
+body.rf-mobile .m-bottomnav__item {
+  min-height: 52px;            /* ≥44px tap target incl. label */
+  justify-content: center;
+  gap: 3px;
+  border-radius: 18px;         /* softer than full-pill — reads as a tab, not a chip */
+  transition: color 180ms var(--ease-out),
+              background 180ms var(--ease-out),
+              transform 120ms var(--ease-out);
+}
+/* tactile press — the pushed tab dips, iOS-style */
+body.rf-mobile .m-bottomnav__item:active {
+  transform: scale(0.94);
+}
+body.rf-mobile .m-bottomnav__icon {
+  transition: transform 200ms var(--ease-out);
+}
+/* active: brighter lens + a gentle amber inner glow, icon lifts a touch */
+body.rf-mobile .m-bottomnav__item.is-active {
+  background: rgba(255, 163, 63, 0.10);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16),
+              0 0 0 0.5px rgba(255, 163, 63, 0.22);
+}
+body.rf-mobile .m-bottomnav__item.is-active .m-bottomnav__icon {
+  transform: translateY(-1px) scale(1.06);
+  filter: drop-shadow(0 0 6px rgba(255, 163, 63, 0.45));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.rf-mobile .m-bottomnav__item,
+  body.rf-mobile .m-bottomnav__item:active,
+  body.rf-mobile .m-bottomnav__icon {
+    transition: none;
+    transform: none;
+  }
+}
+
+
+/* ------------------------------------------------------------
+   3 · CARD RHYTHM & TACTILITY
+   Mobbin: tappable cards acknowledge the press. Add a unified,
+   subtle press-down to every rail card across the family. Uses
+   transform only (cheap on the GPU). Reduced-motion drops it.
+   ------------------------------------------------------------ */
+body.rf-mobile .cocreation-card,
+body.rf-mobile .ai-mosaic__tile,
+body.rf-mobile .community-card,
+body.rf-mobile .film-card,
+body.rf-mobile .activity-card,
+body.rf-mobile .news-card {
+  transition: transform 160ms var(--ease-out);
+  -webkit-tap-highlight-color: transparent;
+}
+@media (hover: none) and (pointer: coarse) {
+  body.rf-mobile .cocreation-card:active,
+  body.rf-mobile .ai-mosaic__tile:active,
+  body.rf-mobile .community-card:active,
+  body.rf-mobile .film-card:active,
+  body.rf-mobile .activity-card:active,
+  body.rf-mobile .news-card:active {
+    transform: scale(0.975);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.rf-mobile .cocreation-card,
+  body.rf-mobile .ai-mosaic__tile,
+  body.rf-mobile .community-card,
+  body.rf-mobile .film-card,
+  body.rf-mobile .activity-card,
+  body.rf-mobile .news-card {
+    transition: none;
+  }
+  body.rf-mobile .cocreation-card:active,
+  body.rf-mobile .ai-mosaic__tile:active,
+  body.rf-mobile .community-card:active,
+  body.rf-mobile .film-card:active,
+  body.rf-mobile .activity-card:active,
+  body.rf-mobile .news-card:active {
+    transform: none;
+  }
+}
+
+
+/* ------------------------------------------------------------
+   4 · HORIZONTAL RAILS — edge-fade + snap polish
+   Mobbin (Netflix / Apple TV rails): the trailing card should hint
+   "more to the right". A soft right-edge mask on every scroll rail
+   communicates scrollability without a scrollbar. Mask is on the
+   track itself, transform/opacity-free, so it's GPU-cheap.
+   The peeking card already implies scroll; the fade reinforces it.
+   ------------------------------------------------------------ */
+body.rf-mobile .cocreation-grid,
+body.rf-mobile .ai-mosaic__grid,
+body.rf-mobile .community-grid,
+body.rf-mobile .activity-grid {
+  /* smoother momentum scroll on iOS */
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;   /* stop the rail rubber-banding the page */
+}
+
+
+/* ------------------------------------------------------------
+   5 · LIBRARY / FILM POSTER GRID
+   Mobbin (Netflix My List / Instagram Saved / Pinterest): a clean
+   2-up poster grid is the canonical mobile "browse saved" view.
+   The film rails stay horizontal (home), but where a page shows a
+   full grid we tidy the gutter + radius to match the poster rhythm.
+   Scoped to the grid container only; no structural change.
+   ------------------------------------------------------------ */
+body.rf-mobile .film-card__poster {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+
+/* ------------------------------------------------------------
+   6 · SOCIAL FEED CARDS
+   Mobbin (Beli / Fi): comfortable post cards, the engagement row
+   sits on a clear baseline. Just firm up the bottom meta so likes /
+   comments line up cleanly — no structural change.
+   ------------------------------------------------------------ */
+body.rf-mobile .community-card__meta {
+  align-items: center;
+}
+
+
+/* ------------------------------------------------------------
+   7 · PULL-TO-REFRESH AFFORDANCE (visual cue only)
+   Mobbin: content apps surface a subtle top affordance. We add a
+   CSS-only "release to refresh" cue that lives behind the first
+   section and is revealed by the native rubber-band overscroll at
+   the top of the page. Pure decoration; no JS, no layout cost.
+   Honours reduced-motion (the spinner just sits still).
+   ------------------------------------------------------------ */
+body.rf-mobile .m-ptr {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-tertiary);
+  font-family: var(--font-cjk-text);
+  font-size: var(--m-fs-eyebrow, 11px);
+  letter-spacing: 0.08em;
+  z-index: 0;
+  pointer-events: none;
+}
+body.rf-mobile .m-ptr__spinner {
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  border-top-color: var(--yellow-500);
+  border-radius: 50%;
+  animation: m-ptr-spin 0.9s linear infinite;
+}
+@keyframes m-ptr-spin {
+  to { transform: rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.rf-mobile .m-ptr__spinner { animation: none; }
+}
+
+
+/* ------------------------------------------------------------
+   8 · EMPTY / LOADING STATE PRIMITIVES
+   First-class states (Mobbin discipline). Reusable classes any page
+   can drop in. Skeleton matches the dark surface; empty state is a
+   composed, on-brand block instead of a blank rail.
+   ------------------------------------------------------------ */
+/* Skeleton shimmer (matches card surface; transform-driven sheen) */
+body.rf-mobile .m-skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-lg);
+}
+body.rf-mobile .m-skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.06) 50%,
+    transparent 100%);
+  animation: m-skeleton-sheen 1.4s ease-in-out infinite;
+}
+@keyframes m-skeleton-sheen {
+  to { transform: translateX(100%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.rf-mobile .m-skeleton::after { animation: none; }
+}
+
+/* Empty state */
+body.rf-mobile .m-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  padding: 48px 24px;
+  color: var(--text-secondary);
+}
+body.rf-mobile .m-empty__title {
+  font-family: var(--font-cjk-display);
+  font-weight: var(--fw-bold);
+  font-size: var(--m-fs-h3, 16px);
+  color: var(--text-primary);
+}
+body.rf-mobile .m-empty__sub {
+  font-family: var(--font-cjk-text);
+  font-size: var(--m-fs-caption, 12px);
+  line-height: 1.5;
+  max-width: 28ch;
+}
+
+
+/* ------------------------------------------------------------
+   9 · SCROLL-REVEAL (gentle, motivated)
+   Mobbin: home sections enter as the eye arrives — communicates
+   hierarchy, not decoration. Section bodies fade+rise once. JS adds
+   .is-revealed via IntersectionObserver; absent JS, content is fully
+   visible (the default state below is the *revealed* look, the
+   pre-state only applies when .rf-reveal is set by JS-capable pages).
+   MOTION_INTENSITY 3 — short, single-shot, reduced-motion safe.
+   ------------------------------------------------------------ */
+body.rf-mobile .rf-reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 520ms var(--ease-out),
+              transform 520ms var(--ease-out);
+  will-change: transform, opacity;
+}
+body.rf-mobile .rf-reveal.is-revealed {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  body.rf-mobile .rf-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

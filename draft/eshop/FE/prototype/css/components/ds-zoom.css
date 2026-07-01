@@ -1,0 +1,118 @@
+/* ════════════════════════════════════════════════════════════════
+   ds-zoom.css — fullscreen product-image viewer (window.DSZoom).
+   Farfetch-parity INTERACTION on our DARK chrome (a white field would
+   seam against #0a0a0a). Pinch / drag-pan zoom, swipe carousel, progress
+   scrubber. The gesture surface is .ds-zoom__viewport (touch-action:none
+   — JS owns every touch). Scroll-lock is handled globally by ds.js via the
+   body.ds-zoom-open class (iOS-safe position:fixed) — not here.
+   ════════════════════════════════════════════════════════════════ */
+.ds-zoom {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  visibility: hidden;
+  pointer-events: none;
+  background: rgba(10, 10, 10, 0.94);          /* dark field — no seam vs the product */
+  opacity: 0;
+  transition: opacity 240ms var(--ease-out);
+}
+.ds-zoom[aria-hidden="false"] { visibility: visible; pointer-events: auto; opacity: 1; }
+
+/* ── gesture surface + horizontal slide track ── */
+.ds-zoom__viewport {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  touch-action: none;                          /* JS owns pan / pinch / swipe */
+  cursor: zoom-in;
+}
+.ds-zoom__track {
+  display: flex;
+  height: 100%;
+  will-change: transform;
+}
+.ds-zoom__slide {
+  flex: 0 0 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  padding: clamp(16px, 4vw, 56px);
+  box-sizing: border-box;
+}
+.ds-zoom__img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+  transform: translate3d(0, 0, 0) scale(1);
+  outline: 1px solid rgba(255, 255, 255, 0.08); /* a defined edge vs the dark field */
+}
+/* promote to its own compositor layer ONLY while the viewer is open */
+.ds-zoom[aria-hidden="false"] .ds-zoom__img { will-change: transform; }
+
+/* ── chrome (glass, on our tokens) ── */
+.ds-zoom__close,
+.ds-zoom__nav {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: var(--glass-border);
+  border-radius: var(--radius-pill);
+  background: var(--glass-fill);
+  -webkit-backdrop-filter: var(--glass-backdrop);
+          backdrop-filter: var(--glass-backdrop);
+  color: var(--text-primary);
+  cursor: pointer;
+  z-index: 2;
+}
+.ds-zoom__close { top: clamp(12px, 3vw, 28px); right: clamp(12px, 3vw, 28px); width: 44px; height: 44px; }
+.ds-zoom__close svg { width: 20px; height: 20px; }
+
+.ds-zoom__nav {
+  top: 50%;
+  transform: translateY(-50%);
+  width: 48px;
+  height: 48px;
+}
+.ds-zoom__nav svg { width: 22px; height: 22px; }
+.ds-zoom__nav--prev { left: clamp(8px, 2vw, 24px); }
+.ds-zoom__nav--next { right: clamp(8px, 2vw, 24px); }
+.ds-zoom__nav:disabled { opacity: 0; pointer-events: none; }   /* fade out at the ends */
+.ds-zoom--single .ds-zoom__nav { display: none; }
+/* touch devices page by swipe — hide the arrows there (Farfetch parity) */
+@media (hover: none) { .ds-zoom__nav { display: none; } }
+
+/* ── progress scrubber (Farfetch signature) — a position thumb on a thin track ── */
+.ds-zoom__scrub {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(16px, 4vw, 32px);
+  transform: translateX(-50%);
+  width: min(60vw, 360px);
+  height: 3px;
+  border-radius: 2px;
+  background: var(--white-alpha-16, rgba(255, 255, 255, 0.16));
+  overflow: hidden;
+  z-index: 2;
+}
+.ds-zoom--single .ds-zoom__scrub { display: none; }
+.ds-zoom__scrub-thumb {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 25%;
+  border-radius: 2px;
+  background: var(--text-primary, #fff);
+  transition: left 280ms var(--ease-out), width 280ms var(--ease-out);
+}
+
+.ds-zoom__close:focus-visible,
+.ds-zoom__nav:focus-visible { outline: 2px solid var(--yellow-500); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ds-zoom { transition: none; }
+  .ds-zoom__scrub-thumb { transition: none; }
+}

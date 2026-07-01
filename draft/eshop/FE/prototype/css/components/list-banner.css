@@ -1,0 +1,111 @@
+/* ─────────────────────────────────────────
+   LIST BANNER — homepage "list recommendation" hero (e.g. 愛有千百種樣子)
+   Left copy column + right 16:9 media, on a pure-CSS warm gradient.
+   Ported from main's 42-creator-subpages bundle (the standalone homepage
+   banner, separated here). Background is a multi-layer radial-gradient —
+   0 KB, retina-sharp — NOT the 41 MB JPEG the older build shipped.
+   ───────────────────────────────────────── */
+
+/* Layers paint top→bottom; the linear base sits last (behind).
+   Double-class beats index.html's inline `.section-bg-surface
+   { background: var(--yellow-500) }` (same specificity, later source order). */
+.section.section--list-banner {
+  background-color: #ef6f3d;
+  background-image:
+    /* magenta mass, upper-left — large so its rounded BOTTOM-RIGHT edge
+       sweeps across and forms the TOP of the gold swoosh */
+    radial-gradient(46% 60% at 26% 26%, #e2255a 0%, #e2255a 14%, rgba(226, 37, 90, 0) 54%),
+    /* deep maroon mass rising from the bottom-centre — its rounded TOP edge
+       forms the BOTTOM of the swoosh; sits right of the magenta so the gap
+       between them opens up-and-to-the-right (the comma curl) */
+    radial-gradient(66% 54% at 62% 98%, #c01f29 0%, rgba(192, 31, 41, 0) 58%),
+    /* gold hook TAIL — small, low-left: pulls the bright band down into a
+       curl at the comma's point */
+    radial-gradient(20% 30% at 45% 55%, #f9b042 0%, rgba(249, 176, 66, 0) 62%),
+    /* gold swoosh CORE — luminous, sweeping up to the right */
+    radial-gradient(50% 30% at 68% 38%, #ffc551 0%, #f7a83e 38%, rgba(247, 168, 62, 0) 66%),
+    /* gold continuation into the top-right */
+    radial-gradient(48% 40% at 90% 20%, #f8b948 0%, rgba(248, 185, 72, 0) 54%),
+    /* pink hint, top-right */
+    radial-gradient(42% 48% at 78% 1%, #e63f63 0%, rgba(230, 63, 99, 0) 50%),
+    /* red-orange, bottom-left */
+    radial-gradient(58% 72% at 6% 94%, #ef5535 0%, rgba(239, 85, 53, 0) 60%),
+    linear-gradient(120deg, #f6a23f 0%, #ef6f3d 56%, #e54b2d 100%);
+}
+
+.list-banner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 600px);
+  align-items: center;
+  gap: var(--space-16);
+}
+
+.list-banner__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  /* Stretch to the media column's height; space-between pins the title
+     to the image's top edge, the CTA to its bottom edge, and floats the
+     description midway between them. */
+  align-self: stretch;
+  justify-content: space-between;
+}
+
+.list-banner__title {
+  margin: 0;  /* kill the h2 UA margin (0.83em ≈ 63px per side at 76px) */
+  padding-top: var(--space-2);  /* optical nudge: title cap sits ~8px below image top */
+  font-family: var(--font-cjk-display);
+  font-size: var(--fs-display);
+  line-height: var(--lh-display);
+  letter-spacing: var(--ls-display);
+  font-weight: var(--fw-bold);
+  color: var(--text-primary);
+}
+
+.list-banner__sub {
+  margin: 0;  /* clear p UA margins; spacing comes from space-between */
+  font-family: var(--font-cjk-text);
+  font-size: var(--fs-body-lg);
+  line-height: var(--lh-body-lg);
+  color: var(--neutral-100);
+}
+
+/* Ink-filled CTA — yellow primary has no contrast on the warm gradient. */
+.list-banner__cta {
+  background: var(--yellow-ink);
+  color: var(--text-primary);
+  border-color: transparent;
+}
+
+.list-banner__cta:hover:not(:disabled) {
+  box-shadow: 0 8px 24px rgba(26, 23, 0, 0.35);
+}
+
+.list-banner__media {
+  display: block;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: 0 24px 48px rgba(26, 23, 0, 0.18);
+}
+
+.list-banner__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 300ms ease;
+}
+
+.list-banner__media:hover img { transform: scale(1.03); }
+
+@media (max-width: 767.98px) {
+  .list-banner {
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+  }
+  .list-banner__title { font-size: clamp(28px, 7vw, 36px); line-height: 1.3; }
+  /* Single column: copy height is natural, so space-between collapses —
+     restore fixed gaps instead. */
+  .list-banner__sub { margin-top: var(--space-3); }
+  .list-banner__cta { margin-top: var(--space-6); }
+}

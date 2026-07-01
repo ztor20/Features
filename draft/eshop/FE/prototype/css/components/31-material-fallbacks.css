@@ -1,0 +1,39 @@
+/* ─────────────────────────────────────────
+   MATERIAL FALLBACKS — liquid glass degrades honestly
+   ───────────────────────────────────────── */
+
+/* No frost without contrast: solid fill replaces transparency */
+@media (prefers-reduced-transparency: reduce) {
+  .btn--ghost,
+  .btn--yellow-ghost,
+  .btn--destructive,
+  .btn--quiet,
+  .icon-btn {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(20, 20, 20, 0.95);
+  }
+  /* Lens-based glass (ghost button + 計畫與價格 pill) carries its frost on a
+     ::before; neutralise that too, or the transparency survives the fallback. */
+  .btn--ghost::before,
+  .popcorn-section::before {
+    background: rgba(20, 20, 20, 0.95);
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .btn--ghost::after,
+  .popcorn-section::after { opacity: 0; }
+  .popcorn-section { background: transparent; }
+}
+
+/* Motion collapses to instant state changes */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

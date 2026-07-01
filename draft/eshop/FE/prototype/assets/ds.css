@@ -1,0 +1,66 @@
+/* ============================================================
+   Ztor 2.0 — Design-System Layer  (ds.css)
+   ------------------------------------------------------------
+   Loaded after components.css on every page. Holds:
+     1. The VARIANT convention (size/density) — same content &
+        context, different size, via ONE knob: --ds-scale.
+     2. Shared component UTILITIES (focus ring, masked icon).
+   Component-specific styling stays in components.css (base look)
+   or each component's block; behaviour lives in ds.js.
+   Never edit tokens.css / components.css to add a variant — add
+   it here or in the component's own scoped rules.
+   See COMPONENTS.md for the catalogue.
+   ============================================================ */
+
+/* ─────────────────────────────────────────
+   1 · VARIANT CONVENTION  —  data-size="sm | md | lg"
+   Put data-size on a component ROOT. Components author their
+   internal dimensions against --ds-scale so one attribute
+   resizes the whole component without changing its content,
+   structure, or behaviour. md (1.0) is the default.
+
+   Authoring example (in a component's CSS):
+     .post-card__title { font-size: calc(18px * var(--ds-scale, 1)); }
+     .post-card { padding: calc(20px * var(--ds-scale, 1)); }
+   Markup:
+     <article class="post-card" data-size="sm"> … </article>
+   ───────────────────────────────────────── */
+[data-size]      { --ds-scale: 1; }      /* safety default */
+[data-size="sm"] { --ds-scale: 0.85; }
+[data-size="md"] { --ds-scale: 1; }
+[data-size="lg"] { --ds-scale: 1.15; }
+
+/* Optional second axis for data-dense surfaces (dashboards, rails)
+   that want tighter spacing without shrinking type. Components opt
+   in by reading --ds-density on their gaps/padding. */
+[data-density="compact"] { --ds-density: 0.7; }
+[data-density="cozy"]    { --ds-density: 1; }
+
+/* ─────────────────────────────────────────
+   2 · SHARED UTILITIES
+   ───────────────────────────────────────── */
+
+/* Focus ring — one definition. Add `ds-focusable` to any custom
+   interactive element (the dozens of ad-hoc focus rings across the
+   refine files collapse into this during migration). */
+.ds-focusable:focus-visible {
+  outline: 2px solid var(--yellow-500);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Masked icon — one definition for the ~30 currentColor mask glyphs.
+   Usage: <span class="ds-icon" style="--icon:url('assets/icons/x.svg')"></span>
+   Size with font-size (1em square) or width/height. */
+.ds-icon {
+  display: inline-block;
+  width: 1em; height: 1em;
+  flex: 0 0 auto;
+  background-color: currentColor;
+  -webkit-mask: var(--icon) center / contain no-repeat;
+          mask: var(--icon) center / contain no-repeat;
+}
+
+/* Reduced-motion: the variant scale is layout, not motion, so it is
+   untouched here on purpose. Motion lives in components + ds.js,
+   each of which honours prefers-reduced-motion locally. */

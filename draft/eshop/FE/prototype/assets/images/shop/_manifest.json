@@ -1,0 +1,2100 @@
+{
+ "items": [
+  {
+   "id": "taiwan-trilogy-concept-poster",
+   "name": "《魏德聖·台灣三部曲》前導概念海報（限量編號版）",
+   "arch": "poster"
+  },
+  {
+   "id": "vintage-film-program-reprint",
+   "name": "絕版電影場刊復刻",
+   "arch": "photobook"
+  },
+  {
+   "id": "ztor-storyboard-notebook",
+   "name": "Ztor. 經典片頭分鏡手稿筆記本",
+   "arch": "book"
+  },
+  {
+   "id": "taiyu-golden-age-postcards",
+   "name": "台語片黃金年代復刻明信片組",
+   "arch": "postcard"
+  },
+  {
+   "id": "film-strip-bookmarks",
+   "name": "電影膠卷書籤組（35mm 真實膠片）",
+   "arch": "book"
+  },
+  {
+   "id": "ztor-clapperboard-acrylic",
+   "name": "Ztor. 場記板（壓克力收藏版）",
+   "arch": "prop"
+  },
+  {
+   "id": "hk-classic-hand-painted-poster",
+   "name": "經典港片手繪海報復刻版",
+   "arch": "poster"
+  },
+  {
+   "id": "director-megaphone-pen-set",
+   "name": "導演筒造型原子筆組",
+   "arch": "merch"
+  },
+  {
+   "id": "film-festival-pin-set",
+   "name": "電影節限定徽章組（六入）",
+   "arch": "pin"
+  },
+  {
+   "id": "film-crew-staff-jacket",
+   "name": "劇組同款工作人員外套",
+   "arch": "jacket"
+  },
+  {
+   "id": "ztor-logo-heavyweight-tee-black",
+   "name": "Ztor. 標準字重磅 T 恤（墨黑）",
+   "arch": "merch"
+  },
+  {
+   "id": "after-credits-hoodie",
+   "name": "「散場之後」重磅連帽衫",
+   "arch": "jacket"
+  },
+  {
+   "id": "projectionist-work-cap",
+   "name": "放映師工裝帽",
+   "arch": "cap"
+  },
+  {
+   "id": "film-reel-bucket-hat",
+   "name": "膠卷圖騰刺繡漁夫帽",
+   "arch": "cap"
+  },
+  {
+   "id": "end-credits-longsleeve",
+   "name": "Ztor. 片尾名單長袖上衣",
+   "arch": "tee"
+  },
+  {
+   "id": "what-to-watch-tonight-tee",
+   "name": "「今晚想看點什麼」休閒短 T",
+   "arch": "merch"
+  },
+  {
+   "id": "crew-pass-lanyard",
+   "name": "劇組通行證識別帶",
+   "arch": "merch"
+  },
+  {
+   "id": "midnight-screening-fleece-jacket",
+   "name": "午夜場刷毛外套",
+   "arch": "jacket"
+  },
+  {
+   "id": "ztor-anniversary-crystal-trophy",
+   "name": "Ztor. 一週年紀念水晶獎座",
+   "arch": "merch"
+  },
+  {
+   "id": "vintage-projector-diecast-model",
+   "name": "經典放映機 1:6 合金模型",
+   "arch": "figure"
+  },
+  {
+   "id": "framed-35mm-film-cell",
+   "name": "35mm 電影膠卷收藏框（含鑑定書）",
+   "arch": "book"
+  },
+  {
+   "id": "taiwan-theater-billboard-miniature",
+   "name": "台灣老戲院手繪看板微縮模型",
+   "arch": "figure"
+  },
+  {
+   "id": "classic-scene-paper-light",
+   "name": "經典長鏡頭立體紙雕燈",
+   "arch": "homeware"
+  },
+  {
+   "id": "ztor-sterling-silver-pendant",
+   "name": "Ztor. 純銀片頭標誌墜飾",
+   "arch": "merch"
+  },
+  {
+   "id": "vintage-ticket-stub-album",
+   "name": "絕版電影票根典藏冊",
+   "arch": "merch"
+  },
+  {
+   "id": "director-chair-walnut-miniature",
+   "name": "導演椅微縮模型（胡桃木）",
+   "arch": "figure"
+  },
+  {
+   "id": "brass-clapperboard-limited",
+   "name": "雙週年純銅場記板（限量雕刻版）",
+   "arch": "prop"
+  },
+  {
+   "id": "digital-collector-card-pack",
+   "name": "數位收藏卡包",
+   "arch": "cards"
+  },
+  {
+   "id": "ztor-4k-wallpaper-collection",
+   "name": "Ztor. 4K 劇照桌布年度合輯",
+   "arch": "merch"
+  },
+  {
+   "id": "classic-quotes-sticker-pack",
+   "name": "經典台詞動態貼圖組",
+   "arch": "merch"
+  },
+  {
+   "id": "director-commentary-unlock",
+   "name": "導演講評音軌解鎖券",
+   "arch": "merch"
+  },
+  {
+   "id": "digital-program-deluxe-edition",
+   "name": "數位場刊典藏版（PDF＋EPUB）",
+   "arch": "photobook"
+  },
+  {
+   "id": "ztor-intro-ringtone-pack",
+   "name": "Ztor. 片頭音效鈴聲包",
+   "arch": "merch"
+  },
+  {
+   "id": "masterclass-editing-rhythm",
+   "name": "線上大師課：剪輯的節奏",
+   "arch": "merch"
+  },
+  {
+   "id": "virtual-premiere-avatar-frames",
+   "name": "虛擬首映禮頭像框組",
+   "arch": "digital"
+  },
+  {
+   "id": "yearly-viewing-report-poster",
+   "name": "年度觀影報告客製海報（數位版）",
+   "arch": "poster"
+  },
+  {
+   "id": "premiere-double-ticket",
+   "name": "首映禮雙人套票",
+   "arch": "ticket"
+  },
+  {
+   "id": "midnight-classic-single-ticket",
+   "name": "午夜經典場單人票",
+   "arch": "merch"
+  },
+  {
+   "id": "projection-room-tour",
+   "name": "膠卷放映室導覽體驗",
+   "arch": "ticket"
+  },
+  {
+   "id": "director-qa-session-ticket",
+   "name": "導演映後座談入場券",
+   "arch": "ticket"
+  },
+  {
+   "id": "private-screening-experience",
+   "name": "私人包場觀影體驗（20 人）",
+   "arch": "ticket"
+  },
+  {
+   "id": "open-air-screening-picnic-combo",
+   "name": "露天老片放映野餐組合票",
+   "arch": "ticket"
+  },
+  {
+   "id": "dubbing-workshop-experience",
+   "name": "經典配音體驗工作坊",
+   "arch": "ticket"
+  },
+  {
+   "id": "cinema-backstage-tech-tour",
+   "name": "戲院後台技術導覽",
+   "arch": "ticket"
+  },
+  {
+   "id": "annual-fan-festival-pass",
+   "name": "年度影迷祭通行證",
+   "arch": "merch"
+  },
+  {
+   "id": "ztor-popcorn-bucket-thermos",
+   "name": "Ztor. 爆米花桶造型保溫杯",
+   "arch": "cup"
+  },
+  {
+   "id": "countdown-leader-wall-clock",
+   "name": "片頭倒數計時掛鐘",
+   "arch": "merch"
+  },
+  {
+   "id": "cinema-velvet-cushion-red",
+   "name": "戲院絨布抱枕（暗紅）",
+   "arch": "homeware"
+  },
+  {
+   "id": "projector-ambient-night-light",
+   "name": "放映機氛圍小夜燈",
+   "arch": "homeware"
+  },
+  {
+   "id": "now-showing-neon-sign",
+   "name": "「正在放映」霓虹燈牌",
+   "arch": "homeware"
+  },
+  {
+   "id": "popcorn-scented-candle",
+   "name": "爆米花香氛蠟燭",
+   "arch": "homeware"
+  },
+  {
+   "id": "magnetic-poster-frame-a2",
+   "name": "電影海報磁吸掛框（A2）",
+   "arch": "poster"
+  },
+  {
+   "id": "ztor-double-wall-glass-set",
+   "name": "Ztor. 雙層玻璃對杯組",
+   "arch": "cup"
+  },
+  {
+   "id": "movie-night-blanket-set",
+   "name": "觀影毯與眼罩禮盒組",
+   "arch": "homeware"
+  },
+  {
+   "id": "ztor-program-book",
+   "name": "限量典藏場刊(燙金編號版)",
+   "arch": "photobook"
+  },
+  {
+   "id": "ztor-original-poster",
+   "name": "原版電影海報(雙聯張)",
+   "arch": "poster"
+  },
+  {
+   "id": "ztor-polaroid-stills",
+   "name": "拍立得劇照組(一套 6 張)",
+   "arch": "merch"
+  },
+  {
+   "id": "ztor-popcorn-bucket",
+   "name": "紀念爆米花桶(午夜場限定色)",
+   "arch": "popcornbucket"
+  },
+  {
+   "id": "ztor-pin-set",
+   "name": "角色琺瑯徽章組(一套 4 枚)",
+   "arch": "pin"
+  },
+  {
+   "id": "ztor-film-cell-frame",
+   "name": "35mm 原片格紀念框",
+   "arch": "merch"
+  },
+  {
+   "id": "ztor-tote-bag",
+   "name": "片名標準字帆布袋",
+   "arch": "bag"
+  },
+  {
+   "id": "ztor-clapperboard",
+   "name": "場記板複製品(片場同款)",
+   "arch": "prop"
+  },
+  {
+   "id": "ztor-signed-script",
+   "name": "導演親簽劇本複製本",
+   "arch": "prop"
+  },
+  {
+   "id": "ztor-acrylic-standee",
+   "name": "劇照壓克力立牌",
+   "arch": "merch"
+  },
+  {
+   "id": "ztor-postcard-set",
+   "name": "劇照明信片組(一套 12 張)",
+   "arch": "postcard"
+  },
+  {
+   "id": "ztor-keychain",
+   "name": "金屬片盤鑰匙圈",
+   "arch": "pin"
+  },
+  {
+   "id": "ztor-crew-cap",
+   "name": "劇組同款棒球帽",
+   "arch": "cap"
+  },
+  {
+   "id": "ztor-crew-tee",
+   "name": "劇組工作 T 恤(黑)",
+   "arch": "merch"
+  },
+  {
+   "id": "premiere-lottery-entry",
+   "name": "首映禮抽選資格(一次)",
+   "arch": "ticket"
+  },
+  {
+   "id": "set-visit-experience",
+   "name": "劇組探班體驗(半日)",
+   "arch": "ticket"
+  },
+  {
+   "id": "private-screening-30",
+   "name": "包場放映體驗(30 個座位)",
+   "arch": "ticket"
+  },
+  {
+   "id": "qa-priority-seat",
+   "name": "映後座談優先入場券",
+   "arch": "ticket"
+  },
+  {
+   "id": "midnight-double-feature",
+   "name": "午夜雙片連映套票(兩人座)",
+   "arch": "ticket"
+  },
+  {
+   "id": "ev-score-live",
+   "name": "經典港片配樂交響音樂會",
+   "ev": true,
+   "arch": "ticket"
+  },
+  {
+   "id": "ev-themesong-night",
+   "name": "電影主題曲之夜：金曲原唱現場",
+   "ev": true,
+   "arch": "ticket"
+  },
+  {
+   "id": "ev-soundtrack-unplugged",
+   "name": "片尾曲不插電音樂會",
+   "ev": true,
+   "arch": "ticket"
+  },
+  {
+   "id": "ev-fanmeet-trilogy",
+   "name": "《台灣三部曲》劇組粉絲見面會",
+   "ev": true,
+   "arch": "ticket"
+  },
+  {
+   "id": "ev-fanmeet-director",
+   "name": "導演面對面：映後深度 Q&A",
+   "ev": true,
+   "arch": "ticket"
+  },
+  {
+   "id": "ev-fanmeet-hk",
+   "name": "港星見面會：經典角色重聚場",
+   "ev": true,
+   "arch": "ticket"
+  },
+  {
+   "id": "ev-online-concert",
+   "name": "線上演唱會：片場直播特別場",
+   "ev": true,
+   "arch": "ticket"
+  },
+  {
+   "id": "ev-online-premiere-live",
+   "name": "線上首映 + 主創即時連線",
+   "ev": true,
+   "arch": "ticket"
+  },
+  {
+   "id": "ev-premiere-trilogy",
+   "name": "《台灣三部曲》首部曲 世界首映禮",
+   "ev": true,
+   "arch": "ticket"
+  },
+  {
+   "id": "ev-midnight-hk-double",
+   "name": "港片午夜場雙片連映：英雄本色＋倩女幽魂",
+   "ev": true,
+   "arch": "ticket"
+  },
+  {
+   "id": "ev-fan-screening-rose",
+   "name": "《玫瑰母親》影迷包場 + 映後座談",
+   "ev": true,
+   "arch": "ticket"
+  },
+  {
+   "id": "ev-doc-workshop",
+   "name": "紀錄片創作工作坊（兩日）",
+   "ev": true,
+   "arch": "ticket"
+  },
+  {
+   "id": "ev-open-air",
+   "name": "戶外星空放映夜：台語經典修復場",
+   "ev": true,
+   "arch": "ticket"
+  },
+  {
+   "id": "ev-foley-tour",
+   "name": "擬音棚導覽 + 親手做音效體驗",
+   "ev": true,
+   "arch": "ticket"
+  },
+  {
+   "id": "ev-costume-exhibit",
+   "name": "戲服與道具特展 早鳥票",
+   "ev": true,
+   "arch": "prop"
+  },
+  {
+   "id": "ev-pitch-night",
+   "name": "共創提案之夜：與監製面對面",
+   "ev": true,
+   "arch": "ticket"
+  },
+  {
+   "id": "au-redcarpet",
+   "name": "秋季首映禮紅毯雙人席",
+   "arch": "homeware"
+  },
+  {
+   "id": "au-masterclass",
+   "name": "王家衛大師班單席",
+   "arch": "ticket"
+  },
+  {
+   "id": "au-setvisit",
+   "name": "《台灣三部曲》劇組探班一日",
+   "arch": "ticket"
+  },
+  {
+   "id": "au-premiere-seat-row1",
+   "name": "金馬首映場 第一排中央席",
+   "arch": "ticket"
+  },
+  {
+   "id": "au-script-signed",
+   "name": "《雙眼之間》導演簽名工作劇本（唯一）",
+   "arch": "merch"
+  },
+  {
+   "id": "au-storyboard-original",
+   "name": "經典片頭分鏡手稿真跡 三連幅",
+   "arch": "manuscript"
+  },
+  {
+   "id": "au-costume-hero",
+   "name": "男主角戲服原件（含戲用配飾）",
+   "arch": "costume"
+  },
+  {
+   "id": "au-poster-artistproof",
+   "name": "前導海報藝術家校樣 AP1/3 親簽",
+   "arch": "poster"
+  },
+  {
+   "id": "au-clapper-final",
+   "name": "殺青場記板（劇組全員簽名）",
+   "arch": "prop"
+  },
+  {
+   "id": "au-popcorn-gold",
+   "name": "金色爆米花桶 #001 編號原型",
+   "arch": "popcornbucket"
+  },
+  {
+   "id": "jay-chou-fantasy-vinyl",
+   "name": "《范特西》黑膠復刻版",
+   "arch": "vinyl"
+  },
+  {
+   "id": "jay-chou-yehuimei-vinyl",
+   "name": "《葉惠美》黑膠復刻版",
+   "arch": "vinyl"
+  },
+  {
+   "id": "jay-chou-november-chopin-vinyl",
+   "name": "《十一月的蕭邦》黑膠復刻版",
+   "arch": "vinyl"
+  },
+  {
+   "id": "jay-chou-carnival-tour-tee",
+   "name": "嘉年華巡迴演唱會限定T恤",
+   "arch": "tee"
+  },
+  {
+   "id": "jay-chou-lyrics-poster-set",
+   "name": "經典歌詞海報三入組",
+   "arch": "poster"
+  },
+  {
+   "id": "jay-chou-piano-keychain",
+   "name": "鋼琴鍵盤金屬鑰匙圈",
+   "arch": "pin"
+  },
+  {
+   "id": "jay-chou-daoxiang-cap",
+   "name": "稻香刺繡棒球帽",
+   "arch": "cap"
+  },
+  {
+   "id": "jay-chou-porcelain-mug",
+   "name": "青花瓷釉色馬克杯",
+   "arch": "cup"
+  },
+  {
+   "id": "jay-chou-secret-notebook",
+   "name": "《不能說的秘密》琴譜筆記本",
+   "arch": "book"
+  },
+  {
+   "id": "jay-chou-tour-lightstick",
+   "name": "嘉年華演唱會應援燈",
+   "arch": "homeware"
+  },
+  {
+   "id": "jay-chou-signature-hoodie",
+   "name": "周同學簽名印花帽T",
+   "arch": "jacket"
+  },
+  {
+   "id": "jay-chou-cowboy-bandana",
+   "name": "牛仔很忙印花方巾",
+   "arch": "merch"
+  },
+  {
+   "id": "jay-chou-vinyl-collection-box",
+   "name": "出道25週年黑膠典藏盒組",
+   "arch": "vinyl"
+  },
+  {
+   "id": "jay-chou-acrylic-stand",
+   "name": "周同學壓克力立牌",
+   "arch": "merch"
+  },
+  {
+   "id": "jay-chou-tour-poster",
+   "name": "嘉年華主視覺海報",
+   "arch": "poster"
+  },
+  {
+   "id": "jay-chou-knit-vest",
+   "name": "等你下課針織背心",
+   "arch": "merch"
+  },
+  {
+   "id": "jay-chou-basketball-jersey",
+   "name": "鬥牛主題籃球衣",
+   "arch": "merch"
+  },
+  {
+   "id": "jay-chou-phone-case",
+   "name": "七里香花卉手機殼",
+   "arch": "homeware"
+  },
+  {
+   "id": "jay-chou-tote-bag",
+   "name": "簡單愛帆布托特包",
+   "arch": "bag"
+  },
+  {
+   "id": "jay-chou-puzzle",
+   "name": "最偉大的作品1000片拼圖",
+   "arch": "homeware"
+  },
+  {
+   "id": "nicholas-tse-viva-live-vinyl",
+   "name": "《Viva Live》黑膠唱片",
+   "arch": "vinyl"
+  },
+  {
+   "id": "nicholas-tse-chef-apron",
+   "name": "鋒味主廚圍裙",
+   "arch": "merch"
+  },
+  {
+   "id": "nicholas-tse-cookie-gift-box",
+   "name": "鋒味曲奇禮盒",
+   "arch": "merch"
+  },
+  {
+   "id": "nicholas-tse-tour-tee",
+   "name": "演唱會限定T恤",
+   "arch": "tee"
+  },
+  {
+   "id": "nicholas-tse-guitar-pick-set",
+   "name": "簽名吉他撥片組",
+   "arch": "merch"
+  },
+  {
+   "id": "nicholas-tse-rider-jacket",
+   "name": "搖滾皮革騎士外套",
+   "arch": "jacket"
+  },
+  {
+   "id": "nicholas-tse-photo-book",
+   "name": "《鋒迴路轉》寫真攝影集",
+   "arch": "photobook"
+  },
+  {
+   "id": "nicholas-tse-movie-poster",
+   "name": "《證人》復刻電影海報",
+   "arch": "poster"
+  },
+  {
+   "id": "nicholas-tse-hot-sauce",
+   "name": "鋒味秘製辣醬",
+   "arch": "merch"
+  },
+  {
+   "id": "nicholas-tse-embroidered-cap",
+   "name": "鋒字刺繡棒球帽",
+   "arch": "cap"
+  },
+  {
+   "id": "nicholas-tse-butterfly-hoodie",
+   "name": "玉蝴蝶印花帽T",
+   "arch": "jacket"
+  },
+  {
+   "id": "nicholas-tse-chef-tool-set",
+   "name": "鋒味廚房道具三件組",
+   "arch": "prop"
+  },
+  {
+   "id": "nicholas-tse-lightstick",
+   "name": "演唱會應援燈",
+   "arch": "homeware"
+  },
+  {
+   "id": "nicholas-tse-acrylic-stand",
+   "name": "舞台造型壓克力立牌",
+   "arch": "merch"
+  },
+  {
+   "id": "nicholas-tse-guitar-keychain",
+   "name": "電吉他金屬鑰匙圈",
+   "arch": "pin"
+  },
+  {
+   "id": "nicholas-tse-tote-bag",
+   "name": "鋒味帆布托特包",
+   "arch": "bag"
+  },
+  {
+   "id": "nicholas-tse-love-vinyl",
+   "name": "《因為愛所以愛》黑膠復刻",
+   "arch": "vinyl"
+  },
+  {
+   "id": "nicholas-tse-phone-case",
+   "name": "舞台剪影手機殼",
+   "arch": "homeware"
+  },
+  {
+   "id": "nicholas-tse-poster-set",
+   "name": "經典歌詞海報二入組",
+   "arch": "poster"
+  },
+  {
+   "id": "nicholas-tse-collab-tee",
+   "name": "鋒味聯名黑T",
+   "arch": "merch"
+  },
+  {
+   "id": "eason-chan-u87-vinyl",
+   "name": "《U87》黑膠復刻版",
+   "arch": "vinyl"
+  },
+  {
+   "id": "eason-chan-duo-tour-tee",
+   "name": "DUO 巡演紀念T恤",
+   "arch": "tee"
+  },
+  {
+   "id": "eason-chan-fad-photobook",
+   "name": "Fear and Dreams 巡演攝影集",
+   "arch": "photobook"
+  },
+  {
+   "id": "eason-chan-lyrics-poster",
+   "name": "《浮誇》歌詞海報",
+   "arch": "poster"
+  },
+  {
+   "id": "eason-chan-ten-years-mug",
+   "name": "《十年》紀念馬克杯",
+   "arch": "cup"
+  },
+  {
+   "id": "eason-chan-mic-keychain",
+   "name": "K歌之王金屬麥克風鑰匙圈",
+   "arch": "pin"
+  },
+  {
+   "id": "eason-chan-bucket-hat",
+   "name": "Eason 漁夫帽",
+   "arch": "cap"
+  },
+  {
+   "id": "eason-chan-vinyl-box",
+   "name": "廣東歌黑膠典藏盒組",
+   "arch": "vinyl"
+  },
+  {
+   "id": "eason-chan-fad-hoodie",
+   "name": "Fear and Dreams 主視覺帽T",
+   "arch": "jacket"
+  },
+  {
+   "id": "eason-chan-tote-bag",
+   "name": "黑白灰帆布托特包",
+   "arch": "bag"
+  },
+  {
+   "id": "eason-chan-acrylic-stand",
+   "name": "演唱會造型壓克力立牌",
+   "arch": "ticket"
+  },
+  {
+   "id": "eason-chan-lightstick",
+   "name": "巡演應援燈",
+   "arch": "homeware"
+  },
+  {
+   "id": "eason-chan-pattern-socks",
+   "name": "陳奕迅圖樣中筒襪",
+   "arch": "homeware"
+  },
+  {
+   "id": "eason-chan-duo-cap",
+   "name": "DUO 刺繡棒球帽",
+   "arch": "cap"
+  },
+  {
+   "id": "eason-chan-notebook",
+   "name": "《不想放手》燙金筆記本",
+   "arch": "book"
+  },
+  {
+   "id": "eason-chan-phone-case",
+   "name": "浮誇舞台剪影手機殼",
+   "arch": "homeware"
+  },
+  {
+   "id": "eason-chan-poster-set",
+   "name": "經典專輯封面海報三入組",
+   "arch": "poster"
+  },
+  {
+   "id": "eason-chan-white-tee",
+   "name": "與你常在白T",
+   "arch": "merch"
+  },
+  {
+   "id": "eason-chan-stage-puzzle",
+   "name": "Fear and Dreams 舞台1000片拼圖",
+   "arch": "homeware"
+  },
+  {
+   "id": "eason-chan-cd-collection",
+   "name": "出道紀念CD套裝",
+   "arch": "album"
+  },
+  {
+   "id": "jacky-cheung-kiss-goodbye-vinyl",
+   "name": "《吻別》黑膠復刻版",
+   "arch": "vinyl"
+  },
+  {
+   "id": "jacky-cheung-snow-wolf-program",
+   "name": "《雪狼湖》音樂劇場刊復刻",
+   "arch": "photobook"
+  },
+  {
+   "id": "jacky-cheung-tour-tee",
+   "name": "60+巡迴演唱會紀念T恤",
+   "arch": "tee"
+  },
+  {
+   "id": "jacky-cheung-photobook",
+   "name": "歌神舞台四十年攝影集",
+   "arch": "photobook"
+  },
+  {
+   "id": "jacky-cheung-lyrics-poster",
+   "name": "《一千個傷心的理由》歌詞海報",
+   "arch": "poster"
+  },
+  {
+   "id": "jacky-cheung-mug",
+   "name": "歌神紀念馬克杯",
+   "arch": "cup"
+  },
+  {
+   "id": "jacky-cheung-scarf",
+   "name": "演唱會應援絲巾",
+   "arch": "ticket"
+  },
+  {
+   "id": "jacky-cheung-vinyl-box",
+   "name": "寶麗金時期黑膠典藏盒組",
+   "arch": "vinyl"
+  },
+  {
+   "id": "jacky-cheung-embroidered-cap",
+   "name": "學友刺繡棒球帽",
+   "arch": "cap"
+  },
+  {
+   "id": "jacky-cheung-tour-hoodie",
+   "name": "60+主視覺帽T",
+   "arch": "jacket"
+  },
+  {
+   "id": "jacky-cheung-lightstick",
+   "name": "巡演應援燈",
+   "arch": "homeware"
+  },
+  {
+   "id": "jacky-cheung-acrylic-stand",
+   "name": "舞台造型壓克力立牌",
+   "arch": "merch"
+  },
+  {
+   "id": "jacky-cheung-vinyl-keychain",
+   "name": "黑膠造型金屬鑰匙圈",
+   "arch": "vinyl"
+  },
+  {
+   "id": "jacky-cheung-tote-bag",
+   "name": "吻別三十週年帆布托特包",
+   "arch": "bag"
+  },
+  {
+   "id": "jacky-cheung-notebook",
+   "name": "《祝福》燙金筆記本",
+   "arch": "book"
+  },
+  {
+   "id": "jacky-cheung-phone-case",
+   "name": "歌神剪影手機殼",
+   "arch": "homeware"
+  },
+  {
+   "id": "jacky-cheung-poster-set",
+   "name": "經典專輯封面海報三入組",
+   "arch": "poster"
+  },
+  {
+   "id": "jacky-cheung-cd-collection",
+   "name": "經典金曲CD套裝",
+   "arch": "album"
+  },
+  {
+   "id": "jacky-cheung-stage-puzzle",
+   "name": "60+演唱會舞台1000片拼圖",
+   "arch": "homeware"
+  },
+  {
+   "id": "jacky-cheung-concert-tee",
+   "name": "她來聽我的演唱會黑T",
+   "arch": "ticket"
+  },
+  {
+   "id": "eric-chou-odyssey-vinyl",
+   "name": "《Odyssey 旅程》黑膠專輯",
+   "arch": "vinyl"
+  },
+  {
+   "id": "eric-chou-tour-tee-black",
+   "name": "旅程巡演限定T恤（午夜黑）",
+   "arch": "tee"
+  },
+  {
+   "id": "eric-chou-lyrics-poster-set",
+   "name": "手寫歌詞海報三入組",
+   "arch": "poster"
+  },
+  {
+   "id": "eric-chou-piano-scorebook",
+   "name": "鋼琴彈唱譜精裝本",
+   "arch": "merch"
+  },
+  {
+   "id": "eric-chou-signed-cd",
+   "name": "《永不失聯的愛》親簽CD",
+   "arch": "album"
+  },
+  {
+   "id": "eric-chou-hoodie-grey",
+   "name": "終曲連帽帽T（霧灰）",
+   "arch": "jacket"
+  },
+  {
+   "id": "eric-chou-canvas-tote",
+   "name": "旅程帆布托特包",
+   "arch": "bag"
+  },
+  {
+   "id": "eric-chou-mug-duo",
+   "name": "你，好不好 對杯組",
+   "arch": "cup"
+  },
+  {
+   "id": "eric-chou-light-stick",
+   "name": "永不失聯應援燈",
+   "arch": "homeware"
+  },
+  {
+   "id": "eric-chou-bracelet",
+   "name": "巡演紀念手環",
+   "arch": "merch"
+  },
+  {
+   "id": "eric-chou-photobook",
+   "name": "巡迴寫真集《在路上》",
+   "arch": "photobook"
+  },
+  {
+   "id": "eric-chou-postcard-set",
+   "name": "城市巡迴明信片十入組",
+   "arch": "postcard"
+  },
+  {
+   "id": "eric-chou-keychain",
+   "name": "鋼琴造型鑰匙圈",
+   "arch": "pin"
+  },
+  {
+   "id": "eric-chou-phone-strap",
+   "name": "手機掛繩（旅程藍）",
+   "arch": "merch"
+  },
+  {
+   "id": "eric-chou-candle",
+   "name": "雨之後香氛蠟燭",
+   "arch": "homeware"
+  },
+  {
+   "id": "eric-chou-umbrella",
+   "name": "終曲摺疊傘",
+   "arch": "homeware"
+  },
+  {
+   "id": "eric-chou-sticker-pack",
+   "name": "歌詞貼紙包",
+   "arch": "merch"
+  },
+  {
+   "id": "eric-chou-cap",
+   "name": "旅程刺繡棒球帽",
+   "arch": "cap"
+  },
+  {
+   "id": "eric-chou-fan-bundle",
+   "name": "永不失聯歌迷套組（T恤＋應援燈＋海報）",
+   "arch": "poster"
+  },
+  {
+   "id": "eric-chou-tumbler",
+   "name": "旅程保溫隨行杯",
+   "arch": "cup"
+  },
+  {
+   "id": "adia-chan-classics-cd",
+   "name": "《把歌談心》經典重唱CD",
+   "arch": "album"
+  },
+  {
+   "id": "adia-chan-vinyl-remaster",
+   "name": "天涯歌女黑膠復刻版",
+   "arch": "vinyl"
+  },
+  {
+   "id": "adia-chan-musical-program",
+   "name": "音樂劇《天涯．歌女》紀念場刊",
+   "arch": "photobook"
+  },
+  {
+   "id": "adia-chan-silk-scarf",
+   "name": "松松優雅絲巾（墨綠）",
+   "arch": "merch"
+  },
+  {
+   "id": "adia-chan-teacup-set",
+   "name": "午後茶敘骨瓷對杯",
+   "arch": "cup"
+  },
+  {
+   "id": "adia-chan-photo-essay",
+   "name": "寫真隨筆集《從容》",
+   "arch": "photobook"
+  },
+  {
+   "id": "adia-chan-signed-poster",
+   "name": "親筆簽名劇照海報",
+   "arch": "poster"
+  },
+  {
+   "id": "adia-chan-brooch",
+   "name": "山茶花胸針",
+   "arch": "merch"
+  },
+  {
+   "id": "adia-chan-tote-bag",
+   "name": "歌女帆布袋",
+   "arch": "bag"
+  },
+  {
+   "id": "adia-chan-postcards",
+   "name": "港劇黃金年代明信片組",
+   "arch": "postcard"
+  },
+  {
+   "id": "adia-chan-calendar-2027",
+   "name": "2027 優雅月曆",
+   "arch": "merch"
+  },
+  {
+   "id": "adia-chan-candle",
+   "name": "白茶香氛蠟燭",
+   "arch": "homeware"
+  },
+  {
+   "id": "adia-chan-notebook",
+   "name": "談心手帳本",
+   "arch": "book"
+  },
+  {
+   "id": "adia-chan-umbrella",
+   "name": "復古長柄傘",
+   "arch": "homeware"
+  },
+  {
+   "id": "adia-chan-tee-white",
+   "name": "見面會限定T恤（米白）",
+   "arch": "tee"
+  },
+  {
+   "id": "adia-chan-keyring",
+   "name": "復古麥克風鑰匙扣",
+   "arch": "merch"
+  },
+  {
+   "id": "adia-chan-shawl",
+   "name": "舞台披肩（酒紅）",
+   "arch": "merch"
+  },
+  {
+   "id": "adia-chan-fan-bundle",
+   "name": "松果歌迷套組（CD＋場刊＋海報）",
+   "arch": "poster"
+  },
+  {
+   "id": "adia-chan-mug",
+   "name": "歲月如歌馬克杯",
+   "arch": "cup"
+  },
+  {
+   "id": "adia-chan-puzzle",
+   "name": "經典劇照拼圖（1000片）",
+   "arch": "homeware"
+  },
+  {
+   "id": "andy-lau-vinyl-forget-love",
+   "name": "《忘情水》黑膠復刻版",
+   "arch": "vinyl"
+  },
+  {
+   "id": "andy-lau-tour-tee",
+   "name": "巡演限定T恤（經典黑）",
+   "arch": "tee"
+  },
+  {
+   "id": "andy-lau-film-photobook",
+   "name": "《無間道》劇照攝影集",
+   "arch": "photobook"
+  },
+  {
+   "id": "andy-lau-signed-bluray",
+   "name": "演唱會藍光（親筆簽名版）",
+   "arch": "ticket"
+  },
+  {
+   "id": "andy-lau-poster-trilogy",
+   "name": "經典電影海報復刻三聯組",
+   "arch": "poster"
+  },
+  {
+   "id": "andy-lau-cap",
+   "name": "17歲刺繡棒球帽",
+   "arch": "cap"
+  },
+  {
+   "id": "andy-lau-hoodie",
+   "name": "笨小孩連帽帽T",
+   "arch": "jacket"
+  },
+  {
+   "id": "andy-lau-leather-wallet",
+   "name": "天王皮革短夾",
+   "arch": "merch"
+  },
+  {
+   "id": "andy-lau-light-stick",
+   "name": "演唱會應援燈",
+   "arch": "homeware"
+  },
+  {
+   "id": "andy-lau-keychain",
+   "name": "電影場記板鑰匙圈",
+   "arch": "prop"
+  },
+  {
+   "id": "andy-lau-postcards",
+   "name": "四十年光影明信片組",
+   "arch": "postcard"
+  },
+  {
+   "id": "andy-lau-mug",
+   "name": "一起走過的日子馬克杯",
+   "arch": "cup"
+  },
+  {
+   "id": "andy-lau-tote",
+   "name": "華仔天地帆布袋",
+   "arch": "bag"
+  },
+  {
+   "id": "andy-lau-cheer-towel",
+   "name": "應援毛巾（天王紅）",
+   "arch": "merch"
+  },
+  {
+   "id": "andy-lau-notebook",
+   "name": "勤奮語錄手帳",
+   "arch": "book"
+  },
+  {
+   "id": "andy-lau-tee-anniversary",
+   "name": "華仔天地35週年紀念T",
+   "arch": "merch"
+  },
+  {
+   "id": "andy-lau-puzzle",
+   "name": "經典劇照拼圖（1000片）",
+   "arch": "homeware"
+  },
+  {
+   "id": "andy-lau-fan-bundle",
+   "name": "天王歌迷套組（T恤＋應援燈＋毛巾）",
+   "arch": "tee"
+  },
+  {
+   "id": "andy-lau-phone-case",
+   "name": "暗裡著迷手機殼",
+   "arch": "homeware"
+  },
+  {
+   "id": "andy-lau-umbrella",
+   "name": "暗戰摺疊傘",
+   "arch": "homeware"
+  },
+  {
+   "id": "jolin-tsai-ugly-beauty-vinyl",
+   "name": "《Ugly Beauty》黑膠典藏版",
+   "arch": "vinyl"
+  },
+  {
+   "id": "jolin-tsai-pleasure-cd",
+   "name": "《Pleasure 玩美》新輯CD",
+   "arch": "album"
+  },
+  {
+   "id": "jolin-tsai-tour-tee",
+   "name": "巡演限定T恤（怪美紫）",
+   "arch": "tee"
+  },
+  {
+   "id": "jolin-tsai-rose-necklace",
+   "name": "玫瑰少年純銀項鍊",
+   "arch": "merch"
+  },
+  {
+   "id": "jolin-tsai-photobook",
+   "name": "《怪美現場》巡演寫真集",
+   "arch": "photobook"
+  },
+  {
+   "id": "jolin-tsai-yoga-mat",
+   "name": "地才精神瑜珈墊",
+   "arch": "merch"
+  },
+  {
+   "id": "jolin-tsai-light-stick",
+   "name": "怪美應援燈",
+   "arch": "homeware"
+  },
+  {
+   "id": "jolin-tsai-cap",
+   "name": "呸字刺繡棒球帽",
+   "arch": "cap"
+  },
+  {
+   "id": "jolin-tsai-hoodie",
+   "name": "Ugly Beauty 連帽帽T",
+   "arch": "jacket"
+  },
+  {
+   "id": "jolin-tsai-earrings",
+   "name": "舞孃流蘇耳環",
+   "arch": "merch"
+  },
+  {
+   "id": "jolin-tsai-tote",
+   "name": "日不落帆布袋",
+   "arch": "bag"
+  },
+  {
+   "id": "jolin-tsai-mirror",
+   "name": "怪美隨身摺疊鏡",
+   "arch": "merch"
+  },
+  {
+   "id": "jolin-tsai-sticker-pack",
+   "name": "歌詞金句貼紙包",
+   "arch": "merch"
+  },
+  {
+   "id": "jolin-tsai-postcards",
+   "name": "舞台造型明信片組",
+   "arch": "postcard"
+  },
+  {
+   "id": "jolin-tsai-tumbler",
+   "name": "倒帶保溫隨行杯",
+   "arch": "cup"
+  },
+  {
+   "id": "jolin-tsai-scrunchie-set",
+   "name": "大髮髻髮圈三入組",
+   "arch": "merch"
+  },
+  {
+   "id": "jolin-tsai-candle",
+   "name": "玫瑰香氛蠟燭",
+   "arch": "homeware"
+  },
+  {
+   "id": "jolin-tsai-fan-bundle",
+   "name": "怪美套組（T恤＋應援燈＋貼紙包）",
+   "arch": "tee"
+  },
+  {
+   "id": "jolin-tsai-phone-strap",
+   "name": "看我七十二變手機鍊",
+   "arch": "merch"
+  },
+  {
+   "id": "jolin-tsai-baking-apron",
+   "name": "甜點烘焙圍裙",
+   "arch": "merch"
+  },
+  {
+   "id": "rainie-yang-vinyl-rain-love",
+   "name": "《雨愛》十五週年黑膠復刻版",
+   "arch": "vinyl"
+  },
+  {
+   "id": "rainie-yang-album-delete-reset",
+   "name": "《刪拾 以後》典藏CD",
+   "arch": "album"
+  },
+  {
+   "id": "rainie-yang-tour-tee-black",
+   "name": "LIKE A STAR 巡演限定T恤（黑）",
+   "arch": "tee"
+  },
+  {
+   "id": "rainie-yang-tour-hoodie",
+   "name": "巡演限定連帽外套",
+   "arch": "jacket"
+  },
+  {
+   "id": "rainie-yang-lyrics-poster-set",
+   "name": "經典歌詞海報三入組",
+   "arch": "poster"
+  },
+  {
+   "id": "rainie-yang-photobook",
+   "name": "《青春住了誰》寫真歌詞本",
+   "arch": "photobook"
+  },
+  {
+   "id": "rainie-yang-light-stick",
+   "name": "雨滴造型應援手燈",
+   "arch": "homeware"
+  },
+  {
+   "id": "rainie-yang-umbrella",
+   "name": "雨愛透明傘",
+   "arch": "homeware"
+  },
+  {
+   "id": "rainie-yang-tote-bag",
+   "name": "年輪說帆布托特包",
+   "arch": "bag"
+  },
+  {
+   "id": "rainie-yang-frog-keyring",
+   "name": "青蛙王子壓克力鑰匙圈",
+   "arch": "pin"
+  },
+  {
+   "id": "rainie-yang-postcard-set",
+   "name": "巡演劇照明信片組（12入）",
+   "arch": "postcard"
+  },
+  {
+   "id": "rainie-yang-cap",
+   "name": "RY 刺繡棒球帽",
+   "arch": "cap"
+  },
+  {
+   "id": "rainie-yang-scrunchie-set",
+   "name": "曖昧緞面髮圈組",
+   "arch": "merch"
+  },
+  {
+   "id": "rainie-yang-mug",
+   "name": "海派甜心陶瓷馬克杯",
+   "arch": "cup"
+  },
+  {
+   "id": "rainie-yang-phone-case",
+   "name": "雨夜霧面手機殼",
+   "arch": "homeware"
+  },
+  {
+   "id": "rainie-yang-badge-set",
+   "name": "巡演徽章五入組",
+   "arch": "pin"
+  },
+  {
+   "id": "rainie-yang-tour-tee-white",
+   "name": "LIKE A STAR 巡演限定T恤（白）",
+   "arch": "tee"
+  },
+  {
+   "id": "rainie-yang-signed-poster",
+   "name": "親筆簽名海報（編號版）",
+   "arch": "poster"
+  },
+  {
+   "id": "rainie-yang-fan-bundle",
+   "name": "雨愛應援組合包（T恤＋手燈＋海報）",
+   "arch": "poster"
+  },
+  {
+   "id": "rainie-yang-sticker-pack",
+   "name": "歌詞手寫貼紙包",
+   "arch": "merch"
+  },
+  {
+   "id": "wong-kar-wai-stills-photobook",
+   "name": "《花樣年華》4K修復劇照攝影集",
+   "arch": "photobook"
+  },
+  {
+   "id": "wong-kar-wai-storyboard-print",
+   "name": "《重慶森林》分鏡手稿複製畫",
+   "arch": "prop"
+  },
+  {
+   "id": "wong-kar-wai-mood-bluray",
+   "name": "《花樣年華》25週年藍光珍藏版",
+   "arch": "merch"
+  },
+  {
+   "id": "wong-kar-wai-2046-keyring",
+   "name": "2046 房號黃銅鑰匙圈",
+   "arch": "pin"
+  },
+  {
+   "id": "wong-kar-wai-pineapple-candle",
+   "name": "鳳梨罐頭造型香氛蠟燭",
+   "arch": "homeware"
+  },
+  {
+   "id": "wong-kar-wai-qipao-scarf",
+   "name": "花樣年華印花絲巾",
+   "arch": "merch"
+  },
+  {
+   "id": "wong-kar-wai-poster-set",
+   "name": "經典電影海報復刻三入組",
+   "arch": "poster"
+  },
+  {
+   "id": "wong-kar-wai-script-book",
+   "name": "《阿飛正傳》劇本典藏書",
+   "arch": "book"
+  },
+  {
+   "id": "wong-kar-wai-sunglasses",
+   "name": "導演同款墨鏡",
+   "arch": "merch"
+  },
+  {
+   "id": "wong-kar-wai-ost-vinyl",
+   "name": "《春光乍洩》原聲帶黑膠",
+   "arch": "vinyl"
+  },
+  {
+   "id": "wong-kar-wai-postcard-box",
+   "name": "光影劇照明信片鐵盒（24入）",
+   "arch": "postcard"
+  },
+  {
+   "id": "wong-kar-wai-tee-chungking",
+   "name": "重慶森林霓虹印花T恤",
+   "arch": "tee"
+  },
+  {
+   "id": "wong-kar-wai-night-tote",
+   "name": "墮落天使夜行托特包",
+   "arch": "bag"
+  },
+  {
+   "id": "wong-kar-wai-grandmaster-print",
+   "name": "《一代宗師》水墨劇照版畫",
+   "arch": "merch"
+  },
+  {
+   "id": "wong-kar-wai-film-notes",
+   "name": "導演手記復刻筆記本",
+   "arch": "book"
+  },
+  {
+   "id": "wong-kar-wai-clock-lamp",
+   "name": "時鐘意象桌燈",
+   "arch": "homeware"
+  },
+  {
+   "id": "wong-kar-wai-trilogy-boxset",
+   "name": "時代三部曲藍光套裝",
+   "arch": "merch"
+  },
+  {
+   "id": "wong-kar-wai-ticket-pins",
+   "name": "戲票造型琺瑯徽章組",
+   "arch": "pin"
+  },
+  {
+   "id": "wong-kar-wai-passport-cover",
+   "name": "春光乍洩護照套",
+   "arch": "merch"
+  },
+  {
+   "id": "wong-kar-wai-darkroom-print",
+   "name": "暗房手放劇照（編號簽名版）",
+   "arch": "merch"
+  },
+  {
+   "id": "wei-te-sheng-cape7-vinyl",
+   "name": "《海角七號》原聲帶黑膠復刻",
+   "arch": "vinyl"
+  },
+  {
+   "id": "wei-te-sheng-seediq-script",
+   "name": "《賽德克・巴萊》劇本典藏書",
+   "arch": "book"
+  },
+  {
+   "id": "wei-te-sheng-kano-jersey",
+   "name": "KANO 嘉農棒球復刻球衣",
+   "arch": "merch"
+  },
+  {
+   "id": "wei-te-sheng-love-letters",
+   "name": "海角七號・七封情書信紙組",
+   "arch": "book"
+  },
+  {
+   "id": "wei-te-sheng-rainbow-tee",
+   "name": "彩虹橋圖騰T恤",
+   "arch": "tee"
+  },
+  {
+   "id": "wei-te-sheng-storyboard-book",
+   "name": "台灣三部曲分鏡手稿集",
+   "arch": "manuscript"
+  },
+  {
+   "id": "wei-te-sheng-malasun-glasses",
+   "name": "馬拉桑小米酒杯組",
+   "arch": "cup"
+  },
+  {
+   "id": "wei-te-sheng-cape7-poster",
+   "name": "《海角七號》復刻海報",
+   "arch": "poster"
+  },
+  {
+   "id": "wei-te-sheng-52hz-dvd",
+   "name": "《52赫茲，我愛你》音樂電影DVD",
+   "arch": "merch"
+  },
+  {
+   "id": "wei-te-sheng-embroidered-cap",
+   "name": "賽德克圖紋刺繡帽",
+   "arch": "cap"
+  },
+  {
+   "id": "wei-te-sheng-hengchun-postcards",
+   "name": "恆春海景劇照明信片組",
+   "arch": "postcard"
+  },
+  {
+   "id": "wei-te-sheng-signed-baseball",
+   "name": "KANO 簽名紀念棒球",
+   "arch": "merch"
+  },
+  {
+   "id": "wei-te-sheng-south-tote",
+   "name": "國境之南帆布袋",
+   "arch": "bag"
+  },
+  {
+   "id": "wei-te-sheng-director-notes",
+   "name": "《導演・巴萊》拍攝手記",
+   "arch": "merch"
+  },
+  {
+   "id": "wei-te-sheng-film-bookmark",
+   "name": "35mm膠卷底片書籤",
+   "arch": "book"
+  },
+  {
+   "id": "wei-te-sheng-trilogy-badges",
+   "name": "台灣三部曲應援徽章組",
+   "arch": "pin"
+  },
+  {
+   "id": "wei-te-sheng-ocean-bundle",
+   "name": "海角七號珍藏組（黑膠＋信紙＋海報）",
+   "arch": "poster"
+  },
+  {
+   "id": "wei-te-sheng-mona-carving",
+   "name": "莫那・魯道木雕小像",
+   "arch": "merch"
+  },
+  {
+   "id": "wei-te-sheng-kano-towel",
+   "name": "甲子園應援毛巾",
+   "arch": "merch"
+  },
+  {
+   "id": "wei-te-sheng-storyboard-notebook",
+   "name": "導演空白分鏡筆記本",
+   "arch": "book"
+  },
+  {
+   "id": "tsai-a-ga-collab-tee",
+   "name": "嘎好穿聯名T恤",
+   "arch": "tee"
+  },
+  {
+   "id": "tsai-a-ga-taigi-textbook",
+   "name": "台語不輪轉檢定教材",
+   "arch": "merch"
+  },
+  {
+   "id": "tsai-a-ga-sticker-set",
+   "name": "經典語錄防水貼紙包",
+   "arch": "merch"
+  },
+  {
+   "id": "tsai-a-ga-kuei-pillow",
+   "name": "蔡桃貴造型抱枕",
+   "arch": "homeware"
+  },
+  {
+   "id": "tsai-a-ga-erbo-apron",
+   "name": "二伯同款廚房圍裙",
+   "arch": "merch"
+  },
+  {
+   "id": "tsai-a-ga-army-hoodie",
+   "name": "嘎家軍連帽T",
+   "arch": "jacket"
+  },
+  {
+   "id": "tsai-a-ga-mug",
+   "name": "嘎逼歪馬克杯",
+   "arch": "cup"
+  },
+  {
+   "id": "tsai-a-ga-dad-cap",
+   "name": "嘎潮流老帽",
+   "arch": "cap"
+  },
+  {
+   "id": "tsai-a-ga-desk-calendar",
+   "name": "蔡桃貴2027桌曆",
+   "arch": "merch"
+  },
+  {
+   "id": "tsai-a-ga-socks-pack",
+   "name": "台味襪子三入組",
+   "arch": "homeware"
+  },
+  {
+   "id": "tsai-a-ga-phone-strap",
+   "name": "桃貴星球手機吊飾",
+   "arch": "pin"
+  },
+  {
+   "id": "tsai-a-ga-eco-cup",
+   "name": "呷飽未環保隨行杯",
+   "arch": "cup"
+  },
+  {
+   "id": "tsai-a-ga-market-tote",
+   "name": "菜市場購物袋",
+   "arch": "bag"
+  },
+  {
+   "id": "tsai-a-ga-keycap-set",
+   "name": "嘎鍵盤注音鍵帽組",
+   "arch": "cap"
+  },
+  {
+   "id": "tsai-a-ga-kuei-plush",
+   "name": "蔡桃貴絨毛娃娃",
+   "arch": "merch"
+  },
+  {
+   "id": "tsai-a-ga-acrylic-stand",
+   "name": "貼圖經典款壓克力立牌",
+   "arch": "merch"
+  },
+  {
+   "id": "tsai-a-ga-family-bundle",
+   "name": "嘎家日常組合包（T恤＋馬克杯＋貼紙）",
+   "arch": "tee"
+  },
+  {
+   "id": "tsai-a-ga-cheer-towel",
+   "name": "台灣加油應援毛巾",
+   "arch": "merch"
+  },
+  {
+   "id": "tsai-a-ga-planet-puzzle",
+   "name": "桃貴星球拼圖（520片）",
+   "arch": "homeware"
+  },
+  {
+   "id": "tsai-a-ga-diary-notebook",
+   "name": "嘎日記手帳本",
+   "arch": "book"
+  }
+ ],
+ "byArch": {
+  "poster": [
+   "taiwan-trilogy-concept-poster",
+   "hk-classic-hand-painted-poster",
+   "yearly-viewing-report-poster",
+   "magnetic-poster-frame-a2",
+   "ztor-original-poster",
+   "au-poster-artistproof",
+   "jay-chou-lyrics-poster-set",
+   "jay-chou-tour-poster",
+   "nicholas-tse-movie-poster",
+   "nicholas-tse-poster-set",
+   "eason-chan-lyrics-poster",
+   "eason-chan-poster-set",
+   "jacky-cheung-lyrics-poster",
+   "jacky-cheung-poster-set",
+   "eric-chou-lyrics-poster-set",
+   "eric-chou-fan-bundle",
+   "adia-chan-signed-poster",
+   "adia-chan-fan-bundle",
+   "andy-lau-poster-trilogy",
+   "rainie-yang-lyrics-poster-set",
+   "rainie-yang-signed-poster",
+   "rainie-yang-fan-bundle",
+   "wong-kar-wai-poster-set",
+   "wei-te-sheng-cape7-poster",
+   "wei-te-sheng-ocean-bundle"
+  ],
+  "photobook": [
+   "vintage-film-program-reprint",
+   "digital-program-deluxe-edition",
+   "ztor-program-book",
+   "nicholas-tse-photo-book",
+   "eason-chan-fad-photobook",
+   "jacky-cheung-snow-wolf-program",
+   "jacky-cheung-photobook",
+   "eric-chou-photobook",
+   "adia-chan-musical-program",
+   "adia-chan-photo-essay",
+   "andy-lau-film-photobook",
+   "jolin-tsai-photobook",
+   "rainie-yang-photobook",
+   "wong-kar-wai-stills-photobook"
+  ],
+  "book": [
+   "ztor-storyboard-notebook",
+   "film-strip-bookmarks",
+   "framed-35mm-film-cell",
+   "jay-chou-secret-notebook",
+   "eason-chan-notebook",
+   "jacky-cheung-notebook",
+   "adia-chan-notebook",
+   "andy-lau-notebook",
+   "wong-kar-wai-script-book",
+   "wong-kar-wai-film-notes",
+   "wei-te-sheng-seediq-script",
+   "wei-te-sheng-love-letters",
+   "wei-te-sheng-film-bookmark",
+   "wei-te-sheng-storyboard-notebook",
+   "tsai-a-ga-diary-notebook"
+  ],
+  "postcard": [
+   "taiyu-golden-age-postcards",
+   "ztor-postcard-set",
+   "eric-chou-postcard-set",
+   "adia-chan-postcards",
+   "andy-lau-postcards",
+   "jolin-tsai-postcards",
+   "rainie-yang-postcard-set",
+   "wong-kar-wai-postcard-box",
+   "wei-te-sheng-hengchun-postcards"
+  ],
+  "prop": [
+   "ztor-clapperboard-acrylic",
+   "brass-clapperboard-limited",
+   "ztor-clapperboard",
+   "ztor-signed-script",
+   "ev-costume-exhibit",
+   "au-clapper-final",
+   "nicholas-tse-chef-tool-set",
+   "andy-lau-keychain",
+   "wong-kar-wai-storyboard-print"
+  ],
+  "merch": [
+   "director-megaphone-pen-set",
+   "ztor-logo-heavyweight-tee-black",
+   "what-to-watch-tonight-tee",
+   "crew-pass-lanyard",
+   "ztor-anniversary-crystal-trophy",
+   "ztor-sterling-silver-pendant",
+   "vintage-ticket-stub-album",
+   "ztor-4k-wallpaper-collection",
+   "classic-quotes-sticker-pack",
+   "director-commentary-unlock",
+   "ztor-intro-ringtone-pack",
+   "masterclass-editing-rhythm",
+   "midnight-classic-single-ticket",
+   "annual-fan-festival-pass",
+   "countdown-leader-wall-clock",
+   "ztor-polaroid-stills",
+   "ztor-film-cell-frame",
+   "ztor-acrylic-standee",
+   "ztor-crew-tee",
+   "au-script-signed",
+   "jay-chou-cowboy-bandana",
+   "jay-chou-acrylic-stand",
+   "jay-chou-knit-vest",
+   "jay-chou-basketball-jersey",
+   "nicholas-tse-chef-apron",
+   "nicholas-tse-cookie-gift-box",
+   "nicholas-tse-guitar-pick-set",
+   "nicholas-tse-hot-sauce",
+   "nicholas-tse-acrylic-stand",
+   "nicholas-tse-collab-tee",
+   "eason-chan-white-tee",
+   "jacky-cheung-acrylic-stand",
+   "eric-chou-piano-scorebook",
+   "eric-chou-bracelet",
+   "eric-chou-phone-strap",
+   "eric-chou-sticker-pack",
+   "adia-chan-silk-scarf",
+   "adia-chan-brooch",
+   "adia-chan-calendar-2027",
+   "adia-chan-keyring",
+   "adia-chan-shawl",
+   "andy-lau-leather-wallet",
+   "andy-lau-cheer-towel",
+   "andy-lau-tee-anniversary",
+   "jolin-tsai-rose-necklace",
+   "jolin-tsai-yoga-mat",
+   "jolin-tsai-earrings",
+   "jolin-tsai-mirror",
+   "jolin-tsai-sticker-pack",
+   "jolin-tsai-scrunchie-set",
+   "jolin-tsai-phone-strap",
+   "jolin-tsai-baking-apron",
+   "rainie-yang-scrunchie-set",
+   "rainie-yang-sticker-pack",
+   "wong-kar-wai-mood-bluray",
+   "wong-kar-wai-qipao-scarf",
+   "wong-kar-wai-sunglasses",
+   "wong-kar-wai-grandmaster-print",
+   "wong-kar-wai-trilogy-boxset",
+   "wong-kar-wai-passport-cover",
+   "wong-kar-wai-darkroom-print",
+   "wei-te-sheng-kano-jersey",
+   "wei-te-sheng-52hz-dvd",
+   "wei-te-sheng-signed-baseball",
+   "wei-te-sheng-director-notes",
+   "wei-te-sheng-mona-carving",
+   "wei-te-sheng-kano-towel",
+   "tsai-a-ga-taigi-textbook",
+   "tsai-a-ga-sticker-set",
+   "tsai-a-ga-erbo-apron",
+   "tsai-a-ga-desk-calendar",
+   "tsai-a-ga-kuei-plush",
+   "tsai-a-ga-acrylic-stand",
+   "tsai-a-ga-cheer-towel"
+  ],
+  "pin": [
+   "film-festival-pin-set",
+   "ztor-pin-set",
+   "ztor-keychain",
+   "jay-chou-piano-keychain",
+   "nicholas-tse-guitar-keychain",
+   "eason-chan-mic-keychain",
+   "eric-chou-keychain",
+   "rainie-yang-frog-keyring",
+   "rainie-yang-badge-set",
+   "wong-kar-wai-2046-keyring",
+   "wong-kar-wai-ticket-pins",
+   "wei-te-sheng-trilogy-badges",
+   "tsai-a-ga-phone-strap"
+  ],
+  "jacket": [
+   "film-crew-staff-jacket",
+   "after-credits-hoodie",
+   "midnight-screening-fleece-jacket",
+   "jay-chou-signature-hoodie",
+   "nicholas-tse-rider-jacket",
+   "nicholas-tse-butterfly-hoodie",
+   "eason-chan-fad-hoodie",
+   "jacky-cheung-tour-hoodie",
+   "eric-chou-hoodie-grey",
+   "andy-lau-hoodie",
+   "jolin-tsai-hoodie",
+   "rainie-yang-tour-hoodie",
+   "tsai-a-ga-army-hoodie"
+  ],
+  "cap": [
+   "projectionist-work-cap",
+   "film-reel-bucket-hat",
+   "ztor-crew-cap",
+   "jay-chou-daoxiang-cap",
+   "nicholas-tse-embroidered-cap",
+   "eason-chan-bucket-hat",
+   "eason-chan-duo-cap",
+   "jacky-cheung-embroidered-cap",
+   "eric-chou-cap",
+   "andy-lau-cap",
+   "jolin-tsai-cap",
+   "rainie-yang-cap",
+   "wei-te-sheng-embroidered-cap",
+   "tsai-a-ga-dad-cap",
+   "tsai-a-ga-keycap-set"
+  ],
+  "tee": [
+   "end-credits-longsleeve",
+   "jay-chou-carnival-tour-tee",
+   "nicholas-tse-tour-tee",
+   "eason-chan-duo-tour-tee",
+   "jacky-cheung-tour-tee",
+   "eric-chou-tour-tee-black",
+   "adia-chan-tee-white",
+   "andy-lau-tour-tee",
+   "andy-lau-fan-bundle",
+   "jolin-tsai-tour-tee",
+   "jolin-tsai-fan-bundle",
+   "rainie-yang-tour-tee-black",
+   "rainie-yang-tour-tee-white",
+   "wong-kar-wai-tee-chungking",
+   "wei-te-sheng-rainbow-tee",
+   "tsai-a-ga-collab-tee",
+   "tsai-a-ga-family-bundle"
+  ],
+  "figure": [
+   "vintage-projector-diecast-model",
+   "taiwan-theater-billboard-miniature",
+   "director-chair-walnut-miniature"
+  ],
+  "homeware": [
+   "classic-scene-paper-light",
+   "cinema-velvet-cushion-red",
+   "projector-ambient-night-light",
+   "now-showing-neon-sign",
+   "popcorn-scented-candle",
+   "movie-night-blanket-set",
+   "au-redcarpet",
+   "jay-chou-tour-lightstick",
+   "jay-chou-phone-case",
+   "jay-chou-puzzle",
+   "nicholas-tse-lightstick",
+   "nicholas-tse-phone-case",
+   "eason-chan-lightstick",
+   "eason-chan-pattern-socks",
+   "eason-chan-phone-case",
+   "eason-chan-stage-puzzle",
+   "jacky-cheung-lightstick",
+   "jacky-cheung-phone-case",
+   "jacky-cheung-stage-puzzle",
+   "eric-chou-light-stick",
+   "eric-chou-candle",
+   "eric-chou-umbrella",
+   "adia-chan-candle",
+   "adia-chan-umbrella",
+   "adia-chan-puzzle",
+   "andy-lau-light-stick",
+   "andy-lau-puzzle",
+   "andy-lau-phone-case",
+   "andy-lau-umbrella",
+   "jolin-tsai-light-stick",
+   "jolin-tsai-candle",
+   "rainie-yang-light-stick",
+   "rainie-yang-umbrella",
+   "rainie-yang-phone-case",
+   "wong-kar-wai-pineapple-candle",
+   "wong-kar-wai-clock-lamp",
+   "tsai-a-ga-kuei-pillow",
+   "tsai-a-ga-socks-pack",
+   "tsai-a-ga-planet-puzzle"
+  ],
+  "cards": [
+   "digital-collector-card-pack"
+  ],
+  "digital": [
+   "virtual-premiere-avatar-frames"
+  ],
+  "ticket": [
+   "premiere-double-ticket",
+   "projection-room-tour",
+   "director-qa-session-ticket",
+   "private-screening-experience",
+   "open-air-screening-picnic-combo",
+   "dubbing-workshop-experience",
+   "cinema-backstage-tech-tour",
+   "premiere-lottery-entry",
+   "set-visit-experience",
+   "private-screening-30",
+   "qa-priority-seat",
+   "midnight-double-feature",
+   "ev-score-live",
+   "ev-themesong-night",
+   "ev-soundtrack-unplugged",
+   "ev-fanmeet-trilogy",
+   "ev-fanmeet-director",
+   "ev-fanmeet-hk",
+   "ev-online-concert",
+   "ev-online-premiere-live",
+   "ev-premiere-trilogy",
+   "ev-midnight-hk-double",
+   "ev-fan-screening-rose",
+   "ev-doc-workshop",
+   "ev-open-air",
+   "ev-foley-tour",
+   "ev-pitch-night",
+   "au-masterclass",
+   "au-setvisit",
+   "au-premiere-seat-row1",
+   "eason-chan-acrylic-stand",
+   "jacky-cheung-scarf",
+   "jacky-cheung-concert-tee",
+   "andy-lau-signed-bluray"
+  ],
+  "cup": [
+   "ztor-popcorn-bucket-thermos",
+   "ztor-double-wall-glass-set",
+   "jay-chou-porcelain-mug",
+   "eason-chan-ten-years-mug",
+   "jacky-cheung-mug",
+   "eric-chou-mug-duo",
+   "eric-chou-tumbler",
+   "adia-chan-teacup-set",
+   "adia-chan-mug",
+   "andy-lau-mug",
+   "jolin-tsai-tumbler",
+   "rainie-yang-mug",
+   "wei-te-sheng-malasun-glasses",
+   "tsai-a-ga-mug",
+   "tsai-a-ga-eco-cup"
+  ],
+  "popcornbucket": [
+   "ztor-popcorn-bucket",
+   "au-popcorn-gold"
+  ],
+  "bag": [
+   "ztor-tote-bag",
+   "jay-chou-tote-bag",
+   "nicholas-tse-tote-bag",
+   "eason-chan-tote-bag",
+   "jacky-cheung-tote-bag",
+   "eric-chou-canvas-tote",
+   "adia-chan-tote-bag",
+   "andy-lau-tote",
+   "jolin-tsai-tote",
+   "rainie-yang-tote-bag",
+   "wong-kar-wai-night-tote",
+   "wei-te-sheng-south-tote",
+   "tsai-a-ga-market-tote"
+  ],
+  "manuscript": [
+   "au-storyboard-original",
+   "wei-te-sheng-storyboard-book"
+  ],
+  "costume": [
+   "au-costume-hero"
+  ],
+  "vinyl": [
+   "jay-chou-fantasy-vinyl",
+   "jay-chou-yehuimei-vinyl",
+   "jay-chou-november-chopin-vinyl",
+   "jay-chou-vinyl-collection-box",
+   "nicholas-tse-viva-live-vinyl",
+   "nicholas-tse-love-vinyl",
+   "eason-chan-u87-vinyl",
+   "eason-chan-vinyl-box",
+   "jacky-cheung-kiss-goodbye-vinyl",
+   "jacky-cheung-vinyl-box",
+   "jacky-cheung-vinyl-keychain",
+   "eric-chou-odyssey-vinyl",
+   "adia-chan-vinyl-remaster",
+   "andy-lau-vinyl-forget-love",
+   "jolin-tsai-ugly-beauty-vinyl",
+   "rainie-yang-vinyl-rain-love",
+   "wong-kar-wai-ost-vinyl",
+   "wei-te-sheng-cape7-vinyl"
+  ],
+  "album": [
+   "eason-chan-cd-collection",
+   "jacky-cheung-cd-collection",
+   "eric-chou-signed-cd",
+   "adia-chan-classics-cd",
+   "jolin-tsai-pleasure-cd",
+   "rainie-yang-album-delete-reset"
+  ]
+ }
+}

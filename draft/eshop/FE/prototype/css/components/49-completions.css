@@ -1,0 +1,42 @@
+/* ════════════════════════════════════════════════════════════════
+   49-completions.css — per-type completion sheets (ticket / auction /
+   popcorn), rendered by completions.js into ds-drawer sheets. Reuses
+   cc-pay / cc-field / cc-success / checkout / ds-drawer / ticket-qr; this
+   file adds only the drawer title + sheet-specific spacing. Tokens only.
+   ════════════════════════════════════════════════════════════════ */
+
+/* ds-drawer head title (ds-drawer.css ships no title rule) */
+.ds-drawer__title { margin: 0; font-family: var(--font-cjk-display); font-size: var(--fs-h4); font-weight: var(--fw-bold); color: var(--text-primary); }
+
+.completion-form { margin-top: var(--space-4); display: flex; flex-direction: column; gap: var(--space-3); }
+.completion-foot { margin-top: var(--space-5); display: flex; flex-direction: column; gap: var(--space-2); }
+.completion-success { padding-block: var(--space-6); text-align: center; }
+.completion-qr { width: -moz-fit-content; width: fit-content; margin: var(--space-5) auto; }
+
+/* auction bid sheet */
+.bid-sheet__status { margin-bottom: var(--space-5); padding: var(--space-4); border: 1px solid var(--border-default); border-radius: var(--radius-lg); background: var(--bg-secondary); }
+.bid-sheet__row { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: var(--space-2); }
+.bid-sheet__row:last-child { margin-bottom: 0; }
+.bid-sheet__k { font-family: var(--font-cjk-text); font-size: var(--fs-body-sm); color: var(--text-tertiary); }
+.bid-sheet__cur { font-family: var(--font-latin); font-size: var(--fs-h4); font-weight: var(--fw-bold); color: var(--yellow-500); font-variant-numeric: tabular-nums; }
+.bid-sheet__chips { display: flex; gap: var(--space-2); margin-bottom: var(--space-4); }
+.bid-sheet__chip { flex: 1; min-height: 44px; border: 1px solid var(--border-default); border-radius: var(--radius-md); background: var(--white-alpha-4); color: var(--text-primary); font-family: var(--font-latin); font-size: var(--fs-body-sm); font-weight: var(--fw-semibold); cursor: pointer; transition: border-color 160ms var(--ease-out), background 160ms var(--ease-out); }
+.bid-sheet__chip:hover { border-color: var(--border-strong); }
+.bid-sheet__chip.is-selected { border-color: var(--yellow-500); background: rgba(255, 163, 63, 0.08); }
+.bid-sheet__note { margin: var(--space-3) 0 0; font-family: var(--font-cjk-text); font-size: var(--fs-caption); color: var(--text-tertiary); }
+
+/* popcorn spend / top-up sheet */
+.pop-sheet__balance { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: var(--space-4); padding: var(--space-4); border: 1px solid var(--border-default); border-radius: var(--radius-lg); background: var(--bg-secondary); }
+.pop-sheet__balance-v { font-family: var(--font-latin); font-size: var(--fs-h4); font-weight: var(--fw-bold); color: var(--yellow-500); font-variant-numeric: tabular-nums; }
+.pop-sheet__row { display: flex; align-items: baseline; justify-content: space-between; font-family: var(--font-cjk-text); font-size: var(--fs-body-sm); color: var(--text-secondary); padding: var(--space-2) 0; }
+.pop-sheet__row--total { border-top: 1px solid var(--border-subtle); margin-top: var(--space-2); padding-top: var(--space-3); color: var(--text-primary); font-weight: var(--fw-bold); }
+.pop-sheet__insufficient { margin: var(--space-3) 0; padding: var(--space-3) var(--space-4); border: 1px solid var(--error-500); border-radius: var(--radius-md); font-family: var(--font-cjk-text); font-size: var(--fs-body-sm); color: var(--error-500); }
+.pop-sheet__packages { display: flex; flex-direction: column; gap: var(--space-2); margin-bottom: var(--space-4); }
+.pop-sheet__package { display: flex; align-items: center; justify-content: space-between; min-height: 52px; padding: var(--space-3) var(--space-4); border: 1px solid var(--border-default); border-radius: var(--radius-md); background: var(--white-alpha-4); color: var(--text-primary); cursor: pointer; transition: border-color 160ms var(--ease-out), background 160ms var(--ease-out); }
+.pop-sheet__package.is-selected { border-color: var(--yellow-500); background: rgba(255, 163, 63, 0.08); }
+.pop-sheet__package-pop { font-family: var(--font-latin); font-weight: var(--fw-bold); }
+.pop-sheet__package-price { font-family: var(--font-latin); font-size: var(--fs-body-sm); color: var(--text-secondary); }
+
+@media (prefers-reduced-motion: reduce) {
+  .bid-sheet__chip, .pop-sheet__package { transition: none; }
+}

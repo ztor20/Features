@@ -1,0 +1,52 @@
+/* SECTION-EYEBROW TAG (.section-eyebrow--tag) — category pill. [COMPONENT] */
+/* ───────────────────────────────────────────
+   SECTION-EYEBROW TAG  (.section-eyebrow--tag)
+   Turns a section eyebrow into a colour-coded category PILL. The COLOUR
+   encodes the content vertical (影視 / 音樂 / 原力), so future labels like
+   「影視 - 共創項目」 vs 「音樂 - 共創項目」 read as different families at a
+   glance. Solid saturated fill + white text (every variant WCAG AA) stays
+   legible on BOTH zebra stripes (yellow + black); a hairline keeps the pill
+   edge on dark. Add ONE vertical modifier; default (none) = neutral pill.
+   To add a vertical: one line in the colour-code list below.
+   ─────────────────────────────────────────── */
+.section-eyebrow--tag {
+  /* A colour pill is a signal, never a faded label — beat the home-page
+     eyebrow dim in refine-home.css. */
+  opacity: 1 !important;
+  /* Hug the text and CENTRE the label both axes. inline-flex + line-height:1
+     fixes the mixed CJK/Latin baseline drift that made the text sit high. */
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  max-width: 100%;
+  padding: 6px var(--space-3);               /* symmetric → text optically centred */
+  line-height: 1;
+  border-radius: var(--radius-pill);
+  letter-spacing: 0.06em;          /* it's a chip now, not a wide-tracked label */
+  font-weight: var(--fw-bold);
+  color: #fff;
+  /* Plain flat fill — NO liquid-glass sheen (dropped the inset highlight +
+     white border). A hair of transparency + a soft frost keeps it modern
+     without the glossy 3D look. */
+  background: color-mix(in srgb, var(--cat, var(--neutral-700)) 92%, transparent);
+  backdrop-filter: blur(8px) saturate(1.05);
+  -webkit-backdrop-filter: blur(8px) saturate(1.05);
+}
+@supports not (background: color-mix(in srgb, red, blue)) {
+  .section-eyebrow--tag { background: var(--cat, var(--neutral-700)); }  /* solid fallback */
+}
+/* ── Vertical colour codes — set --cat. Extend by adding one line. ──
+   Hues pulled from yellow's split-complementary + triadic arc (blue / violet /
+   green) so they complement the yellow+black brand without reading "off-brand".
+   Tuned to the mid-luminance balance point: NO solid colour can clear 3:1
+   surface contrast against bright yellow AND near-black at the same time (the
+   luminance bands don't overlap — it's mathematically impossible), so each is
+   balanced (~2.7–4:1 on each stripe) and the WHITE label (AA 5–7:1 on every
+   fill) is what carries legibility on both. Functional/cross = neutral. */
+.section-eyebrow--film    { --cat: var(--cat-film); }    /* 影視    — blue   · PRIMARY */
+.section-eyebrow--music   { --cat: var(--cat-music); }   /* 音樂    — red    · PRIMARY */
+.section-eyebrow--origin  { --cat: var(--cat-origin); }  /* 原力/AI — orange · secondary */
+.section-eyebrow--events  { --cat: var(--cat-events); }  /* 活動    — green  · secondary */
+.section-eyebrow--neutral { --cat: var(--cat-neutral); } /* 功能/跨類 — charcoal */

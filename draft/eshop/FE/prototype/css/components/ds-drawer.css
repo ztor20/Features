@@ -1,0 +1,255 @@
+/* DS-DRAWER — canonical reusable slide-over drawer primitive. [COMPONENT]
+   ════════════════════════════════════════════════════════════════════════
+   The COMPONENTS.md "drawer consolidation target", realised. Right slide-over
+   on desktop, bottom-sheet on phone. Scrim + panel; behaviour (open/close/
+   focus-trap/scroll-lock) in assets/ds-drawer.js. Depth via border + glass
+   per the brand "no drop shadows" rule (uses the sanctioned --glass-shadow).
+   Stacks at --z-drawer (above sticky chrome, below modal).
+   ──────────────────────────────────────────────────────────────────────── */
+.ds-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-drawer);
+  visibility: hidden;
+  pointer-events: none;
+}
+.ds-drawer.is-open { visibility: visible; pointer-events: auto; }
+
+.ds-drawer__scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  -webkit-backdrop-filter: blur(2px);
+          backdrop-filter: blur(2px);
+  opacity: 0;
+  transition: opacity var(--dur-nav-hide, 250ms) var(--ease-out);
+}
+.ds-drawer.is-open .ds-drawer__scrim { opacity: 1; }
+
+.ds-drawer__panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: min(440px, 92vw);
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-secondary);
+  border-left: 1px solid var(--border-strong);
+  box-shadow: var(--glass-shadow);          /* sanctioned glass depth, not a drop */
+  transform: translateX(100%);
+  transition: transform var(--dur-nav-show, 320ms) var(--ease-out);
+}
+.ds-drawer.is-open .ds-drawer__panel { transform: none; }
+
+.ds-drawer__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.ds-drawer__close {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--white-alpha-8);
+  color: var(--text-secondary);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 150ms var(--ease-out), color 150ms var(--ease-out);
+}
+.ds-drawer__close:hover { background: var(--white-alpha-16); color: var(--text-primary); }
+.ds-drawer__close:focus-visible { outline: 2px solid var(--yellow-500); outline-offset: 2px; }
+
+.ds-drawer__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--space-5);
+}
+
+/* ── Pinned foot (the CTA region) ──
+   A flex-shrink:0 sibling of __body that composes .ds-actionbar
+   (css/components/ds-actionbar.css). The primitive (assets/ds-drawer.js)
+   relocates each step's .cc-stepview__foot / .completion-foot out of the
+   scrolling __body and into here, so the primary CTA is pinned to the panel
+   bottom on desktop AND phone while the body scrolls under it. Created +
+   populated by the registry; hidden until it holds a CTA. */
+.ds-drawer__foot { flex: 0 0 auto; }   /* layout/skin comes from .ds-actionbar */
+
+/* ── Step indicator (numbered) — reuses brand accent only ── */
+.cc-step {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.cc-step__item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-family: var(--font-cjk-text);
+  font-size: var(--fs-caption);
+  color: var(--text-tertiary);
+}
+.cc-step__dot {
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-pill);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-latin);
+  font-size: 12px;
+  font-weight: var(--fw-bold);
+  background: var(--white-alpha-8);
+  color: var(--text-tertiary);
+  border: 1px solid var(--border-default);
+}
+.cc-step__item--active { color: var(--text-primary); }
+.cc-step__item--active .cc-step__dot {
+  background: var(--yellow-500);
+  color: var(--yellow-ink);
+  border-color: var(--yellow-500);
+}
+.cc-step__item--done { color: var(--text-secondary); }
+.cc-step__item--done .cc-step__dot {
+  background: rgba(255, 163, 63, 0.16);
+  color: var(--yellow-500);
+  border-color: rgba(255, 163, 63, 0.36);
+}
+.cc-step__label { white-space: nowrap; }
+
+/* ── Step views inside the drawer ── */
+.cc-stepview { display: flex; flex-direction: column; gap: var(--space-4); }
+.cc-stepview__title {
+  margin: 0;
+  font-family: var(--font-cjk-display);
+  font-size: var(--fs-h4);
+  font-weight: var(--fw-bold);
+  color: var(--text-primary);
+}
+.cc-stepview__lead {
+  margin: 0;
+  font-family: var(--font-cjk-text);
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body-sm);
+  color: var(--text-secondary);
+}
+.cc-stepview__foot {
+  margin-top: var(--space-2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.cc-stepview__foot .btn { width: 100%; }
+
+/* reassurance / info callout — reward-only + no-charge messaging */
+.cc-callout {
+  position: relative;
+  padding: var(--space-3) var(--space-4);
+  padding-left: calc(var(--space-4) + 24px);   /* gutter for the absolute icon */
+  border-radius: var(--radius-md);
+  background: rgba(255, 163, 63, 0.10);
+  border: 1px solid rgba(255, 163, 63, 0.28);
+  font-family: var(--font-cjk-text);
+  font-size: var(--fs-caption);
+  line-height: var(--lh-body-sm);
+  color: var(--text-secondary);
+}
+.cc-callout--info {
+  background: rgba(59, 130, 246, 0.10);
+  border-color: rgba(59, 130, 246, 0.28);
+}
+.cc-callout strong { color: var(--text-primary); font-weight: var(--fw-bold); }
+.cc-callout__icon {
+  position: absolute;
+  left: var(--space-4);
+  top: calc(var(--space-3) + 2px);
+  width: 16px;
+  height: 16px;
+  background-color: var(--yellow-500);
+  -webkit-mask: url('assets/icons/info.svg') center / contain no-repeat;
+          mask: url('assets/icons/info.svg') center / contain no-repeat;
+}
+.cc-callout--info .cc-callout__icon { background-color: var(--info-500); }
+.cc-callout--err { background: rgba(239, 68, 68, 0.10); border-color: rgba(239, 68, 68, 0.30); }
+.cc-callout--err .cc-callout__icon { background-color: var(--error-500); }
+.cc-callout--err strong { color: var(--error-500); font-variant-numeric: tabular-nums; }
+.cc-sca { background: var(--bg-card); border: 1px solid var(--border-default); border-radius: var(--radius-md); padding: var(--space-4); display: flex; flex-direction: column; gap: 4px; }
+.cc-sca__bank { font-family: var(--font-cjk-display); font-weight: var(--fw-bold); color: var(--text-primary); }
+.cc-sca__row { font-family: var(--font-cjk-text); font-size: var(--fs-body-sm); color: var(--text-secondary); }
+
+/* tier picker (radio list) */
+.cc-pick { margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: var(--space-2); }
+.cc-pick__legend { padding: 0; font-family: var(--font-cjk-text); font-size: var(--fs-caption); color: var(--text-tertiary); }
+.cc-pick__opt {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: var(--space-3);
+  align-items: start;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: border-color 150ms var(--ease-out), background 150ms var(--ease-out);
+}
+.cc-pick__opt:hover { border-color: var(--border-strong); }
+.cc-pick__radio { margin-top: 3px; accent-color: var(--yellow-500); }
+.cc-pick__radio:checked ~ .cc-pick__row .cc-pick__name { color: var(--text-primary); }
+.cc-pick__opt:has(.cc-pick__radio:checked) {
+  border-color: var(--yellow-500);
+  background: rgba(255, 163, 63, 0.07);
+}
+.cc-pick__row { grid-column: 2; display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3); }
+.cc-pick__name { font-family: var(--font-cjk-display); font-weight: var(--fw-bold); font-size: var(--fs-body); color: var(--text-secondary); }
+.cc-pick__price { font-family: var(--font-latin); font-weight: var(--fw-bold); color: var(--yellow-500); font-variant-numeric: tabular-nums; }
+.cc-pick__perks { grid-column: 2; margin-top: 4px; font-family: var(--font-cjk-text); font-size: var(--fs-caption); line-height: var(--lh-body-sm); color: var(--text-tertiary); }
+/* perks render as separate nodes (so each localises); CSS supplies the separator */
+.cc-pick__perk:not(:first-child)::before { content: " · "; }
+.cc-pick__meta { grid-column: 2; margin-top: var(--space-1); }
+.cc-pick__slots { font-family: var(--font-cjk-text); font-size: var(--fs-caption); color: var(--text-tertiary); font-variant-numeric: tabular-nums; }
+.cc-pick__slots--full { color: var(--warning-500); font-weight: var(--fw-medium); }
+/* sold-out tiers (or in-stock tiers in waitlist mode) are shown but not selectable */
+.cc-pick__opt--disabled { opacity: 0.55; }
+.cc-pick__opt--disabled,
+.cc-pick__opt--disabled .cc-pick__radio { cursor: not-allowed; }
+.cc-pick__opt--disabled:hover { border-color: var(--border-default); background: transparent; }
+
+/* ── Phone — bottom sheet ── */
+@media (max-width: 767.98px) {
+  .ds-drawer__panel {
+    top: auto;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    max-height: 90vh;
+    border-left: none;
+    border-top: 1px solid var(--border-strong);
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    transform: translateY(100%);
+  }
+  .ds-drawer.is-open .ds-drawer__panel { transform: none; }
+}
+
+/* While a drawer is open, suppress the floating bottom-nav pill so a phone
+   bottom-sheet's footer CTA is never overlapped by it. */
+body.ds-drawer-open .botnav { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ds-drawer__scrim,
+  .ds-drawer__panel { transition: none; }
+}

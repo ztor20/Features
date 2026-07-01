@@ -1,0 +1,23 @@
+/* Afacad — score-orb numerals only (see .ztor-score__value). Imported
+   here so all 16 pages get it through the one shared stylesheet. */
+@import url('https://fonts.googleapis.com/css2?family=Afacad:wght@600;700&display=swap');
+
+/* ============================================================
+   Ztor 2.0 — Components
+   Mirrors Figma component sets:
+   - Button (Type × Size × State)
+   - IconButton (State + Icon swap)
+   - Header (State=Before Login | After Login)
+   ============================================================ */
+
+/* Global fluid media + mobile overflow guard (responsive system).
+   Low-specificity max-width keeps media inside its column WITHOUT overriding
+   component sizing (e.g. cover images that set height:100%). We deliberately
+   do NOT set a global height:auto — that previously broke object-fit:cover
+   images (hero, posters) by outranking their component height. overflow-x:
+   clip on phones is a safety net; clip (not hidden) preserves sticky. */
+:where(img, video, svg, canvas, iframe) { max-width: 100%; }
+@media (max-width: 767.98px) {
+  html { overflow-x: clip; }
+  body { overflow-x: clip; max-width: 100%; }
+}

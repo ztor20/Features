@@ -1,0 +1,324 @@
+/* ─────────────────────────────────────────
+   MOVIE LIBRARY (片庫) — 放映廳 / 資料庫
+   Reuses .films-rail + .film-card from the homepage 片庫 section. Cards are
+   poster-only here (Figma Movie Library 316:13155 / 316:10158): 放映廳 shows a
+   popcorn rental price + optional 最新 ribbon; 資料庫 is plain poster (info only).
+   Top bar = view toggle + search; a genre chip row sits above the rails.
+   ───────────────────────────────────────── */
+
+/* Library pages lead with a small toggle (no page-head title), so the default
+   32px flush-top gap reads as wasted space — pull the whole block up closer
+   to the header. */
+.section--library { padding-top: var(--space-6); }
+
+/* Top bar: 放映廳/資料庫 toggle, sitting left. */
+.library-topbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+/* The toggle borrows base .glass-tabs (12/24 vertical margin); zero it here so
+   it doesn't stack on top of the section + topbar spacing. */
+.library-topbar .glass-tabs { margin: 0; }
+
+/* Search pill (visual only for now). Mirrors Figma "Search Bar" (343 wide). */
+.library-search {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 343px;
+  max-width: 100%;
+  height: 44px;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-pill);
+  background: var(--white-alpha-4);
+  border: 1px solid var(--neutral-700);
+}
+.library-search__icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  background-color: var(--text-tertiary);
+  -webkit-mask: url('data:image/svg+xml,%3Csvg%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20d%3D%22M11.44%204.6C7.66238%204.6%204.60001%207.66237%204.60001%2011.44C4.60001%2015.2176%207.66238%2018.28%2011.44%2018.28C13.3026%2018.28%2014.9913%2017.5355%2016.2248%2016.3279C16.2264%2016.3263%2016.2281%2016.3246%2016.2298%2016.323C17.4951%2015.0817%2018.28%2013.3525%2018.28%2011.44C18.28%207.66237%2015.2176%204.6%2011.44%204.6ZM18.3177%2016.9941C19.545%2015.4763%2020.28%2013.544%2020.28%2011.44C20.28%206.5578%2016.3222%202.6%2011.44%202.6C6.55781%202.6%202.60001%206.5578%202.60001%2011.44C2.60001%2016.3222%206.55781%2020.28%2011.44%2020.28C13.4974%2020.28%2015.3907%2019.5771%2016.8928%2018.3984L19.7047%2021.1187C20.1016%2021.5027%2020.7347%2021.4922%2021.1187%2021.0953C21.5027%2020.6984%2021.4922%2020.0653%2021.0953%2019.6813L18.3177%2016.9941Z%22%20fill%3D%22white%22%2F%3E%3C%2Fsvg%3E') center / contain no-repeat;
+  mask: url('data:image/svg+xml,%3Csvg%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20d%3D%22M11.44%204.6C7.66238%204.6%204.60001%207.66237%204.60001%2011.44C4.60001%2015.2176%207.66238%2018.28%2011.44%2018.28C13.3026%2018.28%2014.9913%2017.5355%2016.2248%2016.3279C16.2264%2016.3263%2016.2281%2016.3246%2016.2298%2016.323C17.4951%2015.0817%2018.28%2013.3525%2018.28%2011.44C18.28%207.66237%2015.2176%204.6%2011.44%204.6ZM18.3177%2016.9941C19.545%2015.4763%2020.28%2013.544%2020.28%2011.44C20.28%206.5578%2016.3222%202.6%2011.44%202.6C6.55781%202.6%202.60001%206.5578%202.60001%2011.44C2.60001%2016.3222%206.55781%2020.28%2011.44%2020.28C13.4974%2020.28%2015.3907%2019.5771%2016.8928%2018.3984L19.7047%2021.1187C20.1016%2021.5027%2020.7347%2021.4922%2021.1187%2021.0953C21.5027%2020.6984%2021.4922%2020.0653%2021.0953%2019.6813L18.3177%2016.9941Z%22%20fill%3D%22white%22%2F%3E%3C%2Fsvg%3E') center / contain no-repeat;
+}
+.library-search__input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: none;
+  color: var(--text-primary);
+  font-family: var(--font-cjk-text);
+  font-size: 14px;
+}
+.library-search__input::placeholder { color: var(--text-tertiary); }
+.library-search__input:focus { outline: none; }
+
+/* Content-category row — a tier BELOW the 放映廳/資料庫 toggle, so it reads as
+   secondary filtering: smaller text, no glass-pill container, and an active
+   state that's a flat neutral chip (no yellow, no glow, no blur). Scoped to
+   .library-genres so the toggle's glass look is untouched. */
+.library-genres {
+  margin: 0 0 var(--space-4);
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 0;
+  gap: var(--space-1);
+}
+.library-genres .glass-tabs__item {
+  height: 32px;
+  padding: 0 14px;
+  font-size: 14px;
+  line-height: 20px;
+}
+.library-genres .glass-tabs__item--active,
+.library-genres .glass-tabs__item--active:hover {
+  color: var(--text-primary);
+  font-weight: var(--fw-medium);
+  background: var(--white-alpha-16);
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+/* Categories not yet open (綜藝 / 動畫) read dimmer, matching V1. */
+.library-genres .glass-tabs__item--muted {
+  color: var(--text-tertiary);
+  cursor: default;
+}
+.library-genres .glass-tabs__item--muted:hover { color: var(--text-tertiary); }
+
+/* Platform-filter variant (資料庫): each item carries a brand logo + label.
+   Logos are pre-rounded app icons, shown small so the row stays a quiet
+   secondary filter. */
+.library-platforms .glass-tabs__item {
+  gap: var(--space-2);
+  padding-left: var(--space-2);
+  padding-right: 14px;
+}
+.glass-tabs__logo {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  border-radius: 5px;
+  object-fit: cover;
+}
+/* 臺灣排行 section overrides (scoped — leaves cocreate filter tabs / database
+   untouched):
+   1. tighten the title → platform-tabs gap
+   2. active platform tab uses the neutral GHOST glass instead of yellow-ghost,
+      so it never clashes with an OTT's brand color when selected. The Ztor
+      tab keeps its yellow Z. chip (that's its logo, not the active treatment). */
+[data-screen-label="ranking"] .section-header { margin-bottom: var(--space-5); }
+/* 現正熱播 cards have a title row below the poster, so raise the digit by the
+   body height (~66px) to land it on the poster bottom — matching the
+   poster-only ranked rails which ground at the card bottom (global bottom:0). */
+#films-panel-trending .film-card__rank { bottom: 50px; }
+/* Platform pill spans the full content width; the options stay left-packed
+   (natural order, widened gap) so the right side is just empty pill bg. */
+.ranking-platforms {
+  margin-top: 0;
+  display: flex;
+  width: 100%;
+  justify-content: flex-start;
+  gap: var(--space-4);
+}
+.ranking-platforms .glass-tabs__item--active,
+.ranking-platforms .glass-tabs__item--active:hover {
+  color: var(--text-primary);
+  background: linear-gradient(0deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.18) 2.45%,
+    rgba(255, 255, 255, 0) 126.14%);
+  box-shadow:
+    rgba(255, 255, 255, 0.9) 1.1px 2.2px 0.5px -1.8px inset,
+    rgba(255, 255, 255, 0.9) -1px -2.2px 0.5px -1.8px inset,
+    rgba(0, 0, 0, 0.10) 2px 3px 2px 0 inset;
+}
+
+.library-row + .library-row { margin-top: var(--space-10); }
+/* Category title sits tight above its rail. */
+.library-row .page-head { margin-bottom: var(--space-2); }
+
+/* 繼續觀看 rail — 只在登入後顯示;標題列右側放「觀看紀錄 →」link. */
+body[data-auth="logged-out"] .library-row--continue { display: none; }
+.library-row--continue .page-head { justify-content: space-between; }
+
+/* Corner ribbon on a poster (最新 / 推薦) — dark glass pill + brand-yellow label.
+   Glass (not a yellow fill) so it reads on any poster art and keeps yellow as the
+   "act here" CTA signal. White-on-blur fallback where backdrop-filter is unsupported. */
+.film-card__ribbon {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  padding: var(--space-1) var(--space-2);
+  border-bottom-right-radius: var(--radius-md);
+  background: rgba(10, 10, 10, 0.6);
+  backdrop-filter: blur(10px) saturate(1.1);
+  -webkit-backdrop-filter: blur(10px) saturate(1.1);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);  /* hairline so it defines on bright posters */
+  color: var(--yellow-500);                              /* brand yellow #ffa33f — the label is the brand tie */
+  font-family: var(--font-cjk-text);
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: var(--fw-medium);
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .film-card__ribbon { background: rgba(10, 10, 10, 0.86); }  /* solid ink so yellow stays legible */
+}
+
+@media (max-width: 767.98px) {
+  .library-topbar { flex-wrap: wrap; }
+  .library-search { width: 100%; }
+}
+
+/* ─────────────────────────────────────────
+   MOVIE LIBRARY — RESPONSIVE
+   Phone  : max-width 767.98px
+   Tablet : 768px – 1023.98px
+   ───────────────────────────────────────── */
+
+/* ── Tablet (768px – 1023.98px) ─────────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  /* Give the library section more breathing room after the header */
+  .section--library { padding-top: var(--space-5); }
+
+  /* Search: allow it to grow but cap at 280px so it doesn't eat the toggle */
+  .library-search { width: clamp(220px, 40%, 280px); }
+
+  /* Genre chips: horizontal scroll if they overflow — avoids wrapping chaos */
+  .library-genres {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: var(--space-3);
+  }
+  .library-genres::-webkit-scrollbar { display: none; }
+
+  /* Library rows: tighten vertical rhythm slightly */
+  .library-row + .library-row { margin-top: var(--space-8); }
+}
+
+/* ── Phone (≤767.98px) ──────────────────────────────────────────────────── */
+@media (max-width: 767.98px) {
+  /* Less top padding on phone — the header is shorter and closer */
+  .section--library { padding-top: var(--space-4); }
+
+  /* Topbar: toggle on first row, search on second row */
+  .library-topbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+  }
+
+  /* Search: full-width on phone, touch target already 44px tall */
+  .library-search { width: 100%; }
+
+  /* Genre chip row: horizontal scroll, no wrap */
+  .library-genres {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: var(--space-3);
+    /* Negative horizontal margin so chips bleed to the section edge */
+    margin-left: calc(var(--container-padding-x) * -1);
+    margin-right: calc(var(--container-padding-x) * -1);
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+  .library-genres::-webkit-scrollbar { display: none; }
+
+  /* Platform filter row: same horizontal scroll treatment */
+  .library-platforms {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    margin-left: calc(var(--container-padding-x) * -1);
+    margin-right: calc(var(--container-padding-x) * -1);
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+  .library-platforms::-webkit-scrollbar { display: none; }
+
+  /* Ranking platform row (Taiwan's Top 10): scrollable, but the first chip
+     ALIGNS with the section content (not flush to the screen edge). Overrides
+     the full-bleed negative margins inherited from .library-platforms. */
+  .ranking-platforms {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    gap: var(--space-2);
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: var(--container-padding-x, var(--space-5));
+    padding-right: var(--container-padding-x, var(--space-5));
+  }
+  .ranking-platforms::-webkit-scrollbar { display: none; }
+
+  /* Library rows: tighter vertical spacing */
+  .library-row + .library-row { margin-top: var(--space-6); }
+
+  /* Continue-watching row stays hidden when logged out (unchanged), but
+     when shown, its page-head title needs to wrap on phone */
+  .library-row--continue .page-head { flex-wrap: wrap; gap: var(--space-2); }
+
+  /* Ribbon: touch target safe — it's decorative only, no tap action */
+  .film-card__ribbon { font-size: 11px; padding: 3px 6px; }
+}
+
+/* ── Small phone (≤479.98px) ────────────────────────────────────────────── */
+@media (max-width: 479.98px) {
+  .library-topbar { gap: var(--space-2); }
+  .library-genres {
+    /* Tighter start padding on very small screens */
+    padding-left: var(--space-3);
+    padding-right: var(--space-3);
+  }
+}
+
+/* ── Platform filter on phone: ICON-ONLY chips, with the active chip expanding
+   to show its name. All 8 platforms now fit with NO horizontal scroll — the
+   chips share the row width instead of overflowing. Appended last so it wins
+   the cascade over the scroll treatment above. (.library-platforms = 資料庫 /
+   database; .ranking-platforms = home Top-10.) ── */
+@media (max-width: 767.98px) {
+  .library-platforms,
+  .ranking-platforms {
+    flex-wrap: nowrap;
+    overflow-x: hidden;                 /* no scroll — chips flex to fit */
+    margin-left: 0; margin-right: 0;
+    padding-left: 0; padding-right: 0;
+    gap: var(--space-1);
+    width: 100%;
+  }
+
+  /* Icon-only: equal flex columns, logo centred, text node hidden via font-size:0
+     (the <img> logo keeps its fixed size). */
+  .library-platforms .glass-tabs__item,
+  .ranking-platforms .glass-tabs__item {
+    flex: 1 1 0;
+    min-width: 0;
+    gap: 0;
+    padding: 0;
+    font-size: 0;
+    justify-content: center;
+  }
+
+  /* Active chip: reveal icon + name. */
+  .library-platforms .glass-tabs__item--active,
+  .ranking-platforms .glass-tabs__item--active {
+    flex: 0 0 auto;
+    gap: var(--space-2);
+    padding: 0 14px 0 10px;
+    font-size: var(--fs-body-sm);
+  }
+}

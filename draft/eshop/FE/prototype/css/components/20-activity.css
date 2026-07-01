@@ -1,0 +1,308 @@
+/* ─────────────────────────────────────────
+   ACTIVITY — 第六章·同場加映
+   3-col grid of lightweight feature cards: icon → title → desc → CTA.
+   Each card has a subtle yellow ambient glow in the top-right to hint
+   at the playful / supplementary tone of this section.
+   Variant .activity-card--disabled drops opacity and removes hover lift
+   (used for 敬請期待 / coming-soon CTAs).
+   ───────────────────────────────────────── */
+
+.activity-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-6);
+}
+
+.activity-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-8);
+  min-height: 280px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+  color: inherit;
+  overflow: hidden;
+  transition: transform 250ms ease, border-color 250ms ease;
+}
+
+.activity-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-default);
+}
+
+/* Yellow ambient glow at top-right — playful tone marker.
+   Circle center is anchored exactly on the card's top-right corner so
+   only the bottom-left quadrant of the circle bleeds into the card. */
+.activity-card::before {
+  content: '';
+  position: absolute;
+  top: -130px;
+  right: -130px;
+  width: 260px;
+  height: 260px;
+  background: radial-gradient(circle,
+    rgba(255, 163, 63, 0.20) 0%,
+    rgba(255, 163, 63, 0.07) 30%,
+    transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.activity-card > * { position: relative; z-index: 1; }
+
+/* Icon chip — outline icon inside a yellow-tinted rounded square. */
+.activity-card__icon {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 163, 63, 0.08);
+  border: 1px solid rgba(255, 163, 63, 0.22);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--yellow-500);
+  margin-bottom: var(--space-6);
+}
+
+/* Glass variant — chip keeps the base yellow tint as the "halo" behind
+   the icon; the class is kept on the markup as a hook for future
+   chip-level glass effects (e.g. backdrop-filter blur, refraction). */
+
+.activity-card__icon-img {
+  width: 32px;
+  height: 32px;
+  display: inline-block;
+}
+
+.activity-card__title {
+  font-family: var(--font-cjk-display);
+  font-weight: var(--fw-bold);
+  font-size: 22px;
+  line-height: 1.4;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-3);
+}
+
+.activity-card__desc {
+  font-family: var(--font-cjk-text);
+  /* Figma spec: Body/Small/zh · Regular · 14/23 · Text/Tertiary */
+  font-weight: var(--fw-regular);
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body-sm);
+  color: var(--text-tertiary);
+  margin: 0;
+  flex: 1;
+}
+
+.activity-card__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: var(--space-6);
+  font-family: var(--font-cjk-text);
+  font-size: 14px;
+  font-weight: var(--fw-medium);
+  color: var(--yellow-500);
+  transition: gap 200ms ease;
+}
+
+.activity-card:hover .activity-card__cta { gap: 10px; }
+
+.activity-card__cta-arrow {
+  width: 14px;
+  height: 14px;
+  display: inline-block;
+  background-color: currentColor;
+  -webkit-mask: url('assets/icons/arrow_right.svg') center / contain no-repeat;
+          mask: url('assets/icons/arrow_right.svg') center / contain no-repeat;
+}
+
+/* Disabled / coming-soon CTA — muted text, no arrow, no hover gap shift. */
+.activity-card__cta--disabled {
+  color: var(--text-disabled);
+}
+
+.activity-card--disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.activity-card--disabled:hover {
+  transform: none;
+  border-color: var(--border-subtle);
+}
+
+.activity-card--disabled:hover .activity-card__cta { gap: 6px; }
+
+/* Disabled glow — swap the yellow ambient for a neutral one so the
+   dimmed card doesn't compete tonally with the active siblings. */
+.activity-card--disabled::before {
+  background: radial-gradient(circle,
+    rgba(255, 255, 255, 0.10) 0%,
+    rgba(255, 255, 255, 0.03) 30%,
+    transparent 70%);
+}
+
+/* ─── Photo variant (--photo) — full-bleed cover + scrim, text pinned bottom.
+   Drops the icon chip; the cover image carries the visual. Scrim gradient
+   matches .news-card--overlay for a consistent light/dark rhythm.
+   Ported from the dolly 2.0 build (2026-06-16). ─── */
+.activity-card--photo {
+  justify-content: flex-end;
+  aspect-ratio: 3 / 2;          /* events art is 1536×1024 */
+  min-height: 0;
+  padding: var(--space-6);
+}
+.activity-card__cover {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 300ms ease;
+}
+.activity-card--photo:hover .activity-card__cover { transform: scale(1.03); }
+/* Repurpose ::before (the yellow glow) as the image→text scrim. */
+.activity-card--photo::before {
+  inset: 0;
+  top: 0;
+  right: 0;
+  width: auto;
+  height: auto;
+  background: linear-gradient(180deg,
+    rgba(10, 10, 10, 0)    34%,
+    rgba(10, 10, 10, 0.46) 58%,
+    rgba(10, 10, 10, 0.82) 80%,
+    rgba(10, 10, 10, 0.94) 100%);
+  z-index: 1;
+}
+/* Stacking: cover(0) → scrim(1) → text(2). */
+.activity-card--photo > * { z-index: 2; }
+.activity-card--photo .activity-card__cover { z-index: 0; }
+.activity-card--photo .activity-card__desc {
+  flex: 0 1 auto;
+  color: rgba(255, 255, 255, 0.78);   /* matches news overlay excerpt */
+}
+/* Second row: desc left, text CTA right, on one line. */
+.activity-card__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+.activity-card__row .activity-card__cta {
+  margin-top: 0;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+/* Disabled photo card: keep the card solid, mute the image instead —
+   full-card opacity would read as a loading glitch over a photo. */
+.activity-card--photo.activity-card--disabled { opacity: 1; }
+.activity-card--photo.activity-card--disabled .activity-card__cover {
+  filter: grayscale(1) brightness(0.72);
+}
+.activity-card--photo.activity-card--disabled:hover .activity-card__cover {
+  transform: none;
+}
+
+/* ─────────────────────────────────────────
+   RESPONSIVE — ACTIVITY GRID + CARDS
+   ───────────────────────────────────────── */
+
+/* ── Tablet (768–1023) ── */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  /* 2-col on tablet */
+  .activity-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-5);
+  }
+
+  .activity-card {
+    padding: var(--space-6);
+    min-height: 240px;
+  }
+}
+
+/* ── Phone (<768) ── */
+@media (max-width: 767.98px) {
+  /* Single column */
+  .activity-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  /* Standard activity card: tighter padding, no need for min-height */
+  .activity-card {
+    padding: var(--space-6);
+    min-height: 0;
+  }
+
+  /* Icon chip: slightly smaller */
+  .activity-card__icon {
+    width: 48px;
+    height: 48px;
+    margin-bottom: var(--space-5);
+  }
+
+  .activity-card__icon-img {
+    width: 26px;
+    height: 26px;
+  }
+
+  .activity-card__title {
+    font-size: var(--fs-h4);
+    margin-bottom: var(--space-3);
+  }
+
+  /* CTA row: 44px touch target */
+  .activity-card__cta {
+    margin-top: var(--space-5);
+    min-height: 44px;
+    align-items: center;
+  }
+
+  /* Photo card: tighter aspect on phone (was 3/2, allow a touch more height) */
+  .activity-card--photo {
+    aspect-ratio: 4 / 3;
+    padding: var(--space-4);
+  }
+
+  /* Photo card row (desc + CTA): stack on small screens */
+  .activity-card__row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+
+  .activity-card__row .activity-card__cta {
+    margin-top: var(--space-2);
+  }
+
+  /* Hover lift: no stuck states on touch */
+  .activity-card:hover {
+    transform: none;
+  }
+}
+
+/* ── Small phone (<480) ── */
+@media (max-width: 480px) {
+  .activity-card {
+    padding: var(--space-5);
+  }
+
+  .activity-card--photo {
+    aspect-ratio: 1 / 1;
+    padding: var(--space-4);
+  }
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .activity-card,
+  .activity-card__cover {
+    transition: none;
+  }
+}

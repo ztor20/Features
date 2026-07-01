@@ -1,0 +1,8 @@
+/* ─────────────────────────────────────────
+   AUTH-GATING — show / hide blocks per auth state
+   Pairs with body[data-auth] toggle. For now driven by dev-toggle;
+   real auth would render server-side and remove these rules.
+   ───────────────────────────────────────── */
+
+body[data-auth="logged-out"] [data-auth-required="logged-in"]  { display: none !important; }
+body[data-auth="logged-in"]  [data-auth-required="logged-out"] { display: none !important; }

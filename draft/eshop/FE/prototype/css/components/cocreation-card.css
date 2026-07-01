@@ -1,0 +1,755 @@
+/* CROWDFUNDING / PRESALE — .cocreation-card (+states/--overlay). [COMPONENT]
+   NOTE: .cocreation-grid layout (base + responsive) is owned by
+   07-cocreation-grid.css so the base + media rules cascade in one file. */
+
+.cocreation-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: transform 250ms ease, border-color 250ms ease;
+  text-decoration: none;
+  color: inherit;
+}
+
+.cocreation-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-default);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+}
+
+.cocreation-card__poster {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--neutral-900);
+}
+
+.cocreation-card__poster img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cocreation-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: 22px;
+  flex: 1;
+}
+
+.cocreation-card__title {
+  font-family: var(--font-cjk-display);
+  font-weight: var(--fw-bold);
+  font-size: 22px;
+  line-height: 1.3;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.cocreation-card__desc {
+  font-family: var(--font-cjk-text);
+  /* Figma spec: Body/Small/zh · Regular · 14/23 · Text/Tertiary */
+  font-weight: var(--fw-regular);
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body-sm);
+  color: var(--text-tertiary);
+  margin: 0;
+}
+
+.cocreation-card__metrics {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cocreation-card__amount {
+  font-family: var(--font-cjk-text);
+  font-size: 18px;
+  font-weight: var(--fw-bold);
+  color: var(--text-primary);
+}
+
+/* Funded-percent header — the hero figure above the bar (Kickstarter /
+   Buy Me a Coffee convention). Promoted from refine-engagement (.rf-cocreate)
+   to the component so it renders identically on every page the card appears
+   (home 影視/音樂共創 sections + cocreate.html), keyed to the class = single source. */
+.rf-fund {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+.rf-fund__pct {
+  font-family: var(--font-latin);
+  font-size: 30px;
+  line-height: 1;
+  font-weight: var(--fw-bold);
+  color: var(--yellow-500);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.5px;
+}
+.rf-fund__pct small {
+  font-size: 17px;
+  font-weight: var(--fw-bold);
+  margin-left: 1px;
+}
+.rf-fund--done .rf-fund__pct { color: var(--success-500); }
+.rf-fund__label {
+  font-family: var(--font-cjk-text);
+  font-size: 13px;
+  font-weight: var(--fw-medium);
+  color: var(--text-secondary);
+}
+
+.cocreation-card__bar {
+  height: 3px;
+  background: var(--white-alpha-8);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.cocreation-card__bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--yellow-600), var(--yellow-400));
+  box-shadow: 0 0 12px rgba(255, 163, 63, 0.35);
+  border-radius: var(--radius-pill);
+  transition: width 1s ease;
+}
+
+/* Goal reached → the fill goes green (matches the 目標達成 badge--success).
+   Keyed off the existing data-bar-fill="100" state, authored once. The
+   :not(--muted) keeps deliberately-greyed 已結束/未達標 bars grey even at 100%. */
+.cocreation-card__bar-fill[data-bar-fill="100"]:not(.cocreation-card__bar-fill--muted) {
+  background: var(--success-500);
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.40);
+}
+
+.cocreation-card__bar-fill--muted {
+  background: var(--white-alpha-24);
+  box-shadow: none;
+}
+
+.cocreation-card__meta-row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  font-family: var(--font-cjk-text);
+  font-size: 12.5px;
+  font-weight: var(--fw-regular);
+  color: var(--text-tertiary);
+}
+.cocreation-card__meta-row span:first-child {
+  font-variant-numeric: tabular-nums;
+  color: var(--text-secondary);
+}
+
+/* ── Crowdfunding card · OVERLAY variant ───────────────────────────────────
+   Opt-in via .cocreation-grid--overlay. The poster shows at its NATURAL ratio
+   (no crop) and the funding block (badge → title → desc → amount → bar → meta)
+   sits in a .media-glass panel that rides up onto the poster's lower edge and
+   flows onto the card surface below — same text-on-photo treatment as the
+   community posts, and it never clips regardless of poster shape. The body
+   carries .media-glass (added in markup). ──────────────────────────────────── */
+.cocreation-grid--overlay .cocreation-card {
+  position: relative;                 /* natural height: poster + funding panel below */
+}
+.cocreation-grid--overlay .cocreation-card__poster { position: relative; aspect-ratio: auto; line-height: 0; }
+.cocreation-grid--overlay .cocreation-card__poster img { position: relative; width: 100%; height: auto; }
+/* Funding block FLOWS (not absolute → never clips). Negative margin lifts it
+   onto the poster's lower edge for the glass dissolve; the dense data simply
+   continues onto the card surface below when the poster is short/landscape. */
+.cocreation-grid--overlay .cocreation-card__body {
+  position: relative;
+  z-index: 1;
+  margin-top: -110px;
+  padding: var(--space-16) var(--space-5) 18px;            /* top ~64px = the blur dissolve zone over the poster */
+  flex: 0 0 auto;
+  gap: 7px;
+}
+.cocreation-grid--overlay .cocreation-card__desc {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+/* Text → light on the glass. */
+.cocreation-grid--overlay .cocreation-card__title { color: #fff; font-size: 18px; }
+.cocreation-grid--overlay .cocreation-card__amount { color: #fff; }
+.cocreation-grid--overlay .cocreation-card__desc,
+.cocreation-grid--overlay .cocreation-card__meta-row { color: rgba(255, 255, 255, 0.85); }
+/* Progress track needs more presence over a photo. */
+.cocreation-grid--overlay .cocreation-card__bar { background: rgba(255, 255, 255, 0.28); }
+
+/* Generic badge — yellow tinted pill (used inside cards / labels)
+   Modifier .badge--success → green tinted + ✓ icon (for 目標達成 / 已完成 狀態) */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  align-self: flex-start;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  background: rgba(255, 163, 63, 0.12);
+  border: 1px solid rgba(255, 163, 63, 0.25);
+  color: var(--yellow-500);
+  font-family: var(--font-cjk-text);
+  font-size: 11px;
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.05em;
+}
+
+/* 目標達成 / 已完成. --success-500 (#22c55e) is documented (see tokens.css
+   score-ink note) to read too dark for small text on near-black, which made
+   this badge invisible on the dark card. Use the brighter system green and
+   a stronger tint/border so the pill reads clearly. */
+.badge--success {
+  background: rgba(48, 209, 88, 0.16);
+  border-color: rgba(48, 209, 88, 0.42);
+  color: #30d158;
+}
+
+.badge--urgent {
+  background: rgba(239, 68, 68, 0.14);
+  border-color: rgba(239, 68, 68, 0.32);
+  color: var(--error-500);
+}
+
+.badge--ended {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.16);
+  color: var(--text-tertiary);
+}
+
+/* ─────────────────────────────────────────
+   HERO CAROUSEL
+   Full-bleed image-led banner. Each slide stacks:
+     <bg image>  +  <darken gradients>  +  <foreground content bottom-left>
+   Auto-advance, pause-on-hover, dots, prev/next.
+
+   ─── BANNER UPLOAD SPEC (for backend / content team) ───
+     Aspect ratio:  3 : 1  (wide cinematic, balances height + minimal cropping)
+     Master size:   2400 × 800  (retina-ready up to 1200px CSS at 2× DPR)
+     Format:        JPG (≤ 700 KB).  WebP (≤ 500 KB) optional later for ~30% size win.
+     Subject safe-zone:
+       central 1080 × 800 area must contain the hero subject so the
+       browser's center-crop survives portrait-phone viewports without
+       cutting off faces / titles.
+     If a separate mobile asset is supported later:
+       1080 × 1350  (4:5 portrait)  — same content, recropped.
+   ───────────────────────────────────────────────────────── */
+
+.hero-carousel {
+  position: relative;
+  width: 100%;
+  /* Aspect-aware height: tracks viewport width to match image's 3:1 ratio.
+     - On 1680–2400px viewports: hero height ≈ viewport_width / 3 → image fits with no vertical crop.
+     - Min 560px on narrow viewports (≤ 1680 wide) — slight horizontal crop, subject in safe zone survives.
+     - Max 800px on ultra-wide (≥ 2400 wide) — image native height, no upscale.
+     - Beyond 2400 CSS px (true 4K+ at 1× DPR) image still crops vertically;
+       fix would be a larger source asset (e.g. 4800×1600). */
+  height: clamp(560px, 33.33vw, 800px);
+  overflow: hidden;
+  background: var(--bg-primary);
+  /* Explicit stacking context so edge vignette children composite independently
+     of the swiper-wrapper GPU transform layer beneath them. */
+  isolation: isolate;
+}
+
+/* ── Swiper wrapper — Swiper owns transform/transition on .swiper-wrapper.
+   We only assert the height so slides fill the carousel frame. */
+.hero-carousel .swiper-wrapper {
+  height: 100%;
+}
+
+/* Each slide fills the carousel frame. overflow:hidden contains
+   the darken-bottom/darken-left overlays within the slide's bounds.
+   Swiper sets width automatically (slidesPerView:1 → 100%). */
+.hero-carousel__slide {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+}
+
+.hero-carousel__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+  transform: scale(1.04);
+}
+
+/* Slide 1 — constellation canvas background (replaces static image)
+   Many small dots with thin connecting lines, slowly drifting; some
+   dots are brand yellow with a soft halo. Drawn at devicePixelRatio
+   for crisp lines. Pauses when slide is not active to save CPU.
+   Layered background: warm yellow ambient near top + dark purple-blue
+   radial centre + black edges → gives depth before particles draw. */
+.hero-carousel__particles {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 25%, rgba(255, 163, 63, 0.06), transparent 70%),
+    radial-gradient(ellipse 60% 60% at 30% 80%, rgba(80, 40, 120, 0.08), transparent 70%),
+    radial-gradient(ellipse at 50% 50%, #15141c 0%, #0a0a0a 75%);
+}
+
+/* Slide 1 only — soften darken-left so the constellation shows through.
+   darken-left is now a PERSISTENT frame layer, so the slide-0 softening is
+   keyed to the frame's data-active (set by hero-carousel.js), not the slide. */
+.hero-carousel[data-active="0"] .hero-carousel__darken-left {
+  background: linear-gradient(90deg,
+    rgba(0, 0, 0, 0.45) 0%,
+    rgba(0, 0, 0, 0.15) 40%,
+    transparent         70%);
+}
+
+/* Persistent darken overlays — direct children of .hero-carousel (frame level),
+   above the sliding track (z auto) and below the captions (z2). They no longer
+   live inside a slide, so they never repaint as the track transforms. */
+.hero-carousel__darken-bottom,
+.hero-carousel__darken-left {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  transition: background 700ms var(--ease-out, ease);
+}
+
+/* Bottom-up darken — fades into page bg for smooth section join */
+.hero-carousel__darken-bottom {
+  background: linear-gradient(180deg,
+    rgba(0, 0, 0, 0.15) 0%,
+    rgba(0, 0, 0, 0)    30%,
+    rgba(0, 0, 0, 0.55) 70%,
+    var(--bg-primary)   100%);
+}
+
+/* Left-side darken — gives copy on the bottom-left enough contrast */
+.hero-carousel__darken-left {
+  background: linear-gradient(90deg,
+    rgba(0, 0, 0, 0.7)  0%,
+    rgba(0, 0, 0, 0.35) 35%,
+    transparent         60%);
+}
+
+/* Premium edge vignette — fixed to the carousel FRAME, not inside slides.
+   Sits as a direct child of .hero-carousel (above the scrolling track) so
+   banners ease THROUGH the edges during drag.
+   z-index:2 = above track (z-index:auto); nav/dots at z-index:3 sit above this.
+
+   TECHNIQUE: pure gradient vignette — NO backdrop-filter.
+   backdrop-filter flickered on every Swiper slide transition because Chrome
+   drops BF compositing when a sibling element (swiper-wrapper) runs a GPU
+   transform. A multi-stop feathered gradient achieves the premium soft-edge
+   look with zero compositing dependency — visually constant before/during/after
+   every swipe.
+
+   Layer promotion (transform: translateZ(0)) keeps these elements on their own
+   compositor layer so they never need to repaint during the track animation. */
+.hero-carousel__edge {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: clamp(44px, 9%, 168px);
+  z-index: 2;
+  pointer-events: none;
+  /* iOS WebKit compositing stability — the real cause of the residual
+     "vignette flickers on swipe" after backdrop-filter was already removed.
+     The edge rides its own GPU layer above the Swiper track. On iOS Safari a
+     PERMANENT `will-change: transform` reserves a backing store that WebKit
+     evicts / re-rasterises while the sibling .swiper-wrapper runs its slide
+     transform — so the gradient blanks for a frame, then repaints. Promoting
+     harder is not the fix; STABILISING the layer is:
+       • translate3d(0,0,0)        — keep it on its own layer (battle-tested)
+       • backface-visibility:hidden — stop iOS dropping the layer mid-transform
+       • NO will-change             — the permanent reservation is the thrash
+                                       trigger on iOS; removing it stops the flash
+     Solid on iOS Safari and desktop Chrome alike. */
+  transform: translate3d(0, 0, 0);
+  -webkit-transform: translate3d(0, 0, 0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+.hero-carousel__edge--l {
+  left: 0;
+  /* Multi-stop feathered gradient: opaque dark core fades to nothing.
+     Mimics the blurred-edge look without any compositing dependency. */
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.72) 0%,
+    rgba(0, 0, 0, 0.52) 25%,
+    rgba(0, 0, 0, 0.28) 55%,
+    rgba(0, 0, 0, 0.08) 78%,
+    rgba(0, 0, 0, 0)    100%
+  );
+}
+.hero-carousel__edge--r {
+  right: 0;
+  background: linear-gradient(
+    270deg,
+    rgba(0, 0, 0, 0.72) 0%,
+    rgba(0, 0, 0, 0.52) 25%,
+    rgba(0, 0, 0, 0.28) 55%,
+    rgba(0, 0, 0, 0.08) 78%,
+    rgba(0, 0, 0, 0)    100%
+  );
+}
+
+/* Captions layer — persistent frame-level stack. pointer-events:none so a
+   horizontal drag anywhere over the hero still reaches the Swiper track; the
+   active slide's buttons re-enable pointer events explicitly (below). */
+.hero-carousel__captions {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* All captions are stacked and absolutely filling the frame; only the
+   .is-active one is visible. They CROSS-FADE in place on slide change —
+   decoupled from the slide transform, so text no longer blanks/re-mounts.
+   (Also more robust than the old GSAP approach: text is visible by default,
+   not opacity:0-until-JS — survives a GSAP/script failure.) */
+.hero-carousel__content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  /* Lift the content block up off the section join — bottom-aligned, so a
+     larger bottom padding rides the whole block (eyebrow→title→sub→CTA)
+     higher and keeps the CTA clear of the next zebra stripe. */
+  padding-bottom: clamp(120px, 15vh, 190px);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 700ms var(--ease-out, ease), visibility 0s linear 700ms;
+}
+.hero-carousel__content.is-active {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 700ms var(--ease-out, ease);
+}
+/* Only the visible caption's buttons capture clicks; the rest of the caption
+   area stays pointer-transparent so the carousel remains swipeable over it. */
+.hero-carousel__content.is-active .btn { pointer-events: auto; }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-carousel__content { transition: opacity 1ms linear; }
+}
+
+.hero-carousel__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  max-width: 880px;
+}
+
+.hero-carousel__eyebrow {
+  font-family: var(--font-cjk-text);
+  font-size: 12px;
+  font-weight: var(--fw-medium);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.85);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+}
+
+.hero-carousel__title {
+  font-family: var(--font-cjk-display);
+  font-weight: var(--fw-bold);
+  font-size: clamp(44px, 5.4vw, 76px);
+  line-height: 1.18;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin: 0;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.4);
+  /* Default to single line (cinematic 1-line feel).
+     Slides that want a 2-line title use explicit <br> — <br> overrides nowrap. */
+  white-space: nowrap;
+}
+
+.hero-carousel__sub {
+  font-family: var(--font-cjk-text);
+  font-weight: var(--fw-light);
+  font-size: 18px;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0;
+  max-width: 520px;
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Meta line — used for countdown / status meta on event-style slides
+   (e.g. AI 競賽：「參賽截止還有 1 天」) */
+.hero-carousel__meta {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-1);
+  font-family: var(--font-cjk-text);
+  font-size: 16px;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0;
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.4);
+}
+
+.hero-carousel__countdown {
+  font-family: var(--font-latin);
+  font-size: 24px;
+  font-weight: var(--fw-bold);
+  color: var(--neutral-white);
+  margin: 0 6px;
+  font-style: normal;
+}
+
+.hero-carousel__ctas {
+  display: flex;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+  flex-wrap: wrap;
+}
+
+/* Prev / next nav buttons — Artlist-style glass (matches popcorn / notification)
+   Hidden by default, fade in when carousel is hovered or nav is focused.
+   z-index:3 — above the fixed edge vignettes (z-index:2). */
+.hero-carousel__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-pill);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  background: linear-gradient(0deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.18) 2.45%,
+    rgba(255, 255, 255, 0) 126.14%);
+  box-shadow:
+    rgba(255, 255, 255, 0.9) 1.1px 2.2px 0.5px -1.8px inset,
+    rgba(255, 255, 255, 0.9) -1px -2.2px 0.5px -1.8px inset,
+    rgba(0, 0, 0, 0.10) 2px 3px 2px 0 inset;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  transition: opacity 250ms ease, background 200ms ease;
+}
+
+.hero-carousel:hover .hero-carousel__nav,
+.hero-carousel__nav:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.hero-carousel__nav:hover {
+  background: linear-gradient(0deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.30) 2.45%,
+    rgba(255, 255, 255, 0) 126.14%);
+}
+
+.hero-carousel__nav--prev { left: 24px; }
+.hero-carousel__nav--next { right: 24px; }
+
+.hero-carousel__nav img {
+  width: 22px;
+  height: 22px;
+  display: block;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.5));
+}
+
+/* Dots — bottom center; active = wider yellow + glow.
+   z-index:3 — above the fixed edge vignettes (z-index:2). */
+.hero-carousel__dots {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 32px;
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  z-index: 3;
+}
+
+.hero-carousel__dot {
+  height: 4px;
+  width: 16px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  transition: width 350ms ease, background 250ms ease, box-shadow 250ms ease;
+}
+
+.hero-carousel__dot.is-active {
+  width: 36px;
+  background: var(--yellow-500);
+  box-shadow: 0 0 12px rgba(255, 163, 63, 0.55);
+}
+
+/* ─────────────────────────────────────────
+   RESPONSIVE — COCREATION CARD INTERNALS
+   Grid layout handled in 07-cocreation-grid.css.
+   ───────────────────────────────────────── */
+
+/* ── Container query — card adjusts when placed in a narrow container ──
+   Works in Chromium 105+, Safari 16+, Firefox 110+. Graceful fallback:
+   the @media rules below handle older engines. */
+.cocreation-card {
+  container-type: inline-size;
+  container-name: cocreation-card;
+}
+
+@container cocreation-card (max-width: 320px) {
+  .cocreation-card__body {
+    padding: var(--space-3);
+    gap: var(--space-2);
+  }
+
+  .cocreation-card__title {
+    font-size: var(--fs-h5);
+  }
+
+  .rf-fund__pct {
+    font-size: 22px;
+  }
+}
+
+/* ── Tablet (768–1023) — card internals ── */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .cocreation-card__body {
+    padding: var(--space-4);
+    gap: var(--space-3);
+  }
+
+  .cocreation-card__title {
+    font-size: var(--fs-h4);
+  }
+
+  .rf-fund__pct {
+    font-size: 26px;
+  }
+}
+
+/* ── Phone (<768) — card internals ── */
+@media (max-width: 767.98px) {
+  .cocreation-card__body {
+    padding: var(--space-4);
+    gap: var(--space-3);
+  }
+
+  .cocreation-card__title {
+    font-size: var(--fs-h4);
+    line-height: 1.35;
+  }
+
+  /* Funded % figure: slightly smaller but still prominent */
+  .rf-fund__pct {
+    font-size: 24px;
+  }
+
+  .rf-fund__pct small {
+    font-size: 14px;
+  }
+
+  .rf-fund__label {
+    font-size: var(--fs-caption);
+  }
+
+  /* Clamp description so cards keep a consistent height in the mobile rail
+     (prevents the tall-narrow-column problem). */
+  .cocreation-card__desc {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Meta row: allow wrap if amounts are long */
+  .cocreation-card__meta-row {
+    flex-wrap: wrap;
+    gap: var(--space-1);
+    font-size: var(--fs-caption);
+  }
+
+  /* Overlay variant: shallower ride-up on narrow */
+  .cocreation-grid--overlay .cocreation-card__body {
+    margin-top: -80px;
+    padding: 50px var(--space-4) var(--space-4);
+  }
+
+  /* Note footer: smaller font */
+  .cocreation-card__note {
+    font-size: var(--fs-body-sm);
+    line-height: var(--lh-body-sm);
+  }
+
+  /* Hover lift: disable on touch */
+  .cocreation-card:hover {
+    transform: none;
+  }
+}
+
+/* ── Small phone (<480) ── */
+@media (max-width: 480px) {
+  .cocreation-card__body {
+    padding: var(--space-3);
+  }
+
+  .cocreation-card__title {
+    font-size: var(--fs-h5);
+  }
+
+  .rf-fund__pct {
+    font-size: 20px;
+  }
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .cocreation-card,
+  .cocreation-card__bar-fill {
+    transition: none;
+  }
+}
+
+/* ── Hero carousel — phone. Full-bleed cover image (restored), wrapping
+   title, fitted height, touch-friendly (arrows hidden, swipe + dots). ── */
+@media (max-width: 767.98px) {
+  .hero-carousel { height: clamp(440px, 72vh, 560px); }
+  .hero-carousel__image { object-position: center 28%; }
+  .hero-carousel__content { padding-bottom: clamp(76px, 12vh, 120px); }
+  .hero-carousel__copy { gap: 14px; max-width: 100%; }
+  .hero-carousel__title {
+    white-space: normal;                 /* allow wrap — was nowrap (clipped the title) */
+    font-size: clamp(28px, 7.6vw, 40px);
+    line-height: 1.2;
+  }
+  .hero-carousel__sub { font-size: 15px; line-height: 1.6; }
+  .hero-carousel__ctas { gap: 10px; }
+  .hero-carousel__nav { display: none; }   /* swipe + dots on touch */
+  .hero-carousel__dots { bottom: 18px; }
+}
+@media (max-width: 480px) {
+  .hero-carousel__title { font-size: clamp(26px, 8vw, 34px); }
+  .hero-carousel__ctas .btn { flex: 1 1 auto; }   /* CTAs share the row evenly */
+}

@@ -1,0 +1,162 @@
+/* ─────────────────────────────────────────
+   GLASS TAB NAV  (.glass-tabs)
+   Pill-shaped segmented filter. Active item = yellow tint + yellow bold
+   text. Mirrors Figma "Nav_Glass" (315:9438).
+   ───────────────────────────────────────── */
+.glass-tabs {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  /* Vertical rhythm: the section's padding-top owns the space ABOVE the tabs;
+     the tabs own the gap BELOW so content never sticks to the bar on any page.
+     32px below, universally. The one place a sibling adds its own top margin
+     (.creator-sec) is de-stacked just below so it doesn't double up. */
+  margin: 0 0 var(--space-8);
+  padding: 4px;
+  background: var(--white-alpha-4);
+  border: 1px solid var(--neutral-700);
+  border-radius: var(--radius-pill);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+/* De-stack: .creator-sec sets its own margin-top for non-tab contexts; when it
+   directly follows the tabs, the tabs already own the gap — zero its top so the
+   two don't add up (keeps the creator/leaderboard tabs→title gap at 32px). */
+.glass-tabs + .creator-sec { margin-top: 0; }
+.glass-tabs::-webkit-scrollbar { display: none; }
+
+.glass-tabs__item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* Never shrink — without this, a width:100% scroll container makes flex
+     compress the items into each other instead of overflowing + scrolling
+     (the cause of the overlapping platform chips on mobile). */
+  flex: 0 0 auto;
+  height: 40px;
+  padding: 0 26px;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-cjk-display);
+  font-size: 16px;
+  font-weight: var(--fw-regular);
+  line-height: 24px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+
+.glass-tabs__item:hover { color: var(--text-primary); }
+
+/* Leading icon — mask uses currentColor so it tracks the tab text colour
+   (灰 inactive / 白 hover / 黃 active). Only rendered where the span exists
+   (片庫 放映廳/資料庫 toggle). */
+.glass-tabs__icon {
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+  flex: 0 0 auto;
+  background-color: currentColor;
+  -webkit-mask: var(--icon) center / contain no-repeat;
+          mask: var(--icon) center / contain no-repeat;
+}
+
+/* Active tab borrows the .btn--yellow-ghost look: glass gradient + glowing
+   yellow inset border + yellow bold text. */
+.glass-tabs__item--active,
+.glass-tabs__item--active:hover {
+  color: var(--yellow-500);
+  font-weight: var(--fw-bold);
+  background: linear-gradient(0deg,
+    rgba(255, 163, 63, 0) 0%,
+    rgba(255, 163, 63, 0.18) 2.45%,
+    rgba(255, 163, 63, 0) 126.14%);
+  box-shadow:
+    rgba(255, 163, 63, 0.9) 1.1px 2.2px 0.5px -1.8px inset,
+    rgba(255, 163, 63, 0.9) -1px -2.2px 0.5px -1.8px inset,
+    rgba(0, 0, 0, 0.10) 2px 3px 2px 0 inset;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+}
+
+/* Ztor platform chip (first chip in the platform filter): render the brand
+   mark in the light wordmark grey, not its orange source PNG, to match the
+   main logo. brightness(0)+invert flattens the PNG to one flat grey regardless
+   of its original colours. Other platforms keep their brand colours. */
+@media (max-width: 767.98px) {
+  /* Ztor platform chip: greyed to match the wordmark — MOBILE ONLY. */
+  .library-platforms .glass-tabs__item:first-child .glass-tabs__logo,
+  .ranking-platforms .glass-tabs__item:first-child .glass-tabs__logo {
+    filter: grayscale(1) brightness(1.15);   /* desaturate but keep the Z visible */
+  }
+}
+
+/* Coming-soon cocreation card: no progress bar, just an anticipatory
+   start-date line (yellow), pinned to the card bottom. */
+.cocreation-card__upcoming {
+  margin-top: auto;
+  font-family: var(--font-cjk-text);
+  font-size: 13px;
+  line-height: 1.6;
+  font-weight: var(--fw-medium);
+  color: var(--yellow-500);
+}
+
+/* ─────────────────────────────────────────
+   GLASS-TABS — RESPONSIVE
+   Tabs become a full-width horizontal scroll strip on phone.
+   Never wraps; never overflows the viewport.
+   ───────────────────────────────────────── */
+
+/* Tablet: allow tab row to fill the available column width. */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .glass-tabs {
+    max-width: 100%;
+  }
+}
+
+/* Phone ≤767.98px: full-width, scrollable, scroll-snap, hidden scrollbar.
+   The .glass-tabs base already sets overflow-x:auto and scrollbar-width:none
+   — we only need to extend it for phone layout specifics. */
+@media (max-width: 767.98px) {
+  .glass-tabs {
+    /* Fill the container rather than hug content width. */
+    width: 100%;
+    /* Keep the bottom gap on phone (24px, a touch tighter) so content doesn't
+       stick to the bar; horizontal margin stays 0 (full-width tabs). */
+    margin: 0 0 var(--space-6);
+    /* Horizontal scroll — mandatory so each active tab snaps into view. */
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    /* Prevent rubber-band bleed on iOS. */
+    overscroll-behavior-x: contain;
+  }
+
+  .glass-tabs__item {
+    /* Snap each item when the strip is scrolled. */
+    scroll-snap-align: start;
+    /* Ensure ≥44px touch target height. */
+    height: 44px;
+    /* Slightly tighter padding so more tabs fit before scrolling. */
+    padding: 0 var(--space-5);
+    font-size: var(--fs-body-sm);
+  }
+}
+
+/* Small phone ≤480px: compress tab padding further; item font matches caption. */
+@media (max-width: 480px) {
+  .glass-tabs__item {
+    padding: 0 var(--space-4);
+    font-size: var(--fs-caption);
+    height: 44px; /* maintain touch target */
+  }
+
+  .glass-tabs__icon {
+    width: 15px;
+    height: 15px;
+    margin-right: var(--space-1);
+  }
+}

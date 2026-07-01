@@ -1,0 +1,423 @@
+/* ─────────────────────────────────────────
+   NEWS — 第五章·新聞與公告
+   Magazine layout: 1 hero card (image-led, larger) on the left + 3 list
+   cards (horizontal compact, image-left/content-right) stacked on the
+   right. No social stats — news is editorial chrome, not user posts.
+   Each card carries:  tag (yellow) → title → optional excerpt → meta
+   (source · date).
+   ───────────────────────────────────────── */
+
+.news-grid {
+  display: grid;
+  /* 左頭條略窄、右側清單較寬 → 頭條維持比例縮小、右欄 fill，兩欄等高
+     minmax(0, …) lets the fr columns shrink below their content's
+     intrinsic width — without it the list cards force the page to
+     overflow horizontally on narrow windows. */
+  grid-template-columns: minmax(0, 4fr) minmax(0, 5fr);
+  gap: var(--space-6);
+}
+
+/* Below ~1080 the two columns can't both breathe — stack them. */
+@media (max-width: 1080px) {
+  .news-grid { grid-template-columns: 1fr; }
+}
+
+.news-card {
+  display: flex;
+  text-decoration: none;
+  color: inherit;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: transform 250ms ease, border-color 250ms ease;
+}
+
+.news-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-default);
+}
+
+/* Hero variant — the photo owns the whole card; the body is a glass
+   panel that dissolves upward into the image (progressive blur:
+   backdrop-filter faded by a gradient mask — masking runs after the
+   filter, so the blur itself melts away rather than ending on a seam.
+   Refs: joshwcomeau.com/css/backdrop-filter, kennethnym.com progressive
+   blur, devslovecoffee Apple progressive blur). */
+.news-card--hero {
+  flex-direction: column;
+  position: relative;
+  /* full row height: the right column's three list cards set the row,
+     the hero matches them edge to edge (aspect-ratio here would defeat
+     the grid stretch and leave a hole under the card) */
+  height: 100%;
+}
+@media (max-width: 1080px) {
+  /* stacked: no sibling column to match — the photo's ratio drives */
+  .news-card--hero { height: auto; aspect-ratio: 1920 / 1340; }
+}
+
+.news-card--hero .news-card__cover {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+}
+.news-card--hero .news-card__cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.news-card--hero .news-card__body {
+  position: absolute;
+  inset: auto 0 0 0;
+  isolation: isolate;   /* keeps the glass pseudos above the cover, below the text */
+  padding: var(--space-16) 26px 26px;  /* tall top padding IS the dissolve zone */
+  gap: var(--space-3);
+}
+/* The glass: blur strongest at the foot, gone by the panel's top edge. */
+.news-card--hero .news-card__body::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  backdrop-filter: blur(22px) saturate(1.35);
+  -webkit-backdrop-filter: blur(22px) saturate(1.35);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.5) 30%, black 62%);
+          mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.5) 30%, black 62%);
+  pointer-events: none;
+}
+/* The tint: quiet ink ramp so the title reads on any photograph. */
+.news-card--hero .news-card__body::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(to bottom,
+    transparent 0%,
+    rgba(10, 10, 10, 0.30) 34%,
+    rgba(10, 10, 10, 0.62) 100%);
+  pointer-events: none;
+}
+/* No backdrop-filter (old engines): the tint alone carries legibility. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .news-card--hero .news-card__body::after {
+    background: linear-gradient(to bottom,
+      transparent 0%,
+      rgba(10, 10, 10, 0.62) 30%,
+      rgba(10, 10, 10, 0.88) 100%);
+  }
+}
+
+.news-card--hero .news-card__title {
+  font-size: 24px;
+  line-height: 1.35;
+}
+
+.news-card--hero .news-card__excerpt {
+  -webkit-line-clamp: 3;
+}
+
+/* List variant — divider-only style, no card chrome. Image left
+   (≈ 40% width), content right. Cards stack inside .news-list with
+   subtle horizontal dividers between them. */
+.news-card--list {
+  flex-direction: row;
+  align-items: stretch;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  overflow: visible;
+  gap: 18px;
+  padding: var(--space-5) 0;
+}
+
+.news-card--list:hover {
+  transform: none;
+  border-color: transparent;
+}
+
+.news-card--list .news-card__cover {
+  flex: 0 0 40%;
+  aspect-ratio: 1920 / 1024;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.news-card--list .news-card__body {
+  flex: 1;
+  padding: var(--space-1) 0;
+  gap: 10px;
+  justify-content: center;
+}
+
+.news-card--list .news-card__title {
+  font-size: 17px;
+  line-height: 1.4;
+}
+
+/* One-line excerpt under the title for editorial breathing room. */
+.news-card--list .news-card__excerpt {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  margin: 0;
+}
+
+/* Cover (shared) */
+.news-card__cover {
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-tertiary);
+}
+
+.news-card__cover img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 500ms ease;
+}
+
+.news-card:hover .news-card__cover img { transform: scale(1.03); }
+
+/* Body (shared) */
+.news-card__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.news-card__tag {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: var(--space-2);
+  padding: 6px var(--space-3);
+  border: 0.8px solid rgba(255, 163, 63, 0.3);
+  border-radius: var(--radius-pill);
+  background:
+    linear-gradient(90deg, rgba(255, 163, 63, 0.12), rgba(255, 163, 63, 0.12)),
+    rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  color: var(--yellow-500);
+  font-family: var(--font-cjk-text);
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: var(--fw-medium);
+}
+
+.news-card__title {
+  font-family: var(--font-cjk-display);
+  font-weight: var(--fw-bold);
+  color: var(--text-primary);
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: color 200ms ease;
+}
+
+/* Hover affordance — title turns brand yellow on either hero or list card. */
+.news-card:hover .news-card__title {
+  color: var(--yellow-500);
+}
+
+.news-card__excerpt {
+  font-family: var(--font-cjk-text);
+  /* Figma spec: Body/Small/zh · Regular · 14/23 · Text/Tertiary */
+  font-weight: var(--fw-regular);
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body-sm);
+  color: var(--text-tertiary);
+  margin: 0;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.news-card__meta {
+  margin-top: auto;
+  padding-top: var(--space-3);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-cjk-text);
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.news-card__meta-source { color: var(--text-secondary); font-weight: var(--fw-medium); }
+
+/* Right column wrapper — stacks the 3 list cards with thin dividers in
+   between (no card chrome on individual cards). */
+.news-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.news-list > .news-card--list:not(:last-child) {
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.news-list > .news-card--list:first-child  { padding-top: 0; }
+.news-list > .news-card--list:last-child   { padding-bottom: 0; }
+
+/* Card variant — the rail beside the hero shows each item as a standalone
+   surface card (bg + hairline border + radius) instead of hairline-divided
+   rows. Same component, different container treatment. */
+.news-list--cards { gap: 14px; }
+.news-list--cards > .news-card--list {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;        /* clip cover to the card's rounded corners */
+  padding: 0;              /* cover hugs the edges; padding lives on the body */
+  gap: var(--space-4);
+}
+.news-list--cards > .news-card--list:not(:last-child) { border-bottom: none; }
+/* Cover hugs the card top/bottom/left edge — no gap above/below the image. */
+.news-list--cards > .news-card--list .news-card__cover {
+  align-self: stretch;
+  aspect-ratio: auto;
+  border-radius: 0;
+}
+/* Breathing room only on the text side. */
+.news-list--cards > .news-card--list .news-card__body {
+  padding: 14px var(--space-4) 14px 0;
+}
+
+/* ─────────────────────────────────────────
+   RESPONSIVE — NEWS GRID + CARDS
+   NOTE: @media (max-width: 1080px) for .news-grid and .news-card--hero
+   already exists above — those are kept. Rules below add/repair phone
+   and tablet behaviour only.
+   ───────────────────────────────────────── */
+
+/* ── Tablet (768–1023) ── */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  /* Hero stacks above list — already handled by 1080 breakpoint, but
+     refine the hero aspect-ratio for the mid range */
+  .news-card--hero {
+    aspect-ratio: 16 / 9;
+  }
+
+  /* List card thumbnail: slightly wider on tablet for better balance */
+  .news-card--list .news-card__cover {
+    flex: 0 0 44%;
+  }
+
+  .news-card--list .news-card__title {
+    font-size: var(--fs-h5);
+  }
+}
+
+/* ── Phone (<768) ── */
+@media (max-width: 767.98px) {
+  /* Hero card: portrait-friendly ratio on phone */
+  .news-card--hero {
+    aspect-ratio: 4 / 3;
+  }
+
+  .news-card--hero .news-card__body {
+    padding: var(--space-8) var(--space-4) var(--space-4);
+    gap: var(--space-2);
+  }
+
+  .news-card--hero .news-card__title {
+    font-size: var(--fs-h5);
+    line-height: 1.4;
+  }
+
+  .news-card--hero .news-card__excerpt {
+    -webkit-line-clamp: 2;
+  }
+
+  /* List card: stack vertically (thumbnail on top, text below) */
+  .news-card--list {
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-4) 0;
+  }
+
+  .news-card--list .news-card__cover {
+    flex: none;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius-md);
+  }
+
+  .news-card--list .news-card__body {
+    flex: 1;
+    padding: 0;
+    gap: var(--space-2);
+  }
+
+  .news-card--list .news-card__title {
+    font-size: var(--fs-h5);
+    line-height: 1.4;
+    -webkit-line-clamp: 3;
+  }
+
+  /* Restore excerpt on phone — more context helps scanability */
+  .news-card--list .news-card__excerpt {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .news-card__meta {
+    padding-top: var(--space-2);
+  }
+
+  /* Cards variant: full bleed cover on phone */
+  .news-list--cards > .news-card--list {
+    flex-direction: column;
+    padding: 0;
+  }
+
+  .news-list--cards > .news-card--list .news-card__cover {
+    flex: none;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    align-self: auto;
+    border-radius: 0;
+  }
+
+  .news-list--cards > .news-card--list .news-card__body {
+    padding: var(--space-4);
+  }
+
+  /* Hover lift: disable on touch (avoids stuck states) */
+  .news-card:hover {
+    transform: none;
+  }
+}
+
+/* ── Small phone (<480) ── */
+@media (max-width: 480px) {
+  .news-card--hero {
+    aspect-ratio: 1 / 1;
+  }
+
+  .news-card--hero .news-card__title {
+    font-size: var(--fs-body);
+  }
+
+  .news-card__tag {
+    font-size: 11px;
+    padding: var(--space-1) var(--space-2);
+  }
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .news-card,
+  .news-card__cover img {
+    transition: none;
+  }
+}

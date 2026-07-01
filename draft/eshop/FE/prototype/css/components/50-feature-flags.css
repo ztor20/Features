@@ -1,0 +1,11 @@
+/* ════════════════════════════════════════════════════════════════
+   50-feature-flags.css — temporary, visual-only feature toggles.
+   Loaded LAST so these win the cascade. Delete a block to re-enable a
+   feature; the underlying pages/code are always retained.
+   ════════════════════════════════════════════════════════════════ */
+
+/* NEWS — paused 2026-06-26 (L). Hide every entry point site-wide (side rail,
+   header nav, mobile drawer, footer, cards). news.html + assets/news-* are
+   kept intact. Re-enable: delete this block and rebuild the CSS. */
+a[href="news.html"],
+a[href$="/news.html"] { display: none !important; }

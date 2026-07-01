@@ -1,0 +1,56 @@
+/* ════════════════════════════════════════════════════════════════
+   shop-buybar.css — mobile sticky buy-bar for the PDP. Phone only.
+   Revealed (IntersectionObserver) once the in-page add button scrolls
+   out of view; sits ABOVE the floating bottom-nav. Glass material.
+   ════════════════════════════════════════════════════════════════ */
+.shop-buybar { display: none; }
+
+@media (max-width: 767.98px) {
+  .shop-buybar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    position: fixed;
+    left: 0;
+    right: 0;
+    /* sit above the floating bottom-nav pill (≈68px tall + 12px gap) */
+    bottom: calc(78px + env(safe-area-inset-bottom, 0px));
+    z-index: var(--z-fab);
+    padding: var(--space-3) var(--space-4);
+    background: var(--glass-fill);
+    -webkit-backdrop-filter: var(--glass-backdrop);
+            backdrop-filter: var(--glass-backdrop);
+    border-top: var(--glass-border);
+    transform: translateY(120%);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 280ms var(--ease-out), opacity 200ms var(--ease-out);
+  }
+  .shop-buybar.is-shown { transform: translateY(0); opacity: 1; pointer-events: auto; }
+
+  .shop-buybar__info { display: flex; flex-direction: column; min-width: 0; flex: 1 1 auto; }
+  .shop-buybar__name {
+    font-family: var(--font-cjk-text);
+    font-size: var(--fs-caption);
+    color: var(--text-tertiary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .shop-buybar__price {
+    font-family: var(--font-latin);
+    font-size: var(--fs-body);
+    font-weight: var(--fw-bold);
+    color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
+  }
+  .shop-buybar__add { flex: 0 0 auto; min-height: 44px; }
+
+  /* give the page room so the related rail never hides behind the bar */
+  .pdp { padding-bottom: calc(var(--space-section) + 64px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shop-buybar { transition: opacity 180ms ease; transform: translateY(0); }
+  .shop-buybar:not(.is-shown) { transform: translateY(120%); }
+}

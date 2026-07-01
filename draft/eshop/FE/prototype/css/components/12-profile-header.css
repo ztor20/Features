@@ -1,0 +1,213 @@
+/* ─────────────────────────────────────────
+   個人頁 (profile.html) — header(info+bio) + tabs + 貼文流
+   貼文流為「文字左 + 媒體右」版型;action 重用 .post-card__stat/__bookmark/__more.
+   ───────────────────────────────────────── */
+/* 內文欄位 960（置中）：container = 960 + 左右各 48 內距 = 1056。 */
+.section--profile .container { max-width: 1056px; }
+.profile-head {
+  display: flex;
+  gap: var(--space-8);
+  align-items: flex-start;
+  padding: var(--space-2) 0 36px;
+}
+.profile-head__avatar {
+  flex: 0 0 auto;
+  width: 132px;
+  height: 132px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--bg-tertiary);
+  display: grid;
+  place-items: center;
+}
+.profile-head__avatar img { width: 54%; height: 54%; opacity: 0.5; }
+.profile-head__info { flex: 1; min-width: 0; padding-top: 6px; }
+.profile-head__title-row { display: flex; align-items: baseline; gap: var(--space-3); }
+.profile-head__name {
+  font-family: var(--font-cjk-display);
+  font-weight: var(--fw-bold);
+  font-size: 28px;
+  line-height: 1.25;
+  color: var(--text-primary);
+  margin: 0;
+}
+.profile-head__role {
+  font-family: var(--font-cjk-text);
+  font-size: 13px;
+  font-weight: var(--fw-medium);
+  color: var(--text-tertiary);
+}
+.profile-head__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-6);
+  margin-top: 14px;
+  font-family: var(--font-cjk-text);
+  font-size: 14px;
+  color: var(--text-tertiary);
+}
+.profile-stat strong {
+  color: var(--text-primary);
+  font-weight: var(--fw-bold);
+  margin-right: var(--space-1);
+}
+.profile-head__online {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: var(--space-3) 0 0;
+  font-family: var(--font-cjk-text);
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+.profile-head__online-icon {
+  width: 14px;
+  height: 14px;
+  background-color: var(--text-tertiary);
+  -webkit-mask: url('assets/icons/history.svg') center / contain no-repeat;
+          mask: url('assets/icons/history.svg') center / contain no-repeat;
+}
+.profile-head__bio {
+  max-width: 780px;
+  margin: var(--space-4) 0 0;
+  font-family: var(--font-cjk-text);
+  font-weight: var(--fw-regular);
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+/* tabs */
+.profile-tabs {
+  display: flex;
+  gap: var(--space-1);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.profile-tab {
+  position: relative;
+  padding: 14px var(--space-5);
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: var(--font-cjk-text);
+  font-size: 15px;
+  font-weight: var(--fw-medium);
+  color: var(--text-tertiary);
+  transition: color 200ms ease;
+}
+.profile-tab:hover { color: var(--text-secondary); }
+.profile-tab--active { color: var(--yellow-500); }
+.profile-tab--active::after {
+  content: "";
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: -1px;
+  height: 2px;
+  background: var(--yellow-500);
+}
+
+/* 貼文流 — 文字左 + 媒體右 */
+.profile-feed { display: flex; flex-direction: column; }
+.profile-post {
+  display: flex;
+  gap: 28px;
+  align-items: flex-start;
+  padding: 28px 0;
+}
+.profile-post + .profile-post { border-top: 1px solid var(--border-subtle); }
+.profile-post__body { flex: 1; min-width: 0; }
+.profile-post__head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+.profile-post__avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--bg-tertiary);
+}
+.profile-post__author {
+  font-family: var(--font-cjk-text);
+  font-size: 14px;
+  font-weight: var(--fw-medium);
+  color: var(--text-primary);
+}
+.profile-post__date {
+  font-family: var(--font-cjk-text);
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+.profile-post__title {
+  font-family: var(--font-cjk-display);
+  font-weight: var(--fw-bold);
+  font-size: 20px;
+  line-height: 1.4;
+  color: var(--text-primary);
+  margin: 0 0 10px;
+}
+.profile-post__excerpt {
+  margin: 0 0 var(--space-4);
+  font-family: var(--font-cjk-text);
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.profile-post__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+}
+.profile-post__translate {
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: var(--font-cjk-text);
+  font-size: 13px;
+  color: var(--text-tertiary);
+  transition: color 150ms ease;
+}
+.profile-post__translate:hover { color: var(--text-secondary); }
+.profile-post__actions-spacer { flex: 1; }
+.profile-post__media {
+  flex: 0 0 auto;
+  position: relative;
+  width: 208px;
+  aspect-ratio: 16 / 10;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--bg-tertiary);
+}
+.profile-post__media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* Play badge for video posts (pure CSS, no icon dependency). */
+.profile-post__media--video::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+}
+.profile-post__media--video::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-40%, -50%);
+  width: 0;
+  height: 0;
+  border-left: 13px solid #fff;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+}

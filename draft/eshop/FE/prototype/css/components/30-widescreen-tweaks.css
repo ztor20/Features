@@ -1,0 +1,36 @@
+/* ─────────────────────────────────────────
+   WIDE-SCREEN TWEAKS  ─  single breakpoint @ 1680px
+   Above 1680px the default 1440-capped layout leaves big side gutters, so
+   per-page we either grow the container (共創 / zorigin — more columns) or go
+   full-bleed (片庫 — Netflix/YouTube style). News / events keep the 1440 cap
+   (container--wide untouched there) per request. Placed at file end so these
+   overrides win the cascade over the base grid definitions above.
+   ───────────────────────────────────────── */
+@media (min-width: 1680px) {
+
+  /* 共創 + zorigin: grow the container well past 1440 so the extra column keeps
+     the cards near their 1440 size (≈432px at 3-col → ≈418px at 4-col here),
+     not shrunken. Contained, not full-bleed — caps at 1840 then centres. */
+  .container--wide-grow { max-width: 1840px; }
+
+  /* Scoped to .container--wide-grow so ONLY the cocreate / zorigin pages widen.
+     The 焦點 home previews reuse .cocreation-grid in a normal container and must
+     stay 3-up (otherwise 3 preview cards leave an empty 4th column). */
+  /* 影視共創頁: 共創卡 3 → 4 */
+  .container--wide-grow .cocreation-grid { grid-template-columns: repeat(4, 1fr); }
+
+  /* AI 原力創作計畫: 活動卡 3 → 4，精選作品 5 → 6 */
+  .container--wide-grow .aic-grid   { grid-template-columns: repeat(4, 1fr); }
+  .container--wide-grow .works-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  /* The 4th 徵集卡 only exists to fill the 4-col row here — hidden below 1680
+     so the 3-col layout doesn't leave an orphan on a second row. */
+  .container--wide-grow .aic-card--xl-only { display: block; }
+
+  /* 片庫: full-bleed Netflix/YouTube feel — drop the 1440 cap, keep the 48px
+     side padding (from .container). At this width 6 posters are too big, so the
+     rails go to 8 across (ranked Top-N shelf to 6). Scoped to .section--library
+     so the 焦點 home rail (also .films-rail, but 1440-capped) stays untouched. */
+  .section--library .container--wide { max-width: none; }
+  .section--library .films-rail__track { --rail-cols: 8; }
+  .section--library .films-rail__track--ranked { --rail-cols: 6; }
+}

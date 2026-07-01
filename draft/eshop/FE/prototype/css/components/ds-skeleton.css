@@ -1,0 +1,53 @@
+/* ════════════════════════════════════════════════════════════════════════
+   SKELETON LOADER  ·  .ds-skeleton (+ shape/width modifiers)   [COMPONENT]
+   ════════════════════════════════════════════════════════════════════════
+   The ONE skeleton primitive. Replaces 4 fragmented, page-keyed copies
+   (.rf-skel / .m-skeleton / refine-engagement / refine-library shimmers).
+   Pure-CSS shimmer (animated background-position, off the main thread — NOT
+   GSAP: a loading state is exactly when the main thread is busy, so JS-driven
+   shimmer drops frames). background-attachment:fixed → every skeleton samples
+   one shared light field and shimmers as a single surface.
+
+   USE: give any placeholder `.ds-skeleton` + a shape + (optional) width.
+   The skeleton DOM must MIRROR the real component's box → zero layout shift
+   on swap. Only data-driven components get one; static (header/footer/nav/
+   buttons/hero) never do — see COMPONENTS.md "skeleton cut".
+
+   First component extracted into the per-component structure (2026-06-16).
+   ════════════════════════════════════════════════════════════════════════ */
+.ds-skeleton {
+  background-color: var(--skeleton-surface);       /* sits back on the dark canvas */
+  background-image: linear-gradient(100deg,
+    transparent 40%, rgba(255, 255, 255, 0.05) 50%, transparent 60%);  /* white sheen, never brand yellow */
+  background-repeat: no-repeat;
+  background-size: 200% 100%;
+  background-attachment: fixed;                    /* shared field → all shimmer as one */
+  animation: ds-shimmer 1.4s linear infinite;      /* linear = constant motion; slow = calm */
+  border-radius: 6px;
+}
+@keyframes ds-shimmer {                             /* background-position only — no layout/paint */
+  from { background-position: 150% 0; }
+  to   { background-position: -150% 0; }
+}
+/* shapes — match the real component's box */
+.ds-skeleton--media   { width: 100%; aspect-ratio: 16 / 10; border-radius: var(--radius-md, 10px); }
+.ds-skeleton--poster  { width: 100%; aspect-ratio: 2 / 3;  border-radius: var(--radius-md, 10px); }
+.ds-skeleton--line    { height: 0.82em; border-radius: 4px; }
+.ds-skeleton--circle  { aspect-ratio: 1; width: 40px; border-radius: 50%; }
+/* line widths */
+.ds-skeleton--title   { width: 84%; }
+.ds-skeleton--cat     { width: 38%; }
+.ds-skeleton--price   { width: 30%; }
+.ds-skeleton--short   { width: 60%; }
+.ds-skeleton--full    { width: 100%; }
+/* card-shaped wrappers (mirror a card column / a row) */
+.ds-skeleton-card { display: flex; flex-direction: column; gap: 10px; }
+.ds-skeleton-row  { display: flex; align-items: center; gap: var(--space-3); }
+.ds-skeleton-row > .ds-skeleton--line { flex: 1; }
+/* crossfade on swap (renderer sets [data-exiting] just before replacing) */
+.ds-skeleton[data-exiting] { opacity: 0; transition: opacity 150ms cubic-bezier(0.23, 1, 0.32, 1); }
+/* reduced motion → gentle pulse (a frozen grey block reads as broken) */
+@media (prefers-reduced-motion: reduce) {
+  .ds-skeleton { animation: ds-skeleton-pulse 2s ease-in-out infinite; background-image: none; }
+  @keyframes ds-skeleton-pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+}

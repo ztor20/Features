@@ -1,0 +1,253 @@
+/* ─────────────────────────────────────────
+   SHOP FILTER SHEET — mobile-only nav restructure for the shop umbrella.
+
+   On phones (≤767.98px): the shop-TYPE nav (商店/爆米花商店/…) shares one
+   PINNED row with a filter icon (nav left, scrolls; icon pinned right). The
+   per-page category filter (the old 2nd nav, .shop-toolbar) is hidden inline
+   and its options move into a glass BOTTOM SHEET. On 爆米花商店, 兌換紀錄 is
+   lifted above the pinned row (non-sticky). Active filters show as chips.
+
+   DESKTOP IS UNTOUCHED: every layout rule is inside @media (max-width: 767.98px),
+   and the always-on pieces (trigger icon, sheet, scrim, chips, prerow) are
+   display:none above the phone breakpoint. The JS-added .shop-typenav-row class
+   has no desktop rules. Loaded LAST in main.css so it wins over 45-sticky-tabs.
+   Reuses glass + motion tokens — no new magic numbers.
+   ───────────────────────────────────────── */
+
+/* Injected by shop-filter-sheet.js — hidden until the phone breakpoint. */
+.shop-filter-trigger { display: none; }
+.shop-active-filters { display: none; }
+
+/* The glass bottom sheet + scrim are a phone-only control. */
+@media (min-width: 768px) {
+  .shop-sheet, .shop-sheet-scrim { display: none !important; }
+}
+
+@media (max-width: 767.98px) {
+
+  /* ── Pinned row: shop-type nav (left, scrolls) + filter icon (right) ── */
+  /* Beats 45-sticky-tabs' `.tabstick.tabstick-host{justify-content:center}`
+     by equal specificity + later source order (this file imports last). */
+  .tabstick.shop-typenav-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: var(--space-2);
+    justify-content: flex-start;
+  }
+  .tabstick.shop-typenav-row > .glass-tabs--push {
+    flex: 1 1 auto;                  /* FILL the row up to the filter icon (no dead gap) */
+    min-width: 0;
+    margin-bottom: 0;
+    justify-content: space-between;  /* spread the 5 items across the full pill width */
+  }
+
+  .shop-filter-trigger {
+    flex: 0 0 auto;
+    margin-left: auto;       /* pinned hard right */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-pill);
+    border: var(--glass-border);
+    background: var(--glass-fill);
+    -webkit-backdrop-filter: var(--glass-backdrop);
+            backdrop-filter: var(--glass-backdrop);
+    box-shadow: var(--glass-shadow);
+    color: var(--text-primary);
+    position: relative;
+  }
+  .shop-filter-trigger svg { width: 20px; height: 20px; }
+  .shop-filter-trigger__count {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    min-width: 17px;
+    height: 17px;
+    padding: 0 4px;
+    border-radius: var(--radius-pill);
+    background: var(--yellow-500);
+    color: var(--yellow-ink);
+    font-size: 10px;
+    line-height: 17px;
+    font-weight: var(--fw-bold);
+    text-align: center;
+    display: none;
+  }
+  .shop-filter-trigger.has-active .shop-filter-trigger__count { display: block; }
+
+  /* ── Main nav fit: condense the shop-type items so all 5 fit IN-PILL without
+     horizontal scroll. Scoped to .shop-typenav-row so other glass-tab navs
+     (lifecycle / platform / creator tabs) keep their roomier spacing. The pill
+     keeps overflow-x:auto (from .glass-tabs) as the LAST-RESORT fallback: it
+     only scrolls if a device is too narrow to fit even condensed. ── */
+  .shop-typenav-row .glass-tabs__item {
+    padding-inline: var(--space-2);   /* comfortable interior; space-between adds the breathing room */
+    font-size: var(--fs-caption);
+  }
+
+  /* ── 2nd nav (category toolbar) — moved into the sheet, hidden inline ── */
+  .shop-toolbar { display: none; }
+
+  /* ── 兌換紀錄 (popcorn) — on the TITLE row: title left, link right-aligned.
+     JS moves the link into .shop-head and adds .shop-head--with-action; the
+     desc drops to its own line below. (Supersedes the prerow placement.) ── */
+  .shop-head--with-action {
+    display: flex;
+    flex-direction: row;          /* base .shop-head is column — title+link must be a row */
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: var(--space-3);
+  }
+  .shop-head--with-action .popcorn-history-link { margin-left: auto; }
+  .shop-head--with-action .shop-head__desc { flex: 1 1 100%; }
+
+  /* ── Active-filter chips (below the pinned row, above the grid) ── */
+  .shop-active-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: var(--space-4) 0 var(--space-2);
+  }
+  .shop-active-filters:empty { display: none; }
+  .shop-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 8px 6px 12px;
+    border-radius: var(--radius-pill);
+    background: var(--white-alpha-8);
+    border: 0.8px solid var(--border-default);
+    color: var(--text-primary);
+    font-size: var(--fs-body-sm);
+    line-height: 1;
+  }
+  .shop-chip__x {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border: none;
+    border-radius: 50%;
+    background: var(--white-alpha-8);
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .shop-chip__x:hover { color: var(--text-primary); background: var(--white-alpha-16); }
+}
+
+/* ── The TOP sheet + scrim (rendered into <body> by JS). Full-width, slides
+   DOWN from under the header; capped so it never reaches the fixed bottom nav.
+   z-index sits BELOW the header (which is 100) so the panel emerges from under
+   the header instead of sliding over it; the header stays crisp above the dim. */
+.shop-sheet-scrim {
+  position: fixed;
+  inset: var(--header-height) 0 0 0;   /* dim the content BELOW the header */
+  z-index: var(--z-sheet-scrim);
+  background: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-nav-show) var(--ease-out);
+}
+.shop-sheet-scrim.is-open { opacity: 1; pointer-events: auto; }
+
+.shop-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: var(--header-height);           /* clears the header */
+  z-index: var(--z-sheet);             /* below the header (100) → slides from under it */
+  /* never reach the bottom-nav zone */
+  max-height: calc(100dvh - var(--header-height) - var(--space-24));
+  display: flex;
+  flex-direction: column;
+  border-radius: 0 0 var(--radius-2xl) var(--radius-2xl);
+  background: var(--glass-fill);
+  -webkit-backdrop-filter: var(--glass-backdrop);
+          backdrop-filter: var(--glass-backdrop);
+  border-bottom: var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  transform: translateY(-110%);        /* parked above the header, slides down to 0 */
+  /* visibility:hidden guarantees the sheet is FULLY gone when closed — translate
+     alone leaves ~0.1×height peeking below the viewport top (only masked while
+     the header is shown; it reappears once the header hides on scroll). The 0s
+     visibility delay = the slide duration on close (stays visible through the
+     slide-out), instant on open. */
+  visibility: hidden;
+  transition: transform var(--dur-nav-morph) var(--ease-out),
+              visibility 0s linear var(--dur-nav-morph);
+  padding: var(--space-4) var(--space-5);
+}
+.shop-sheet.is-open {
+  transform: translateY(0);
+  visibility: visible;
+  transition: transform var(--dur-nav-morph) var(--ease-out),
+              visibility 0s;
+}
+
+.shop-sheet__grip {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--white-alpha-16);
+  margin: var(--space-3) auto 0;       /* handle at the BOTTOM edge — swipe up to close */
+  flex: 0 0 auto;
+}
+.shop-sheet__title {
+  font-size: var(--fs-h5);
+  font-weight: var(--fw-bold);
+  color: var(--text-primary);
+  margin: 0 0 var(--space-4);
+  flex: 0 0 auto;
+}
+.shop-sheet__options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  overflow-y: auto;
+  margin: 0;
+  padding: 2px;
+}
+.shop-sheet__opt {
+  padding: 9px 15px;
+  border-radius: var(--radius-pill);
+  border: 0.8px solid var(--border-default);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-cjk-text);
+  font-size: var(--fs-body-sm);
+  cursor: pointer;
+  transition: background var(--dur-nav-show) var(--ease-out),
+              border-color var(--dur-nav-show) var(--ease-out),
+              color var(--dur-nav-show) var(--ease-out);
+}
+.shop-sheet__opt[aria-pressed="true"] {
+  background: var(--white-alpha-16);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+.shop-sheet__apply {
+  flex: 0 0 auto;
+  margin-top: var(--space-4);
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--yellow-500);
+  color: var(--yellow-ink);
+  font-family: var(--font-cjk-display);
+  font-size: var(--fs-h5);
+  font-weight: var(--fw-bold);
+  cursor: pointer;
+}
+
+/* Reduced motion: the sheet appears without the slide. */
+@media (prefers-reduced-motion: reduce) {
+  .shop-sheet,
+  .shop-sheet-scrim { transition: none; }
+}

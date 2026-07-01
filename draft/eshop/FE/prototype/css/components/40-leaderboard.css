@@ -1,0 +1,410 @@
+/* ─────────────────────────────────────────
+   LEADERBOARD — podium → table → sticky my-rank
+   ───────────────────────────────────────── */
+.lb-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-top: var(--space-2);
+}
+.lb-head__title {
+  font-family: var(--font-cjk-display);
+  font-size: 20px;
+  font-weight: var(--fw-bold);
+}
+.lb-head__season {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+.lb-back {
+  font-size: 13px;
+  color: var(--yellow-500);
+  text-decoration: none;
+}
+.lb-back:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+/* Tier legend — four quiet columns over a hairline */
+.lb-legend {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-8);   /* 32px — on scale (was off-scale 28px) */
+  padding-top: 18px;
+  border-top: 1px solid var(--border-subtle);
+}
+.lb-legend__tier { display: flex; flex-direction: column; gap: 5px; }
+.lb-legend__note { font-size: 12px; color: var(--text-tertiary); }
+
+/* Tier chip: top tier filled, the rest ringed */
+.lb-chip {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  height: 20px;
+  padding: 0 9px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-latin);
+  font-size: 10px;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.08em;
+  border: 1px solid var(--border-default);
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+.lb-chip--inner     { background: var(--yellow-500); color: var(--yellow-ink); border-color: transparent; }
+.lb-chip--super     { border-color: var(--success-500); color: var(--success-500); }
+.lb-chip--supporter { border-color: var(--info-500); color: var(--info-500); }
+
+/* Podium — #1 centred and raised */
+.lb-podium {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: var(--space-14);
+  margin: var(--space-12) 0 var(--space-4);   /* 48 / 16 — on scale (was 56/16) */
+}
+.lb-podium .top-fan { width: 110px; }
+.lb-podium .top-fan__avatar { width: 84px; height: 84px; }
+.lb-podium .top-fan--first .top-fan__avatar { width: 108px; height: 108px; }
+.lb-podium .top-fan__nick { font-size: 13px; color: var(--neutral-white); }
+.lb-podium .top-fan__pts { font-size: 12px; }
+
+/* Table */
+.lb-table { margin-top: var(--space-6); }   /* 24px — on scale (was 28px) */
+.lb-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 13px 0;
+  border-top: 1px solid var(--border-subtle);
+}
+.lb-row__rank {
+  font-family: var(--font-latin);
+  font-size: 13px;
+  color: var(--text-tertiary);
+  width: 36px;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+.lb-row__avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  padding: 2px;
+  background: var(--border-default);
+  flex-shrink: 0;
+}
+.lb-row--inner .lb-row__avatar     { background: var(--yellow-500); }
+.lb-row--super .lb-row__avatar     { background: var(--success-500); }
+.lb-row--supporter .lb-row__avatar { background: var(--info-500); }
+.lb-row__avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; border: 2px solid var(--bg-primary); }
+.lb-row__nick {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-cjk-text);
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.lb-row__pts {
+  font-family: var(--font-latin);
+  font-size: 14px;
+  font-weight: var(--fw-medium);
+  font-variant-numeric: tabular-nums;
+}
+
+/* My rank — pinned, auth-gated */
+/* MY RANK — floating snackbar. Fixed near the bottom so the user always sees
+   their rank AND the gap to the next tier (the climb incentive). Auth-gated:
+   a visitor has no "my rank". */
+.lb-me {
+  position: fixed;
+  left: 50%;
+  bottom: 22px;
+  transform: translateX(-50%);
+  z-index: 60;
+  width: min(560px, calc(100vw - 120px));   /* narrower — content-sized, no dead space */
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) 18px;
+  border-radius: var(--radius-lg);
+  background: rgba(18, 18, 18, 0.88);
+  border: 1px solid var(--border-default);
+  backdrop-filter: blur(18px) saturate(1.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+}
+/* recentre into the content column, past the left side-rail */
+body.has-rail .lb-me { left: calc(50% + 36px); }
+
+.lb-me__rank {
+  font-family: var(--font-latin);
+  font-weight: var(--fw-bold);
+  font-size: 16px;
+  color: var(--yellow-500);
+  min-width: 30px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.lb-me .lb-row__avatar,
+.lb-me .lb-row__avatar img { width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0; }
+.lb-me .lb-row__avatar img { object-fit: cover; display: block; }
+
+/* Two compact rows: identity + score, then progress + next-tier target. */
+.lb-me__main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 7px; }
+.lb-me__line { display: flex; align-items: center; gap: var(--space-2); }
+.lb-me__nick { flex: 1; min-width: 0; font-family: var(--font-cjk-text); font-size: 14px; font-weight: var(--fw-medium); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lb-me .lb-chip { flex-shrink: 0; }
+.lb-me__score { flex-shrink: 0; margin-left: auto; font-family: var(--font-cjk-text); font-size: 12px; color: var(--text-tertiary); white-space: nowrap; }
+.lb-me__score b { font-family: var(--font-latin); font-size: 15px; color: var(--text-primary); font-variant-numeric: tabular-nums; }
+
+.lb-me__line--climb { gap: 10px; }
+.lb-me__bar { flex: 1; min-width: 0; height: 6px; border-radius: 999px; background: rgba(255, 255, 255, 0.1); overflow: hidden; }
+.lb-me__bar-fill { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--yellow-600), var(--yellow-400)); box-shadow: 0 0 10px rgba(255, 163, 63, 0.55); }
+.lb-me__next { flex-shrink: 0; max-width: 58%; font-family: var(--font-cjk-text); font-size: 11.5px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lb-me__next b { color: var(--yellow-500); font-family: var(--font-latin); }
+
+/* clearance so the floating card never covers the last rows (logged-in only) */
+body[data-auth="logged-in"].rf-leaderboard main { padding-bottom: 130px; }
+
+@media (max-width: 767.98px) {
+  /* Float ABOVE the bottom-nav pill (pill ≈ 12px + ~53px tall) so the two
+     never collide — this was the overlap in the screenshot. */
+  .lb-me, body.has-rail .lb-me {
+    left: 50%; width: calc(100vw - 24px);
+    bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+    gap: 10px; padding: 11px var(--space-4);
+  }
+  /* Extra clearance so the last rows are never hidden behind the floating card. */
+  body[data-auth="logged-in"].rf-leaderboard main { padding-bottom: calc(188px + env(safe-area-inset-bottom, 0px)); }
+}
+
+/* Ways to earn — verb rows with point chips */
+.lb-earn { margin-top: var(--space-4); max-width: 560px; }
+.lb-earn__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.lb-earn__verb { font-size: 14px; }
+.lb-earn__pts {
+  font-family: var(--font-latin);
+  font-size: 12px;
+  font-weight: var(--fw-bold);
+  color: var(--yellow-500);
+}
+
+/* Shop v2 mobile collapse — kept below the global MOBILE TWEAKS block
+   on purpose (source-order rule from the README). */
+@media (max-width: 767.98px) {
+  .shop-grid, .creator-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 10px; row-gap: 30px; }
+  .shop-toolbar { flex-direction: column; gap: var(--space-3); }
+  .creator-hero__name { font-size: 30px; }
+  .creator-pickup { flex-direction: column; align-items: flex-start; }
+  .lb-legend { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .lb-podium { gap: var(--space-6); }
+  .creator-event { flex-wrap: wrap; }
+  .creator-event__date { width: auto; }
+}
+
+/* ─────────────────────────────────────────
+   LEADERBOARD — RESPONSIVE
+   ───────────────────────────────────────── */
+
+/* Tablet (768–1023): tighten podium gap and table row padding. */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .lb-podium {
+    gap: var(--space-8);
+    margin: var(--space-10) 0 var(--space-4);
+  }
+
+  .lb-legend {
+    gap: var(--space-4);
+  }
+}
+
+/* Phone ≤767.98px */
+@media (max-width: 767.98px) {
+  /* Head row: stack title and season on one side, keep back link. */
+  .lb-head {
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .lb-head__title {
+    font-size: var(--fs-h4);
+  }
+
+  /* Podium: scale avatars down, reduce gap and top margin. */
+  .lb-podium {
+    gap: var(--space-6);
+    margin: var(--space-8) 0 var(--space-4);
+  }
+
+  .lb-podium .top-fan {
+    width: 80px;
+  }
+
+  .lb-podium .top-fan__avatar {
+    width: 62px;
+    height: 62px;
+  }
+
+  .lb-podium .top-fan--first .top-fan__avatar {
+    width: 80px;
+    height: 80px;
+  }
+
+  .lb-podium .top-fan__nick {
+    font-size: var(--fs-caption);
+  }
+
+  /* Legend: two columns at 768px already set; keep it consistent. */
+  .lb-legend {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-4);
+    margin-top: var(--space-6);
+  }
+
+  /* Table rows: reduce gap and avatar so rank/name/points stay on one line. */
+  .lb-row {
+    gap: var(--space-3);
+    padding: var(--space-3) 0;
+  }
+
+  .lb-row__rank {
+    width: 28px;
+    font-size: var(--fs-caption);
+  }
+
+  .lb-row__avatar {
+    width: 32px;
+    height: 32px;
+  }
+
+  .lb-row__nick {
+    font-size: var(--fs-caption);
+  }
+
+  .lb-row__pts {
+    font-size: var(--fs-caption);
+  }
+
+  /* Ways-to-earn rows: let the label wrap if needed. */
+  .lb-earn__row {
+    gap: var(--space-3);
+  }
+
+  .lb-earn__verb {
+    font-size: var(--fs-caption);
+  }
+}
+
+/* Small phone ≤480px: compress further; legend goes single-col. */
+@media (max-width: 480px) {
+  .lb-legend {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3);
+  }
+
+  .lb-podium {
+    gap: var(--space-5);
+  }
+
+  .lb-podium .top-fan {
+    width: 68px;
+  }
+
+  .lb-podium .top-fan__avatar {
+    width: 52px;
+    height: 52px;
+  }
+
+  .lb-podium .top-fan--first .top-fan__avatar {
+    width: 68px;
+    height: 68px;
+  }
+
+  /* Stack climb label and points vertically when space is very tight. */
+  .lb-me__climb-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-1);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   GAMIFICATION LAYER — make the leaderboard a climb-the-ranks dopamine hub.
+   Real medal podium (pedestals + crown + gold/silver/bronze badges + tier
+   glow) and a promotion-framed "my rank" bar. Desktop + mobile. Appended last
+   so it wins the cascade. Mobbin refs: Kahoot / Duolingo / Stadium Live.
+   The renderer (shop-render.js) already emits rank badges + tier classes, so
+   this is pure CSS — DOM order in .lb-podium is [#2, #1(.--first), #3].
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Raised pedestals — #1 (centre) tallest, then #2, then #3. align-items:flex-end
+   (set on .lb-podium) makes the blocks rise from one baseline = a podium. */
+.lb-podium .top-fan { position: relative; }
+.lb-podium .top-fan::after {
+  content: "";
+  display: block;
+  width: 86%;
+  margin-top: 14px;
+  border-radius: 12px 12px 0 0;
+  border: 1px solid var(--border-subtle);
+  border-bottom: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.02));
+}
+.lb-podium .top-fan:nth-child(1)::after { height: 46px; background: linear-gradient(180deg, rgba(232, 234, 240, 0.22), rgba(232, 234, 240, 0.03)); }  /* silver (#2) */
+.lb-podium .top-fan--first::after        { height: 68px; background: linear-gradient(180deg, rgba(255, 200, 90, 0.28),  rgba(255, 163, 63, 0.04)); }   /* gold (#1)   */
+.lb-podium .top-fan:nth-child(3)::after  { height: 32px; background: linear-gradient(180deg, rgba(214, 150, 95, 0.24),  rgba(214, 150, 95, 0.03)); }   /* bronze (#3) */
+
+/* Medal rank badges */
+.lb-podium .top-fan__rank { width: 22px; height: 22px; font-size: 11px; border-color: transparent; }
+.lb-podium .top-fan:nth-child(1) .top-fan__rank { background: linear-gradient(180deg, #eef0f5, #b9bcc6); color: #33363d; }
+.lb-podium .top-fan--first .top-fan__rank        { background: linear-gradient(180deg, #ffe48f, #f4a623); color: #5a3a00; box-shadow: 0 2px 10px rgba(244, 166, 35, 0.5); }
+.lb-podium .top-fan:nth-child(3) .top-fan__rank  { background: linear-gradient(180deg, #edc09a, #c8854c); color: #4a2b10; }
+
+/* Crown over #1 */
+.lb-podium .top-fan--first .top-fan__avatar::after {
+  content: "";
+  position: absolute; left: 50%; top: -24px; transform: translateX(-50%);
+  width: 34px; height: 26px;
+  background: url('assets/icons/crown.svg') center / contain no-repeat;
+  filter: drop-shadow(0 2px 6px rgba(244, 166, 35, 0.5));
+}
+
+/* Tier-coloured avatar glow on the podium (subtle dopamine) */
+.lb-podium .top-fan--inner .top-fan__avatar     { box-shadow: 0 8px 26px rgba(255, 163, 63, 0.38); }
+.lb-podium .top-fan--super .top-fan__avatar     { box-shadow: 0 8px 24px rgba(54, 211, 153, 0.30); }
+.lb-podium .top-fan--supporter .top-fan__avatar { box-shadow: 0 8px 24px rgba(90, 200, 250, 0.28); }
+
+/* The score is the dopamine number — make it read */
+.lb-podium .top-fan__pts { font-size: 13px; color: var(--text-secondary); font-weight: var(--fw-medium); }
+.lb-podium .top-fan--first .top-fan__pts { color: var(--yellow-500); font-weight: var(--fw-bold); }
+
+/* My-rank bar — frame it as a PROMOTION climb (brand glow + glowing fill) */
+.lb-me { border-color: rgba(255, 163, 63, 0.32); box-shadow: 0 14px 44px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 163, 63, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.06); }
+.lb-me__bar-fill { box-shadow: 0 0 10px rgba(255, 163, 63, 0.55); }
+.lb-me__climb-label::before {
+  content: "▲"; display: inline-block; margin-right: 5px;
+  font-size: 9px; color: var(--yellow-500); transform: translateY(-1px);
+}
+
+/* Mobile: scale the pedestals + crown down with the smaller podium */
+@media (max-width: 767.98px) {
+  .lb-podium .top-fan:nth-child(1)::after { height: 34px; }
+  .lb-podium .top-fan--first::after        { height: 50px; }
+  .lb-podium .top-fan:nth-child(3)::after  { height: 24px; }
+  .lb-podium .top-fan--first .top-fan__avatar::after { width: 28px; height: 22px; top: -20px; }
+  .lb-podium .top-fan__pts { font-size: 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lb-me__bar-fill { box-shadow: none; }
+}

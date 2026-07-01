@@ -1,0 +1,157 @@
+/* ── 43-bottom-nav.css — mobile floating pill navigation ──────────────────
+   A detached, centered, safe-area-aware pill shown only on phones (<768).
+   At rest: icon + label. On scroll-down it condenses to icons-only
+   (mobile-nav.js toggles .is-condensed); re-expands on scroll-up / at top.
+
+   Five primary destinations. The Community cell becomes "Create" on the
+   Community page (JS adds .botnav__item--create + swaps icon/label/action).
+   Tablet (icon-rail) and desktop (side-rail) hide this entirely.
+   Owns its own responsive behaviour — no page-level overrides. */
+
+.botnav { display: none; }
+
+/* Hide the floating bottom-nav while a take-over overlay is open — otherwise it
+   overlaps the overlay's own primary CTA (e.g. the cart's 前往結帳) and invites a
+   tap that abandons the task. Covers cart, ds-drawers (checkout/auth/completions),
+   the mobile menu, and the zoom lightbox. Higher specificity wins over the
+   mobile @media show rule below. */
+body.cart-open .botnav,
+body.ds-drawer-open .botnav,
+body.mdrawer-open .botnav,
+body.ds-zoom-open .botnav { display: none; }
+
+/* Reserve space so page content / footers never sit under the pill */
+@media (max-width: 767.98px) {
+  body { padding-bottom: calc(104px + env(safe-area-inset-bottom, 0px)); }
+}
+
+@media (max-width: 767.98px) {
+  .botnav {
+    display: block;
+    position: fixed;
+    /* THE FROST LIVES HERE, on the FIXED element (2026-06-29). A fixed nav's
+       backdrop-filter only composites on mobile when transform + backdrop-filter
+       are on the SAME (fixed) element — that gives it its own GPU layer (exactly
+       what the working f2e .m-bottomnav does). The old "no transform" note was a
+       MISDIAGNOSIS: the transform failed only because it was split onto this
+       wrapper while the backdrop sat on the CHILD .botnav__list. Together here,
+       they work. The child keeps only the visible tint/border/shadow. */
+    left: 0;
+    right: 0;
+    margin-inline: auto;
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    z-index: var(--z-bottomnav);
+    width: min(92vw, 390px);         /* equal columns → middle cell (the +) is dead-centre */
+    pointer-events: none;            /* outer wrapper is click-through; backdrop still renders */
+    isolation: isolate;
+    border-radius: var(--radius-pill, 999px);   /* clip the backdrop blur to the pill shape */
+    transform: translateZ(0);                   /* own compositing layer → the fixed-nav frost actually composites */
+    -webkit-transform: translateZ(0);
+    backdrop-filter: blur(38px);                /* the REAL frost — on the fixed element itself */
+    -webkit-backdrop-filter: blur(38px);
+    transition: width 260ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  .botnav.is-condensed { width: min(74vw, 330px); }   /* narrows on scroll-down */
+
+  .botnav__list {
+    position: relative;                 /* for the specular sheen ::before */
+    pointer-events: auto;
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    margin: 0;
+    width: 100%;
+    padding: 4px;
+    list-style: none;
+    /* The VISIBLE glass styling only — translucent tint + border + the 10-layer
+       specular box-shadow. The actual blur (backdrop-filter) + transform live on
+       the FIXED .botnav parent above (one element = own GPU layer → it composites);
+       this child sits on top of that blurred backdrop and tints it. NO sheen, NO
+       spectral rim, NO url() refraction. */
+    isolation: isolate;
+    background: var(--glass-nav-tint);                /* translucent dark glass — the parent's blur shows through */
+    border: var(--glass-border);
+    border-radius: var(--radius-pill, 999px);
+    box-shadow: var(--glass-shadow);
+    transition: padding 220ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  /* The frost is kicked ONE FRAME AFTER LOAD (mobile-nav.js adds .lg-ready) — a
+     post-paint property change forces the fixed element to (re)composite its
+     backdrop-filter. Applied to .botnav (where the blur now lives). */
+  .botnav.lg-ready {
+    -webkit-backdrop-filter: blur(38px) saturate(1.6);
+            backdrop-filter: blur(38px) saturate(1.6);
+  }
+
+  .botnav__cell { display: flex; flex: 1 1 0; min-width: 0; }   /* 5 equal columns → + dead-centre */
+
+  .botnav__item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    min-width: 0;
+    min-height: 45px;
+    padding: 5px 2px;
+    border-radius: 16px;
+    color: var(--text-secondary, rgba(255, 255, 255, 0.58));
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: color 160ms ease, padding 200ms ease, gap 200ms ease, min-height 200ms ease;
+  }
+  .botnav__item:active { transform: scale(0.94); }
+
+  .botnav__icon {
+    width: 20px; height: 20px;
+    flex: none;
+    background: currentColor;
+    -webkit-mask: var(--i) center / contain no-repeat;
+            mask: var(--i) center / contain no-repeat;
+    transition: width 200ms ease, height 200ms ease;
+  }
+
+  /* Label shown at rest; collapses smoothly when the bar condenses on scroll. */
+  .botnav__label {
+    font-family: var(--font-cjk-text);
+    font-size: 9px;
+    line-height: 1.35;               /* room for descenders (g/p/y) */
+    font-weight: var(--fw-medium, 500);
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    opacity: 1;
+    max-height: 16px;
+    transition: opacity 150ms ease, max-height 200ms ease;
+  }
+
+  /* Active destination — accent colour only (no highlight background). */
+  .botnav__item.is-active,
+  .botnav__item[aria-current="page"] { color: var(--accent-500, var(--yellow-500, #ffa33f)); }
+  .botnav__item--create { color: var(--accent-500, var(--yellow-500, #ffa33f)); }
+
+  /* Condensed (scroll-down): drop the labels → icon-only + shorter. */
+  .botnav.is-condensed .botnav__list { padding: 3px; }
+  .botnav.is-condensed .botnav__item { gap: 0; min-height: 35px; padding: 6px 2px; }
+  .botnav.is-condensed .botnav__icon { width: 19px; height: 19px; }
+  .botnav.is-condensed .botnav__label { opacity: 0; max-height: 0; pointer-events: none; }
+
+  @media (max-width: 360px) {
+    .botnav__label { font-size: 8.5px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .botnav__list, .botnav__item, .botnav__icon, .botnav__label { transition: none; }
+    .botnav__item:active { transform: none; }
+  }
+}
+
+/* Short landscape phones: hug the bottom a little tighter */
+@media (max-width: 926px) and (orientation: landscape) and (max-height: 460px) {
+  .botnav { bottom: calc(8px + env(safe-area-inset-bottom, 0px)); }
+  .botnav.is-condensed .botnav__item { padding: 7px 12px; }
+}
+

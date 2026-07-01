@@ -1,0 +1,399 @@
+/* ─────────────────────────────────────────
+   FILM CARD
+   2:3 poster + popcorn-price badge (br) + body (title / meta / score)
+   Hover: poster lifts + bottom darken overlay reveals.
+   Variant .film-card--ranked: huge outlined number behind the poster (Top 5).
+   ───────────────────────────────────────── */
+
+/* CONSISTENCY FIX (2026-06-16): the poster is a FIXED intrinsic width, so the
+   card is the SAME size on every page. It used to be computed from --rail-cols
+   ÷ the track's container width, which DRIFTED — 172px inside the home page's
+   1440 container vs 191px on full-bleed library pages (same component, same
+   viewport). The rail now simply fits however many 184px cards fit; the card
+   itself never changes size. (Mobile gets a smaller token below — responsive,
+   not drift.) */
+.film-card {
+  --card-w: 184px;
+  position: relative;
+  flex: 0 0 var(--card-w);
+  width: var(--card-w);
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: inherit;
+}
+
+.film-card__poster {
+  position: relative;
+  aspect-ratio: 2 / 3;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  transition: transform 220ms var(--ease-out), border-color 220ms var(--ease-out);
+  z-index: 1; /* above ranked number */
+}
+
+.film-card:hover .film-card__poster {
+  transform: translateY(-4px);
+  border-color: var(--border-default);
+}
+
+.film-card__poster img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Hover darken — reveals price badge and stays subtle on idle */
+.film-card__poster::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg,
+    rgba(0, 0, 0, 0) 55%,
+    rgba(0, 0, 0, 0.55) 100%);
+  opacity: 0.6;
+  transition: opacity 250ms ease;
+  pointer-events: none;
+}
+
+.film-card:hover .film-card__poster::after { opacity: 1; }
+
+/* Popcorn price — bottom-right glass pill (mirrors 1.0) */
+.film-card__price {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2) var(--space-1) 6px;
+  border-radius: var(--radius-pill);
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  font-family: var(--font-cjk-text);
+  font-size: 12px;
+  font-weight: var(--fw-semibold);
+  color: var(--text-primary);
+  z-index: 2;
+}
+
+.film-card__price-icon {
+  width: 14px;
+  height: 14px;
+  display: inline-block;
+  background-color: var(--neutral-white);
+  -webkit-mask: url('assets/icons/popcorn_single.svg') center / contain no-repeat;
+          mask: url('assets/icons/popcorn_single.svg') center / contain no-repeat;
+}
+
+/* ── 繼續觀看(resume)變體 — 租借中影片:海報底部黃進度條 + 左下剩餘時間.
+   沿用桌機 2/3 海報比例(.film-card__poster);ref: mobile-screening.html.
+   剩餘時間 badge 鏡像 .film-card__price(改放左下). ── */
+.film-card__resume-time {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  z-index: 2;
+  padding: var(--space-1) 10px;
+  border-radius: var(--radius-pill);
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  font-family: var(--font-cjk-text);
+  font-size: 12px;
+  font-weight: var(--fw-semibold);
+  color: var(--text-primary);
+}
+.film-card__progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.25);
+  z-index: 2;
+}
+.film-card__progress-fill {
+  display: block;
+  height: 100%;
+  background: var(--yellow-500);
+}
+
+/* Body — title + meta row (year/tag on left, score on right) */
+.film-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: var(--space-3) var(--space-1) 0;
+}
+
+.film-card__title {
+  font-family: var(--font-cjk-display);
+  font-weight: var(--fw-bold);
+  font-size: 15px;
+  line-height: 1.35;
+  color: var(--text-primary);
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.film-card__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  min-height: 28px; /* match score ring height to keep rail rhythm */
+}
+
+.film-card__meta-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-cjk-text);
+  font-size: 11px;
+  color: var(--text-tertiary);
+  min-width: 0;
+}
+
+.film-card__meta-tag {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-secondary);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Ranked variant — outlined number sits behind the poster on the left.
+   The padding-left reserves a slot for the digit so part of it stays
+   visible to the left of the poster. Sized to also fit double-digit
+   "10" — the leading "1" reads, the "0" tucks behind the poster.
+
+   container-type makes each ranked card a size container, so the digit
+   (font-size/offsets in cqi below) scales WITH the card. Fixed px here
+   breaks the moment the card shrinks — the digits detach from their
+   posters and float over the section. */
+.film-card--ranked {
+  /* Wider than a normal card by exactly the rank gutter, so the POSTER inside
+     is still 184px — matches every other rail (the gutter holds the big #1). */
+  --card-w: calc(184px + 56px);
+  padding-left: var(--space-14);   /* px on purpose: an element's own cqi can't reference itself */
+  container-type: inline-size;
+}
+
+.film-card__rank {
+  position: absolute;
+  left: -9.5cqi;
+  bottom: -8.5cqi;    /* lower-left: base sits just below the poster bottom so it
+                         reads in the strip under the image. 現正熱播 offsets via
+                         a scoped rule. */
+  font-family: var(--font-cjk-display);
+  font-weight: var(--fw-black);
+  /* cqi resolves against the card's CONTENT box (card minus the 56px
+     digit slot). 127cqi reproduces the original 240px at the 245px
+     reference card, then scales with it. */
+  font-size: 127cqi;
+  line-height: 0.85;
+  color: transparent;
+  /* SOLID grey stroke (was white-22% translucent). Pre-composited to the same
+     tone the translucent stroke rendered on the dark section (~#404040 over
+     neutral-900), but OPAQUE — so the overlapping 1+0 strokes of "10" no longer
+     double up into a darker patch at their crossing. color-mix keeps it
+     token-based; the plain --neutral-600 line is the no-color-mix fallback. */
+  -webkit-text-stroke: 2px var(--neutral-600);
+  -webkit-text-stroke: 2px color-mix(in srgb, var(--neutral-600) 74%, var(--neutral-900));
+          text-stroke: 2px var(--neutral-600);
+          text-stroke: 2px color-mix(in srgb, var(--neutral-600) 74%, var(--neutral-900));
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+  letter-spacing: -0.05em;
+}
+.film-card__rank--double {
+  left: -44.5cqi;
+  /* +2px over the base -0.08em nudges the "0" right so it clears the "1"
+     (calc keeps the em base scaling with the card, adds a fixed gap). */
+  letter-spacing: calc(-0.08em + 2px);
+}
+
+/* ─────────────────────────────────────────
+   FILM CARD — RESPONSIVE
+   Phone  : max-width 767.98px
+   Tablet : 768px – 1023.98px
+   Container queries handle the card when it appears in different
+   layouts (narrow grid cell vs wide list vs carousel slot).
+   ───────────────────────────────────────── */
+
+/* ── Container query setup ──────────────────────────────────────────────────
+   The card's OUTER wrapper (the scrollable track or grid) must carry
+   container-type. film-card--ranked already sets it on itself; here we
+   add it to the base card so child container queries can fire inside any
+   layout that hosts .film-card. We use a local --card-cq flag so callers
+   that need to opt out can override. */
+
+/* Standard card: make it a size container when hosted inside a known grid/
+   rail wrapper. Since the card itself IS the container root, child queries
+   (@container) reference the card's own inline size. */
+.film-card {
+  container-type: inline-size;
+  container-name: film-card;
+}
+
+/* ── Container: narrow card (≤120px) — ultra-compact carousel slot ──────── */
+@container film-card (max-width: 120px) {
+  .film-card__body { padding: var(--space-2) var(--space-1) 0; gap: var(--space-1); }
+  .film-card__title { font-size: 11px; }
+  .film-card__meta { display: none; } /* too narrow; title alone is enough */
+  .film-card__price { right: 4px; bottom: 4px; font-size: 10px; padding: 2px 5px 2px var(--space-1); }
+  .film-card__price-icon { width: 11px; height: 11px; }
+}
+
+/* ── Container: small card (121px – 160px) — tight grid / sidebar ───────── */
+@container film-card (min-width: 121px) and (max-width: 160px) {
+  .film-card__body { padding: var(--space-2) var(--space-1) 0; gap: var(--space-1); }
+  .film-card__title { font-size: 12px; -webkit-line-clamp: 2; }
+  .film-card__meta-tag { display: none; } /* drop tag, keep year + score */
+}
+
+/* ── Container: normal card (161px+) — default carousel / library ───────── */
+@container film-card (min-width: 161px) {
+  /* Title: 2-line clamp on narrower real estate (phone-sized card in a grid) */
+  .film-card__title { -webkit-line-clamp: 2; }
+}
+
+/* ── Touch devices: price badge is always visible (no hover) ────────────── */
+@media (hover: none) {
+  /* Darken overlay fixed at a comfortable reading opacity — no hover needed */
+  .film-card__poster::after { opacity: 0.75; }
+  /* Price badge always visible at full opacity */
+  .film-card__price { opacity: 1; }
+  /* Kill the lift transform on touch tap; the browser's :active handles feedback */
+  .film-card:active .film-card__poster { transform: none; }
+}
+
+/* ── Tablet (768px – 1023.98px) ─────────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  /* Slightly tighter card on tablet so more fit in the rail */
+  .film-card { --card-w: 160px; }
+
+  /* Ranked: scale down the digit gutter proportionally */
+  .film-card--ranked {
+    --card-w: calc(160px + 48px);
+    padding-left: var(--space-12);
+  }
+}
+
+/* ── Phone (≤767.98px) ──────────────────────────────────────────────────── */
+@media (max-width: 767.98px) {
+  /* Smaller poster fits 2+ cards comfortably in phone viewport */
+  .film-card { --card-w: 136px; }
+
+  /* Title: show 2 lines on phone — the single-line clamp loses CJK titles */
+  .film-card__title {
+    font-size: 13px;
+    -webkit-line-clamp: 2;
+  }
+
+  /* Body tighter on phone */
+  .film-card__body { padding: var(--space-2) var(--space-1) 0; gap: var(--space-1); }
+
+  /* Meta text smaller but still legible */
+  .film-card__meta-text { font-size: 10px; gap: var(--space-1); }
+
+  /* Price badge: always visible on phone (no hover) */
+  .film-card__poster::after { opacity: 0.75; }
+  .film-card__price {
+    opacity: 1;
+    font-size: 11px;
+    padding: 3px 6px 3px 5px;
+  }
+
+  /* Ranked: tighter gutter on phone so digit doesn't overwhelm */
+  .film-card--ranked {
+    --card-w: calc(136px + 40px);
+    padding-left: var(--space-10);
+  }
+
+  /* Resume-time badge: stays readable at phone size */
+  .film-card__resume-time { font-size: 11px; padding: 3px var(--space-2); }
+}
+
+/* ── Small phone (≤479.98px) ────────────────────────────────────────────── */
+@media (max-width: 479.98px) {
+  .film-card { --card-w: 120px; }
+
+  .film-card__title { font-size: 12px; }
+
+  .film-card--ranked {
+    --card-w: calc(120px + 36px);
+    padding-left: 36px;
+  }
+}
+
+/* ── Skeleton / loading state ───────────────────────────────────────────── */
+.film-card--skeleton .film-card__poster {
+  background: var(--skeleton-surface);
+  animation: film-card-skeleton-pulse 1.4s ease-in-out infinite;
+}
+.film-card--skeleton .film-card__title,
+.film-card--skeleton .film-card__meta {
+  border-radius: var(--radius-sm);
+  background: var(--skeleton-surface);
+  color: transparent;
+  animation: film-card-skeleton-pulse 1.4s ease-in-out infinite;
+}
+.film-card--skeleton .film-card__title { height: 15px; width: 80%; }
+.film-card--skeleton .film-card__meta  { height: 12px; width: 55%; }
+
+@keyframes film-card-skeleton-pulse {
+  0%, 100% { opacity: 0.45; }
+  50%       { opacity: 0.8;  }
+}
+
+/* ── Missing image fallback ─────────────────────────────────────────────── */
+.film-card__poster--no-image {
+  background: var(--bg-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.film-card__poster--no-image::before {
+  content: '';
+  width: 32px;
+  height: 32px;
+  background-color: var(--text-tertiary);
+  -webkit-mask: url('assets/icons/film_placeholder.svg') center / contain no-repeat;
+          mask: url('assets/icons/film_placeholder.svg') center / contain no-repeat;
+  opacity: 0.4;
+}
+
+/* ── Sold-out / unavailable state ───────────────────────────────────────── */
+.film-card--unavailable .film-card__poster { opacity: 0.45; filter: grayscale(0.6); }
+.film-card--unavailable .film-card__price {
+  background: rgba(0, 0, 0, 0.7);
+  color: var(--text-tertiary);
+}
+
+/* ── Reduced-motion ─────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .film-card__poster,
+  .film-card__poster::after {
+    transition: none;
+  }
+  .film-card--skeleton .film-card__poster,
+  .film-card--skeleton .film-card__title,
+  .film-card--skeleton .film-card__meta {
+    animation: none;
+    opacity: 0.55;
+  }
+}

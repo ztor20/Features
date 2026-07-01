@@ -1,0 +1,43 @@
+/* MEDIA-GLASS — .media-glass shared text-on-photo primitive. [COMPONENT] */
+/* ════════════════════════════════════════════════════════════════════════
+   .media-glass — THE canonical "text on a photo" treatment (shared primitive)
+   ════════════════════════════════════════════════════════════════════════
+   One frosted-glass band for any text overlaid on an image: a PROGRESSIVE
+   backdrop-blur (strong at the foot, dissolving upward via a mask) + a quiet
+   ink tint + a text-shadow safety net — so copy reads on ANY photo (bright,
+   dark, or busy). Lifted from the news hero (the original implementation).
+
+   USAGE: put .media-glass on the TEXT PANEL that overlays the photo. The panel
+   MUST come AFTER the <img>/cover in the DOM (backdrop-filter blurs whatever is
+   painted behind it). Give the panel a tall TOP padding — that empty zone is
+   where the blur dissolves into the photo. Children ride above the glass
+   automatically. Adopters: community --overlay, ai-mosaic tiles. (The news
+   hero keeps its inline copy as the origin, pending migration to this class.)
+   ──────────────────────────────────────────────────────────────────────── */
+.media-glass { position: relative; isolation: isolate; }
+.media-glass > * { position: relative; z-index: 1; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45); }
+.media-glass::before {              /* progressive blur, masked to fade in upward */
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  -webkit-backdrop-filter: blur(22px) saturate(1.35);
+          backdrop-filter: blur(22px) saturate(1.35);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.5) 30%, #000 62%);
+          mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.5) 30%, #000 62%);
+  pointer-events: none;
+}
+.media-glass::after {               /* quiet ink tint ramp */
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(to bottom, transparent 0%, rgba(10, 10, 10, 0.30) 34%, rgba(10, 10, 10, 0.62) 100%);
+  pointer-events: none;
+}
+/* No backdrop-filter (old engines): the tint alone carries legibility. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .media-glass::after {
+    background: linear-gradient(to bottom, transparent 0%, rgba(10, 10, 10, 0.62) 30%, rgba(10, 10, 10, 0.88) 100%);
+  }
+}

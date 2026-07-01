@@ -1,0 +1,309 @@
+/* ─────────────────────────────────────────
+   POPCORN PRICING PAGE
+   /popcorn.html — points-of-entry: header popcorn-entry pill (guest)
+   and after-login popcorn balance/+ buttons. Two sections stacked:
+   1) "我的爆米花" — balance + history + redeem (logged-in only)
+   2) "購買爆米花" — 3 package cards (always)
+   3) "使用指南" bullet block (always)
+   ───────────────────────────────────────── */
+
+.popcorn-page {
+  padding-block: 72px var(--space-24);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-20);
+}
+
+.popcorn-page__heading {
+  text-align: center;
+  font-family: var(--font-cjk-display);
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-h3);
+  line-height: 1.2;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-8);
+}
+
+/* ── 1. My popcorn balance card ── */
+.popcorn-balance-card {
+  max-width: 720px;
+  margin: 0 auto;
+  width: 100%;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.popcorn-balance-card__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-6) 28px;
+  text-decoration: none;
+  color: var(--text-primary);
+  font-family: var(--font-cjk-text);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  border-bottom: 1px solid var(--white-alpha-8);
+}
+
+.popcorn-balance-card__row:last-child { border-bottom: none; }
+
+/* Balance row uses a faint yellow tint and brand-coloured value */
+.popcorn-balance-card__row--balance {
+  background: rgba(255, 163, 63, 0.04);
+  color: var(--yellow-500);
+}
+
+.popcorn-balance-card__label-icon {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  vertical-align: -3px;
+  background-color: var(--yellow-500);
+  -webkit-mask: var(--icon) center / contain no-repeat;
+  mask: var(--icon) center / contain no-repeat;
+}
+
+/* History / redeem rows are clickable, hover-lit */
+.popcorn-balance-card__row--link {
+  cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+.popcorn-balance-card__row--link:hover {
+  background: var(--white-alpha-4);
+  color: var(--yellow-500);
+}
+
+.popcorn-balance-card__row--link:hover .popcorn-balance-card__chevron {
+  background-color: var(--yellow-500);
+  transform: translateX(2px);
+}
+
+.popcorn-balance-card__label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.popcorn-balance-card__value {
+  font-family: var(--font-latin);
+  font-size: var(--fs-h4);
+  font-weight: var(--fw-bold);
+}
+
+/* Chevron rendered via mask so it can recolor on hover */
+.popcorn-balance-card__chevron {
+  width: 18px;
+  height: 18px;
+  background-color: var(--text-tertiary);
+  -webkit-mask: url('assets/icons/chevron_right.svg') center / contain no-repeat;
+          mask: url('assets/icons/chevron_right.svg') center / contain no-repeat;
+  transition: background-color 150ms ease, transform 150ms ease;
+}
+
+/* ── 2. Purchase package cards ── */
+.popcorn-packages {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-5);
+  max-width: 720px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.popcorn-package {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 36px var(--space-6) 28px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  text-align: center;
+  transition: background-color 200ms ease, transform 200ms ease;
+}
+
+.popcorn-package:hover {
+  background: var(--bg-tertiary);
+  transform: translateY(-2px);
+}
+
+.popcorn-package__icon {
+  width: 56px;
+  height: 56px;
+  margin-bottom: var(--space-1);
+}
+
+.popcorn-package__name {
+  font-family: var(--font-cjk-display);
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-h5);
+  line-height: var(--lh-h5);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.popcorn-package__count {
+  font-family: var(--font-cjk-text);
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body-sm);
+  color: var(--yellow-500);
+  margin: 0;
+}
+
+.popcorn-package__buy {
+  margin-top: var(--space-3);
+  min-width: 152px;
+}
+
+/* ── 3. Usage guide ── */
+.popcorn-guide {
+  max-width: 720px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.popcorn-guide__title {
+  font-family: var(--font-cjk-text);
+  font-weight: var(--fw-medium);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text-primary);
+  margin: 0 0 var(--space-3);
+}
+
+.popcorn-guide__list {
+  margin: 0;
+  padding-left: 1.4em;
+  font-family: var(--font-cjk-text);
+  font-size: var(--fs-body-sm);
+  line-height: 1.75;
+  color: var(--text-secondary);
+}
+
+.popcorn-guide__list li { list-style: disc; }
+
+/* Responsive — 3 → 1 col on narrow (768 = site-wide mobile breakpoint) */
+@media (max-width: 767.98px) {
+  .popcorn-page { padding-block: var(--space-12) var(--space-16); gap: var(--space-14); }
+  .popcorn-page__heading { font-size: var(--fs-h3); margin-bottom: var(--space-5); }
+  .popcorn-packages { grid-template-columns: 1fr; gap: 14px; }
+  .popcorn-balance-card__row { padding: 18px var(--space-5); }
+}
+
+/* Flush the top padding for index/main pages — their title sits close
+   under the site header (~32px per Figma), unlike homepage chapters which
+   use the generous .section breathing room. Bottom padding unchanged. */
+.section--flush-top { padding-top: clamp(var(--space-4), 4vw, var(--space-8)); }   /* 16 on phone → 32 desktop */
+
+/* ─────────────────────────────────────────
+   RESPONSIVE — popcorn page
+   (supplements the existing max-width:768px block above)
+   ───────────────────────────────────────── */
+
+/* ── Tablet: 768–1023px ── */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .popcorn-page {
+    padding-block: var(--space-14) 72px;
+    gap: 60px;
+  }
+
+  .popcorn-packages {
+    /* 3 columns still fit on tablet but give a bit more breathing room */
+    gap: var(--space-4);
+  }
+
+  .popcorn-package {
+    padding: var(--space-8) var(--space-5) var(--space-6);
+  }
+}
+
+/* ── Phone: ≤767px — extend the existing block ── */
+@media (max-width: 767.98px) {
+  .popcorn-page {
+    padding-block: var(--space-10) var(--space-16);
+    gap: var(--space-14);
+  }
+
+  /* Heading: step down to h4 scale */
+  .popcorn-page__heading {
+    font-size: var(--fs-h4);
+    margin-bottom: var(--space-5);
+  }
+
+  /* Balance card: full-width, tighter rows */
+  .popcorn-balance-card {
+    max-width: 100%;
+  }
+
+  .popcorn-balance-card__row {
+    padding: var(--space-4) var(--space-5);
+    gap: var(--space-3);
+    flex-wrap: nowrap;
+  }
+
+  /* Value: slightly smaller so label + value don't collide in one row */
+  .popcorn-balance-card__value {
+    font-size: var(--fs-h5);
+    white-space: nowrap;
+  }
+
+  /* Packages: single column (already set by 768px block above;
+     restate at 767.98px boundary with tighter gap) */
+  .popcorn-packages {
+    max-width: 100%;
+    gap: var(--space-3);
+  }
+
+  .popcorn-package {
+    padding: var(--space-6) var(--space-5) var(--space-5);
+    gap: var(--space-2);
+  }
+
+  .popcorn-package__icon {
+    width: 44px;
+    height: 44px;
+    margin-bottom: var(--space-1);
+  }
+
+  /* Buy button: full width on phone so it's easy to tap */
+  .popcorn-package__buy {
+    width: 100%;
+    min-width: unset;
+  }
+
+  /* Guide: full width */
+  .popcorn-guide {
+    max-width: 100%;
+  }
+}
+
+/* ── Small phone: ≤480px ── */
+@media (max-width: 480px) {
+  /* Balance card rows: allow label to wrap if needed */
+  .popcorn-balance-card__row {
+    flex-wrap: wrap;
+    padding: var(--space-3) var(--space-4);
+  }
+
+  /* Ensure the label + icon and the value each take a full line if cramped */
+  .popcorn-balance-card__label {
+    flex: 1 1 100%;
+  }
+
+  .popcorn-balance-card__value {
+    flex: 1 1 auto;
+    font-size: var(--fs-body);
+  }
+
+  .popcorn-balance-card__chevron {
+    flex-shrink: 0;
+  }
+
+  .popcorn-package {
+    padding: var(--space-5) var(--space-4);
+  }
+}

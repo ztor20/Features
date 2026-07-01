@@ -1,0 +1,592 @@
+/* ============================================================
+   Ztor 2.0 — ENGAGEMENT family rework (Mobbin-benchmarked)
+   ------------------------------------------------------------
+   Loaded AFTER components.css on 4 pages:
+     community.html  → body.rf-community   (社群 / social feed)
+     cocreate.html   → body.rf-cocreate    (共創 / IP co-creation)
+     zorigin.html    → body.rf-zorigin     (比賽 / AI 原力創作)
+     leaderboard.html→ body.rf-leaderboard (排行榜 / fan ranking)
+
+   Every rule is scoped under one of those body classes so the four
+   page types never bleed into one another. NOTHING here edits
+   tokens.css or components.css — this file only ADDS, reusing the
+   existing token + component vocabulary (brand yellow #ffa33f, dark
+   canvas, --radius-*, --space-*, glass blur, status colors).
+
+   Motion budget: transform/opacity only; one shared easing
+   (--ease-out); all decorative motion gated behind
+   prefers-reduced-motion. Design dials: VARIANCE 5 / MOTION 3 /
+   DENSITY 3 — clean, premium, a touch more structured than airy.
+   ============================================================ */
+
+
+/* ════════════════════════════════════════════════════════════
+   1 · COMMUNITY — inline post composer + feed states
+   Converged pattern (Fi, YouTube, Mindvalley, Greg): the feed
+   leads with a persistent composer affordance, not a hidden FAB.
+   We keep the existing FAB too (mobile / scrolled-away fallback).
+   ════════════════════════════════════════════════════════════ */
+
+.rf-community .rf-composer {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  margin-bottom: 4px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  cursor: text;
+  transition: border-color 200ms var(--ease-out),
+              transform 200ms var(--ease-out);
+}
+.rf-community .rf-composer:hover,
+.rf-community .rf-composer:focus-visible {
+  border-color: var(--border-default);
+  outline: none;
+}
+.rf-community .rf-composer:focus-visible {
+  border-color: var(--yellow-500);
+  box-shadow: 0 0 0 3px rgba(255, 163, 63, 0.18);
+}
+.rf-community .rf-composer:active { transform: scale(0.995); }
+
+.rf-community .rf-composer__avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  opacity: 0.9;
+}
+.rf-community .rf-composer__prompt {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-cjk-text);
+  font-size: 15px;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* Single round + button on the right — the composer's post CTA, sized to
+   mirror the avatar on the left. (Replaces the old photo/片單 tool chips.)
+   Stays a decorative span: the whole composer is role="button", so the +
+   reads as the affordance, not a nested interactive control. */
+.rf-community .rf-composer__add {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-flex;
+  background: var(--white-alpha-16);
+  transition: background-color 160ms var(--ease-out);
+}
+.rf-community .rf-composer:hover .rf-composer__add { background: var(--white-alpha-24); }
+.rf-community .rf-composer__add::after {
+  content: "";
+  width: 20px;
+  height: 20px;
+  margin: auto;
+  background-color: var(--text-secondary);
+  -webkit-mask: url('icons/plus.svg') center / contain no-repeat;
+          mask: url('icons/plus.svg') center / contain no-repeat;
+}
+
+/* ── Feed empty state ──────────────────────────────────────── */
+.rf-community .rf-feed-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 6px;
+  padding: 64px 24px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+}
+.rf-community .rf-feed-empty[hidden] { display: none; }
+.rf-community .rf-feed-empty__icon {
+  width: 44px;
+  height: 44px;
+  margin-bottom: 6px;
+  background-color: var(--text-tertiary);
+  -webkit-mask: url('icons/comment.svg') center / contain no-repeat;
+          mask: url('icons/comment.svg') center / contain no-repeat;
+  opacity: 0.6;
+}
+.rf-community .rf-feed-empty__title {
+  margin: 0;
+  font-family: var(--font-cjk-display);
+  font-size: 18px;
+  font-weight: var(--fw-bold);
+  color: var(--text-primary);
+}
+.rf-community .rf-feed-empty__body {
+  margin: 0 0 14px;
+  font-family: var(--font-cjk-text);
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--text-secondary);
+  max-width: 320px;
+}
+
+/* ── Feed loading skeletons ────────────────────────────────── */
+.rf-community .rf-feed-loading { display: flex; flex-direction: column; gap: 20px; }
+.rf-community .rf-feed-loading[hidden] { display: none; }
+.rf-community .rf-skel-card {
+  padding: 24px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+}
+.rf-community .rf-skel {
+  background: var(--white-alpha-8);
+  border-radius: var(--radius-sm);
+  position: relative;
+  overflow: hidden;
+}
+.rf-community .rf-skel--head  { width: 45%; height: 16px; margin-bottom: 18px; }
+.rf-community .rf-skel--title { width: 80%; height: 22px; margin-bottom: 16px; }
+.rf-community .rf-skel--cover { width: 100%; aspect-ratio: 1920 / 1024; height: auto; border-radius: var(--radius-md); margin-bottom: 16px; }
+.rf-community .rf-skel--line  { width: 100%; height: 13px; margin-bottom: 9px; }
+.rf-community .rf-skel--short { width: 60%; }
+/* Shimmer sweep — opacity-only via a moving highlight (transform). */
+.rf-community .rf-skel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg,
+    transparent 0%, rgba(255, 255, 255, 0.06) 50%, transparent 100%);
+  animation: rf-shimmer 1.4s var(--ease-out) infinite;
+}
+@keyframes rf-shimmer { to { transform: translateX(100%); } }
+
+/* The post-card action row reads a little flat — give the heart a
+   warm hover and the whole row a touch more affordance, without
+   touching components.css. Reactions are the converged engagement
+   primitive (every social feed Mobbin surfaced leads with them). */
+.rf-community .post-card__stat:hover .post-card__stat-icon--heart { color: var(--error-500); }
+.rf-community .post-card__bookmark:hover .post-card__bookmark-icon { color: var(--yellow-500); }
+.rf-community .post-card { transition: border-color 200ms var(--ease-out); }
+.rf-community .post-card:hover { border-color: var(--border-default); }
+
+/* Post body reads a touch larger here — the 描述文字 is the substance of a
+   feed post, so bump it one step (15→16px) for comfortable long-form
+   reading. line-height stays 1.8 and the 3-line clamp (max-height in em)
+   scales with the new size automatically. */
+.rf-community .post-card__body { font-size: 16px; }
+
+
+/* ════════════════════════════════════════════════════════════
+   2 · COCREATE — crowdfunding progress emphasis
+   PROMOTED TO THE COMPONENT (2026-06-18): the funded-% header
+   (.rf-fund / __pct / __label / --done), the 3px bar + gradient fill +
+   green-at-100% (:not(--muted)) state, the metrics/meta-row spacing, and
+   the card hover lift now live un-prefixed in css/components/cocreation-card.css
+   so the home 影視/音樂共創 sections render identically to cocreate.html from a
+   single source. Nothing cocreate-only remains here — see the component file.
+   ════════════════════════════════════════════════════════════ */
+
+
+/* ════════════════════════════════════════════════════════════
+   3 · ZORIGIN — contest submit tile + vote counts
+   Converged pattern (Runway, Krea AI): the gallery leads with a
+   persistent "submit your work" tile in the grid; entries carry a
+   visible vote/like count. We match the poster aspect so the tile
+   sits as a first-class grid cell.
+   ════════════════════════════════════════════════════════════ */
+
+.rf-zorigin .rf-submit-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  /* Match the POSTER box only (same 2:3 as .work-card__poster), and top-align
+     so the title/creator/vote area below each card stays empty under the tile
+     — i.e. the tile is poster-sized, not full-card height. align-self:start
+     stops the grid's default stretch from filling the whole row. */
+  aspect-ratio: 256 / 384;
+  align-self: start;
+  padding: 20px;
+  text-align: center;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-md);
+  background:
+    radial-gradient(120% 80% at 50% 0%, rgba(255, 163, 63, 0.10), transparent 60%),
+    var(--bg-card);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: border-color 200ms var(--ease-out),
+              transform 200ms var(--ease-out),
+              background-color 200ms var(--ease-out);
+}
+.rf-zorigin .rf-submit-tile:hover {
+  border-color: var(--yellow-500);
+  transform: translateY(-4px);
+}
+.rf-zorigin .rf-submit-tile:focus-visible {
+  outline: none;
+  border-color: var(--yellow-500);
+  box-shadow: 0 0 0 3px rgba(255, 163, 63, 0.22);
+}
+.rf-zorigin .rf-submit-tile:active { transform: translateY(-1px); }
+.rf-zorigin .rf-submit-tile__plus {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--yellow-500);
+  position: relative;
+  margin-bottom: 4px;
+  transition: transform 200ms var(--ease-out);
+}
+.rf-zorigin .rf-submit-tile:hover .rf-submit-tile__plus { transform: scale(1.06); }
+.rf-zorigin .rf-submit-tile__plus::before,
+.rf-zorigin .rf-submit-tile__plus::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  background: var(--yellow-ink);
+  border-radius: var(--radius-pill);
+}
+.rf-zorigin .rf-submit-tile__plus::before { width: 18px; height: 3px; }
+.rf-zorigin .rf-submit-tile__plus::after  { width: 3px; height: 18px; }
+.rf-zorigin .rf-submit-tile__title {
+  font-family: var(--font-cjk-display);
+  font-size: 16px;
+  font-weight: var(--fw-bold);
+  color: var(--text-primary);
+}
+.rf-zorigin .rf-submit-tile__sub {
+  font-family: var(--font-cjk-text);
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--text-tertiary);
+  max-width: 16em;
+}
+
+/* Vote-count chip — glass pill bottom-left of the poster (the badge
+   already lives bottom-right, so they don't collide). */
+.rf-zorigin .rf-votes {
+  position: absolute;
+  left: 11px;
+  bottom: 11px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 24px;
+  padding: 0 9px 0 7px;
+  border-radius: var(--radius-pill);
+  background: rgba(10, 10, 10, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid var(--white-alpha-16);
+  font-family: var(--font-latin);
+  font-size: 12px;
+  font-weight: var(--fw-bold);
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+.rf-zorigin .rf-votes__icon {
+  width: 13px;
+  height: 13px;
+  background-color: var(--yellow-500);
+  -webkit-mask: url('icons/vote.svg') center / contain no-repeat;
+          mask: url('icons/vote.svg') center / contain no-repeat;
+}
+
+
+/* ════════════════════════════════════════════════════════════
+   4 · LEADERBOARD — tier rewards + rank emphasis + promotion zone
+   Converged pattern (Duolingo, DoorDash Dasher, Crypto.com): tiers
+   state their rewards; the user's own row + the cutoff for the next
+   tier are emphasised. We keep the brand's score/tier color logic
+   (yellow / green / blue) intact.
+   ════════════════════════════════════════════════════════════ */
+
+/* Tier legend cards — give each tier a panel so the reward line has
+   a home, replacing the bare 4-column hairline list. */
+.rf-leaderboard .lb-legend--rewards {
+  border-top: none;
+  padding-top: 0;
+  gap: 14px;
+}
+.rf-leaderboard .lb-legend--rewards .lb-legend__tier {
+  gap: 8px;
+  padding: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  transition: border-color 200ms var(--ease-out), transform 200ms var(--ease-out);
+}
+.rf-leaderboard .lb-legend--rewards .lb-legend__tier:hover {
+  border-color: var(--border-default);
+  transform: translateY(-2px);
+}
+/* A 2px brand-tinted top edge keyed to each tier's color. */
+.rf-leaderboard .lb-legend--rewards .lb-legend__tier {
+  position: relative;
+  overflow: hidden;
+}
+.rf-leaderboard .lb-legend--rewards .lb-legend__tier::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: var(--border-default);
+}
+.rf-leaderboard .lb-legend--rewards .lb-legend__tier:nth-child(1)::before { background: var(--yellow-500); }
+.rf-leaderboard .lb-legend--rewards .lb-legend__tier:nth-child(2)::before { background: var(--success-500); }
+.rf-leaderboard .lb-legend--rewards .lb-legend__tier:nth-child(3)::before { background: var(--info-500); }
+
+.rf-leaderboard .rf-tier-reward {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 2px;
+  font-family: var(--font-cjk-text);
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+.rf-leaderboard .rf-tier-reward__icon {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  background-color: var(--yellow-500);
+  -webkit-mask: url('icons/reddem.svg') center / contain no-repeat;
+          mask: url('icons/reddem.svg') center / contain no-repeat;
+}
+
+/* Podium — give #1 a soft brand glow so the crown reads instantly. */
+.rf-leaderboard .lb-podium .top-fan--first .top-fan__avatar {
+  box-shadow: 0 0 0 2px var(--bg-primary), 0 6px 28px rgba(255, 163, 63, 0.30);
+}
+
+/* Rank rows — hover affordance + tabular rank, and emphasise the
+   top three rows' numerals with the brand color (the data renders
+   #4+ in the table; ranks 1-3 live in the podium, so this lifts the
+   leading table rows). */
+.rf-leaderboard .lb-row {
+  padding-inline: 12px;
+  margin-inline: -12px;
+  border-radius: var(--radius-md);
+  transition: background-color 150ms var(--ease-out);
+}
+.rf-leaderboard .lb-row:hover { background: var(--white-alpha-4); }
+.rf-leaderboard .lb-row__pts { color: var(--text-primary); }
+
+/* "My rank" pinned bar — make it unmistakably the user's row with a
+   brand-tinted left edge + label chip (DoorDash/Duolingo "you" cue). */
+.rf-leaderboard .lb-me {
+  border-radius: var(--radius-lg);   /* fully rounded — it floats now, not flush to the edge */
+  box-shadow: 0 14px 44px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 163, 63, 0.14);
+}
+/* Edge-bar retired — the gold #rank already marks this as "you", and a
+   straight bar fought the card's rounded corners. */
+.rf-leaderboard .lb-me::before { content: none; }
+.rf-leaderboard .lb-me__label {
+  color: var(--yellow-500);
+  font-weight: var(--fw-bold);
+}
+
+/* Earn-points rows — turn the bare list into a quiet two-tone with a
+   brand point chip, matching the reward language above. */
+.rf-leaderboard .lb-earn__pts {
+  background: rgba(255, 163, 63, 0.12);
+  padding: 3px 9px;
+  border-radius: var(--radius-pill);
+}
+
+@media (min-width: 521px) and (max-width: 768px) {
+  .rf-leaderboard .lb-legend--rewards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* Phone: compact 2×2 tier grid — chip + threshold only. The full perks list
+   lives one tap away in the tier modal, so the four cards stop eating the
+   whole screen. And the "my rank" card becomes a pill to echo the bottom-nav. */
+@media (max-width: 767.98px) {
+  .rf-leaderboard .lb-legend--rewards { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .rf-leaderboard .lb-legend--rewards .lb-legend__tier { padding: 12px; gap: 5px; }
+  .rf-leaderboard .lb-legend--rewards .rf-tier-reward { display: none; }   /* detail in modal */
+  .rf-leaderboard .lb-legend--rewards .lb-legend__note { font-size: 11.5px; line-height: 1.4; }
+  .rf-leaderboard .lb-legend__tier[role="button"]::after { top: 12px; right: 12px; }
+
+}
+
+
+/* ════════════════════════════════════════════════════════════
+   5 · REDUCED MOTION — kill all decorative motion across the family.
+   (transform/opacity transitions on hover are fine to keep, but the
+   looping shimmer must stop.)
+   ════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  .rf-community .rf-skel::after { animation: none; }
+}
+
+
+/* ════════════════════════════════════════════════════════════
+   6 · LEADERBOARD — tier-benefits overlay (click a tier card).
+   Mobbin-benchmarked (Gymshark / Sephora / Vrbo / Grab): perks as a
+   stacking checklist, spend→points stated, climb tips. Brand skin only;
+   tier accent passed in via --bx-accent. No new tokens.
+   ════════════════════════════════════════════════════════════ */
+
+/* Tier cards become buttons — corner chevron signals the new action. */
+.rf-leaderboard .lb-legend__tier[role="button"] { cursor: pointer; position: relative; }
+.rf-leaderboard .lb-legend__tier[role="button"]:focus-visible {
+  outline: 2px solid var(--yellow-500); outline-offset: 2px;
+}
+.rf-leaderboard .lb-legend__tier[role="button"]::after {
+  content: ''; position: absolute; top: 16px; right: 16px;
+  width: 7px; height: 7px;
+  border-top: 2px solid var(--text-tertiary);
+  border-right: 2px solid var(--text-tertiary);
+  transform: rotate(45deg); opacity: 0.45;
+  transition: opacity 150ms var(--ease-out);
+}
+.rf-leaderboard .lb-legend__tier[role="button"]:hover::after { opacity: 0.9; }
+
+/* Overlay shell */
+.rf-leaderboard .lb-bx {
+  position: fixed; inset: 0; z-index: 1000;
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: clamp(16px, 6vh, 64px) 16px;
+  overflow-y: auto;
+}
+.rf-leaderboard .lb-bx[hidden] { display: none; }
+.rf-leaderboard .lb-bx__backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0, 0, 0, 0.62);
+  -webkit-backdrop-filter: blur(8px) saturate(1.2);
+          backdrop-filter: blur(8px) saturate(1.2);
+  opacity: 0; transition: opacity 200ms var(--ease-out);
+}
+.rf-leaderboard .lb-bx.is-open .lb-bx__backdrop { opacity: 1; }
+
+.rf-leaderboard .lb-bx__dialog {
+  position: relative; width: 100%; max-width: 520px;
+  display: flex; flex-direction: column;
+  max-height: calc(100dvh - clamp(32px, 12vh, 128px));   /* fit the viewport; long tier content scrolls inside */
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-2xl); overflow: hidden;
+  box-shadow: 0 24px 64px -16px rgba(0, 0, 0, 0.7);
+  opacity: 0; transform: translateY(12px) scale(0.98);
+  transition: opacity 220ms var(--ease-out), transform 220ms var(--ease-out);
+}
+.rf-leaderboard .lb-bx.is-open .lb-bx__dialog { opacity: 1; transform: none; }
+.rf-leaderboard .lb-bx__dialog:focus { outline: none; }
+.rf-leaderboard .lb-bx__accent {
+  position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  background: var(--bx-accent, var(--yellow-500));
+}
+.rf-leaderboard .lb-bx__close {
+  position: absolute; top: 12px; right: 12px; z-index: 2;
+  width: 36px; height: 36px; border: none; border-radius: var(--radius-pill);
+  background: var(--white-alpha-8); color: var(--text-secondary);
+  font-size: 22px; line-height: 1;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: background 150ms var(--ease-out), color 150ms var(--ease-out);
+}
+.rf-leaderboard .lb-bx__close:hover { background: var(--white-alpha-16); color: var(--text-primary); }
+.rf-leaderboard .lb-bx__close:focus-visible { outline: 2px solid var(--yellow-500); outline-offset: 2px; }
+
+.rf-leaderboard .lb-bx__body { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 32px 28px 28px; }
+
+/* Header — chip + threshold + progress toward this tier */
+.rf-leaderboard .lb-bx__head { margin-bottom: var(--space-6); }
+.rf-leaderboard .lb-bx__note { margin: 10px 0 0; color: var(--text-secondary); font-size: var(--fs-body-sm); }
+.rf-leaderboard .lb-bx__bar {
+  margin-top: 16px; height: 6px; border-radius: var(--radius-pill);
+  background: var(--white-alpha-8); overflow: hidden;
+}
+.rf-leaderboard .lb-bx__bar span {
+  display: block; height: 100%; border-radius: inherit;
+  background: var(--bx-accent, var(--yellow-500));
+  transition: width 400ms var(--ease-out);
+}
+.rf-leaderboard .lb-bx__status { margin: 8px 0 0; font-size: var(--fs-body-sm); color: var(--text-tertiary); }
+.rf-leaderboard .lb-bx__status.is-reached { color: var(--bx-accent, var(--yellow-500)); font-weight: var(--fw-semibold); }
+
+/* Sections */
+.rf-leaderboard .lb-bx__sec {
+  margin-top: var(--space-5); padding-top: var(--space-5);
+  border-top: 1px solid var(--border-subtle);
+}
+.rf-leaderboard .lb-bx__sec:first-of-type { margin-top: 0; padding-top: 0; border-top: none; }
+.rf-leaderboard .lb-bx__h {
+  margin: 0 0 var(--space-4); font-family: var(--font-cjk-display);
+  font-size: var(--fs-h5); font-weight: var(--fw-bold); color: var(--text-primary);
+}
+
+/* Perks — stacking checklist */
+.rf-leaderboard .lb-bx__perks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.rf-leaderboard .lb-bx__perk { display: flex; align-items: flex-start; gap: 12px; color: var(--text-primary); font-size: var(--fs-body); }
+.rf-leaderboard .lb-bx__tick { position: relative; width: 18px; height: 18px; flex: 0 0 auto; margin-top: 2px; }
+.rf-leaderboard .lb-bx__tick::after {
+  content: ''; position: absolute; left: 6px; top: 1px; width: 5px; height: 10px;
+  border: solid var(--bx-accent, var(--yellow-500)); border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+.rf-leaderboard .lb-bx__inherit { margin: 14px 0 0; color: var(--text-tertiary); font-size: var(--fs-body-sm); }
+
+/* Earn rows — action + point-value chip */
+.rf-leaderboard .lb-bx__earn { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.rf-leaderboard .lb-bx__earn-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 11px 0; border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-secondary); font-size: var(--fs-body-sm);
+}
+.rf-leaderboard .lb-bx__earn-row:last-child { border-bottom: none; }
+.rf-leaderboard .lb-bx__pts {
+  flex: 0 0 auto; color: var(--yellow-500); font-weight: var(--fw-semibold);
+  background: rgba(255, 163, 63, 0.12); padding: 3px 10px; border-radius: var(--radius-pill);
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+
+/* Tips */
+.rf-leaderboard .lb-bx__tips { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.rf-leaderboard .lb-bx__tip {
+  position: relative; padding-left: 24px; color: var(--text-secondary);
+  font-size: var(--fs-body-sm); line-height: var(--lh-body-sm);
+}
+.rf-leaderboard .lb-bx__tip::before {
+  content: ''; position: absolute; left: 4px; top: 7px; width: 7px; height: 7px;
+  border-radius: 50%; background: var(--bx-accent, var(--yellow-500)); opacity: 0.85;
+}
+
+/* Footer CTA — brand orange (the spend action stays brand, not tier-tinted).
+   Pinned to the dialog bottom (a flex-shrink:0 sibling of the scroll body) so it
+   stays on-screen no matter how long the tier content runs. */
+.rf-leaderboard .lb-bx__foot {
+  flex: 0 0 auto;
+  padding: var(--space-4) 28px max(var(--space-5), env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--border-subtle);
+  background: var(--bg-secondary);
+}
+.rf-leaderboard .lb-bx__cta {
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; height: 48px; border-radius: var(--radius-pill);
+  background: var(--yellow-500); color: var(--yellow-ink);
+  font-family: var(--font-cjk-display); font-weight: var(--fw-bold); font-size: var(--fs-h5);
+  transition: filter 150ms var(--ease-out), transform 120ms var(--ease-out);
+}
+.rf-leaderboard .lb-bx__cta:hover { filter: brightness(1.06); }
+.rf-leaderboard .lb-bx__cta:active { transform: translateY(1px); }
+.rf-leaderboard .lb-bx__cta:focus-visible { outline: 2px solid var(--yellow-500); outline-offset: 3px; }
+
+@media (max-width: 520px) {
+  .rf-leaderboard .lb-bx__body { padding: 28px 20px 22px; }
+  .rf-leaderboard .lb-bx__foot { padding-inline: 20px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rf-leaderboard .lb-bx__backdrop,
+  .rf-leaderboard .lb-bx__dialog,
+  .rf-leaderboard .lb-bx__bar span,
+  .rf-leaderboard .lb-legend__tier[role="button"]::after { transition: none; }
+  .rf-leaderboard .lb-bx__dialog { transform: none; }
+}

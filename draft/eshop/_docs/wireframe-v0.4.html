@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Ztor eShop — User Flow &amp; Architecture Wireframe</title>
+<style>
+  :root {
+    --paper:    #efece2;
+    --ink:      #1f1f1f;
+    --ink-2:    #4a4a4a;
+    --muted:    #5a5a5a;
+    --line:     #2a2a2a;
+    --yellow:   #ffd966;
+    --yellow-2: #f7c83f;
+    --orange:   #ff9a3d;
+    --blue:     #b9d8ff;
+    --purple:   #d6c2ff;
+    --green:    #c4ecb6;
+    --pink:     #ffb1c1;
+    --black:    #1d1d1d;
+    --wf-bg:    #ffffff;
+    --wf-line:  #b9b4a6;
+    --wf-fill:  #e8e5da;
+    --wf-fill-2:#d8d4c6;
+    --shadow:   0 1px 0 rgba(0,0,0,0.08), 0 8px 16px -8px rgba(0,0,0,0.18);
+    --shadow-lg:0 1px 0 rgba(0,0,0,0.08), 0 14px 26px -10px rgba(0,0,0,0.25);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background:
+      radial-gradient(circle at 25% 15%, rgba(0,0,0,0.018) 0 1px, transparent 1.5px) 0 0/22px 22px,
+      var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+      'PingFang HK', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif;
+    line-height: 1.4;
+  }
+
+  header.canvas-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(247, 245, 238, 0.95);
+    backdrop-filter: saturate(140%) blur(8px);
+    -webkit-backdrop-filter: saturate(140%) blur(8px);
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 22px;
+    flex-wrap: wrap;
+  }
+  .brand { font-weight: 800; letter-spacing: -0.5px; font-size: 22px; }
+  .brand small { color: var(--muted); font-weight: 600; font-size: 11px; margin-left: 4px; vertical-align: super; }
+  .title { font-size: 14px; color: var(--ink-2); border-left: 1px solid rgba(0,0,0,0.15); padding-left: 14px; }
+  .meta { margin-left: auto; color: var(--muted); font-size: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #fff; border: 1px solid rgba(0,0,0,0.1);
+    padding: 4px 10px; border-radius: 12px;
+    font-size: 11px; color: var(--ink-2);
+  }
+  .swatch { width: 12px; height: 12px; border-radius: 3px; box-shadow: 0 1px 0 rgba(0,0,0,0.12); }
+
+  main { padding: 40px 28px 60px; max-width: 1480px; margin: 0 auto; }
+
+  section.board { margin-bottom: 64px; }
+  .board-title {
+    display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+    margin: 0 0 6px;
+  }
+  .board-title h2 { font-size: 20px; font-weight: 800; margin: 0; letter-spacing: -0.3px; }
+  .board-title .sub { font-size: 12px; color: var(--muted); }
+  .board-rule { height: 2px; background: var(--line); opacity: 0.85; margin: 8px 0 26px; }
+
+  /* ---------- sticky notes (annotation grammar from ztor-sitemap) ---------- */
+  .sticky {
+    background: var(--yellow);
+    border-radius: 4px;
+    padding: 10px 12px;
+    box-shadow: var(--shadow);
+    font-size: 12px;
+    color: var(--ink);
+    max-width: 230px;
+  }
+  .sticky strong { display: block; font-size: 12px; margin-bottom: 3px; }
+  .sticky--note { background: var(--black); color: #f5f5f5; }
+  .sticky--note .en { color: rgba(255,255,255,0.72); }
+  .sticky--decision { background: var(--pink); }
+  .sticky--assume { background: var(--green); }
+  .sticky ul { margin: 4px 0 0; padding-left: 16px; }
+  .sticky li { margin: 2px 0; }
+  .tagline {
+    display: inline-block; font-size: 10px; font-weight: 800; letter-spacing: 0.8px;
+    text-transform: uppercase; padding: 2px 7px; border-radius: 999px;
+    border: 1px solid rgba(0,0,0,0.2); background: rgba(255,255,255,0.55); margin-bottom: 5px;
+  }
+  .sticky--note .tagline { border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.12); }
+
+  /* ---------- flow lanes ---------- */
+  .lane { margin-bottom: 26px; }
+  .lane-head {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
+    margin-bottom: 10px; color: var(--ink);
+  }
+  .lane-head .dot { width: 12px; height: 12px; border-radius: 3px; box-shadow: 0 1px 0 rgba(0,0,0,0.15); }
+  .flow { display: flex; align-items: stretch; gap: 0; flex-wrap: wrap; row-gap: 18px; }
+  .step {
+    background: #fff;
+    border: 1.5px solid var(--line);
+    border-radius: 6px;
+    padding: 9px 12px;
+    width: 178px;
+    box-shadow: var(--shadow);
+    font-size: 12px;
+    display: flex; flex-direction: column; gap: 3px; justify-content: center;
+  }
+  .step b { font-size: 12.5px; }
+  .step .en { color: var(--ink-2); font-size: 11px; }
+  .step .path {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 10px; background: var(--wf-fill); border-radius: 3px;
+    padding: 1px 5px; align-self: flex-start; margin-top: 2px;
+  }
+  .step--new { background: var(--yellow); }
+  .step--money { background: var(--blue); }
+  .arrow {
+    align-self: center;
+    width: 34px; height: 2px; background: var(--line); position: relative; flex: none;
+  }
+  .arrow::after {
+    content: ""; position: absolute; right: -1px; top: -4px;
+    border-left: 8px solid var(--line);
+    border-top: 5px solid transparent; border-bottom: 5px solid transparent;
+  }
+
+  /* ---------- wireframe screens ---------- */
+  .screens {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    align-items: start;
+  }
+  .screen { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+  .frame {
+    width: 100%; max-width: 300px;
+    background: var(--wf-bg);
+    border: 2px solid var(--line);
+    border-radius: 14px;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+  }
+  .frame--wide { max-width: 640px; border-radius: 8px; }
+  .frame-bar {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--wf-fill); border-bottom: 1.5px solid var(--wf-line);
+    padding: 6px 10px;
+  }
+  .frame-bar .dots { display: flex; gap: 4px; }
+  .frame-bar .dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--wf-line); }
+  .urlbar {
+    flex: 1; background: #fff; border: 1px solid var(--wf-line); border-radius: 999px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 9.5px; padding: 3px 9px; color: var(--ink-2);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .urlbar b { color: var(--ink); }
+  .frame-body { padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+
+  /* wf primitives */
+  .wf-img {
+    background:
+      linear-gradient(to top right, transparent calc(50% - 0.75px), var(--wf-line) calc(50% - 0.75px), var(--wf-line) calc(50% + 0.75px), transparent calc(50% + 0.75px)),
+      linear-gradient(to bottom right, transparent calc(50% - 0.75px), var(--wf-line) calc(50% - 0.75px), var(--wf-line) calc(50% + 0.75px), transparent calc(50% + 0.75px)),
+      var(--wf-fill);
+    border: 1px solid var(--wf-line);
+    border-radius: 4px;
+  }
+  .wf-row { display: flex; gap: 8px; align-items: center; }
+  .wf-line { height: 8px; border-radius: 4px; background: var(--wf-fill-2); }
+  .wf-line.thin { height: 6px; opacity: 0.8; }
+  .w-90 { width: 90%; } .w-70 { width: 70%; } .w-55 { width: 55%; } .w-40 { width: 40%; } .w-30 { width: 30%; }
+  .wf-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--wf-fill-2); border: 1px solid var(--wf-line); flex: none; }
+  .wf-btn {
+    border: 1.5px solid var(--line); border-radius: 6px;
+    font-size: 10px; font-weight: 700; text-align: center;
+    padding: 6px 10px; background: #fff;
+  }
+  .wf-btn--primary { background: var(--ink); color: #fff; }
+  .wf-btn--accent { background: var(--yellow); }
+  .wf-label {
+    font-size: 9px; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase;
+    color: var(--muted);
+  }
+  .wf-tag {
+    display: inline-block; font-size: 9px; font-weight: 700; border: 1px solid var(--wf-line);
+    border-radius: 999px; padding: 1px 7px; background: var(--wf-fill); color: var(--ink-2);
+  }
+  .wf-tag--on { background: var(--yellow); border-color: var(--line); color: var(--ink); }
+  .wf-tabs { display: flex; gap: 4px; border-bottom: 1.5px solid var(--wf-line); padding-bottom: 5px; }
+  .wf-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .wf-card { border: 1px solid var(--wf-line); border-radius: 6px; padding: 6px; display: flex; flex-direction: column; gap: 5px; background: #fff; }
+  .wf-rail { display: flex; gap: 6px; overflow: hidden; }
+  .wf-rail .wf-card { width: 76px; flex: none; }
+  .wf-hr { height: 1px; background: var(--wf-line); opacity: 0.6; margin: 2px 0; }
+  .price { font-size: 10px; font-weight: 800; }
+  .nav-mock { display: flex; justify-content: space-between; align-items: center; }
+  .nav-mock .wf-line { margin: 0; }
+
+  .screen-caption { display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 300px; align-items: center; }
+  .frame--wide + .screen-caption, .screen--wide .screen-caption { max-width: 640px; }
+  .screen-name { font-size: 12px; font-weight: 800; text-align: center; }
+  .screen-name .path {
+    display: block; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-weight: 400; font-size: 10px; color: var(--muted); margin-top: 2px;
+  }
+
+  /* badge grammar from sitemap */
+  .badge {
+    display: inline-block; background: #fff; border: 1px solid rgba(0,0,0,0.18); border-radius: 999px;
+    padding: 2px 7px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--ink-2);
+  }
+  .badge--new    { background: var(--yellow); border-color: var(--yellow-2); color: #6b4e00; }
+  .badge--exist  { background: #e8f7ea; color: #1f7a35; border-color: #c2e6c8; }
+  .badge--open   { background: #ffe3ea; color: #a02645; border-color: #ffb1c1; }
+
+  /* ---------- architecture ---------- */
+  .arch {
+    display: grid;
+    grid-template-columns: 1fr 1.35fr 1fr;
+    gap: 22px;
+    align-items: start;
+  }
+  .arch-col { display: flex; flex-direction: column; gap: 14px; }
+  .arch-col-head {
+    font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.2px;
+    color: var(--muted); text-align: center;
+  }
+  .node {
+    background: #fff; border: 2px solid var(--line); border-radius: 8px;
+    box-shadow: var(--shadow); padding: 10px 12px; font-size: 12px;
+    position: relative;
+  }
+  .node h4 { margin: 0 0 4px; font-size: 13px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .node ul { margin: 4px 0 0; padding-left: 16px; color: var(--ink-2); font-size: 11px; }
+  .node li { margin: 2px 0; }
+  .node .path { font-family: ui-monospace, Menlo, monospace; font-size: 10px; background: var(--wf-fill); padding: 0 4px; border-radius: 3px; }
+  .node--new { background: #fffbe8; border-color: #b78900; }
+  .node--money { background: #eef5ff; border-color: #1f4caa; }
+  .node--dashed { border-style: dashed; opacity: 0.85; }
+  .arch-link {
+    text-align: center; font-size: 10px; color: var(--muted); font-weight: 700;
+    letter-spacing: 0.5px; padding: 0 6px;
+  }
+  .arch-link::before { content: "↓ "; }
+  .legend-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+
+  .notes-row { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 26px; align-items: stretch; }
+
+  footer.canvas-footer {
+    padding: 18px 28px 40px;
+    color: var(--muted);
+    font-size: 12px;
+    text-align: center;
+    border-top: 1px dashed rgba(0,0,0,0.15);
+  }
+  footer.canvas-footer code { background: rgba(0,0,0,0.05); padding: 1px 5px; border-radius: 3px; font-size: 11px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+  @media (max-width: 980px) {
+    .arch { grid-template-columns: 1fr; }
+    .flow .arrow { display: none; }
+    .flow { gap: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="canvas-header">
+  <div class="brand">ztor.<small>BETA</small></div>
+  <div class="title">eShop — User Flow &amp; Architecture · wireframe v0.4 (draft)</div>
+  <div class="meta">
+    <span class="chip"><span class="swatch" style="background:var(--yellow)"></span>New build</span>
+    <span class="chip"><span class="swatch" style="background:#e8f7ea"></span>Existing / reused</span>
+    <span class="chip"><span class="swatch" style="background:var(--pink)"></span>Open decision</span>
+    <span class="chip"><span class="swatch" style="background:var(--green)"></span>Working assumption</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============================== 1 · USER FLOWS ============================== -->
+  <section class="board" aria-labelledby="flows-h">
+    <div class="board-title">
+      <h2 id="flows-h">1 · User Flows</h2>
+      <span class="sub">three actors · Creator Studio auto-creation · dual-currency checkout (fiat + POPCORN)</span>
+    </div>
+    <div class="board-rule"></div>
+
+    <div class="lane">
+      <div class="lane-head"><span class="dot" style="background:var(--purple)"></span>Admin (Creator Studio)</div>
+      <div class="flow">
+        <div class="step step--new"><b>Create creator profile</b><span class="en">Creator Studio · handle set here · Store account linked</span></div>
+        <div class="arrow"></div>
+        <div class="step step--new"><b>eShop auto-generated</b><span class="en">created together with the profile · no separate step</span></div>
+        <div class="arrow"></div>
+        <div class="step step--new"><b>Pick creator → manage</b><span class="en">opens Product/Orders/Reports as that artist's role · admin has no global view</span></div>
+        <div class="arrow"></div>
+        <div class="step step--new"><b>Add products</b><span class="en">dual pricing: cash base + POPCORN ref · separate fields</span></div>
+        <div class="arrow"></div>
+        <div class="step step--new"><b>Publish</b><span class="en">CMS surfaces Published shops only · manual + conditional sort</span></div>
+      </div>
+    </div>
+
+    <div class="lane">
+      <div class="lane-head"><span class="dot" style="background:var(--orange)"></span>Creator (operated by Admin · migrated from Beamco)</div>
+      <div class="flow">
+        <div class="step"><b>White-glove onboard</b><span class="en">ops-assisted · no migration pipeline (small N)</span></div>
+        <div class="arrow"></div>
+        <div class="step"><b>Ztor account</b><span class="en">existing user DB · no separate artist auth</span></div>
+        <div class="arrow"></div>
+        <div class="step step--new"><b>Creator profile</b><span class="en">created by Admin in Creator Studio · approval flow TBC w/ business</span></div>
+        <div class="arrow"></div>
+        <div class="step"><b>Shop run by internal staff</b><span class="en">v1 = admin-operated · artist SSO self-serve is phase 2</span></div>
+        <div class="arrow"></div>
+        <div class="step step--new"><b>Author drop post</b><span class="en">optional intro post on listing → Store social feed</span></div>
+        <div class="arrow"></div>
+        <div class="step"><b>Promote URL</b><span class="en">share /shop/:handle on socials</span></div>
+      </div>
+    </div>
+
+    <div class="lane">
+      <div class="lane-head"><span class="dot" style="background:var(--blue)"></span>Ztor (buyer)</div>
+      <div class="flow">
+        <div class="step"><b>Discover</b><span class="en">home rail · feed post · social link · creator profile</span></div>
+        <div class="arrow"></div>
+        <div class="step step--new"><b>Browse shop</b><span class="path">/shop/:handle</span></div>
+        <div class="arrow"></div>
+        <div class="step step--new"><b>Product detail</b><span class="en">cash + POPCORN price shown · variants</span></div>
+        <div class="arrow"></div>
+        <div class="step step--money"><b>Checkout</b><span class="en">fiat via Stripe = NEW rail · POPCORN reuses existing flow · platform toggle (Aug: Stripe only)</span></div>
+        <div class="arrow"></div>
+        <div class="step step--money"><b>Order confirmed</b><span class="en">income stays cash · no refunds in v1</span></div>
+        <div class="arrow"></div>
+        <div class="step step--new"><b>Pickup / delivery</b><span class="en">dynamic QR local pickup · shipping offline v1</span></div>
+      </div>
+    </div>
+
+    <div class="notes-row">
+      <div class="sticky sticky--assume">
+        <span class="tagline">Assumption</span>
+        <strong>White-glove migration</strong>
+        <ul><li>Beamco closed beta → small artist count</li><li>ops onboards manually, no pipeline build</li></ul>
+      </div>
+      <div class="sticky sticky--note">
+        <span class="tagline">Note</span>
+        <strong>Shop creation lives in Creator Studio</strong>
+        <ul><li>shop auto-created with the creator profile — nothing to create in BO</li><li>only Published shops reach the frontend (CMS-gated)</li></ul>
+      </div>
+      <div class="sticky sticky--note">
+        <span class="tagline">Note</span>
+        <strong>Fiat checkout is net-new for Ztor</strong>
+        <ul><li>today Ztor only takes POPCORN (virtual currency)</li><li>eShop adds a direct fiat rail (Stripe) — new payment integration</li><li>POPCORN purchase reuses the existing flow</li></ul>
+      </div>
+      <div class="sticky sticky--decision">
+        <span class="tagline">Open</span>
+        <strong>Creator registration approval</strong>
+        <ul><li>does opening creator sign-up need a review flow?</li><li>confirm with business team</li></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== 2 · KEY SCREENS ============================== -->
+  <section class="board" aria-labelledby="screens-h">
+    <div class="board-title">
+      <h2 id="screens-h">2 · Key Screens</h2>
+      <span class="sub">lo-fi · mobile-first for buyer surfaces · desktop for Creator Studio</span>
+    </div>
+    <div class="board-rule"></div>
+
+    <div class="screens">
+
+      <!-- Screen A: Home with artist shops rail -->
+      <div class="screen">
+        <div class="frame" role="img" aria-label="Wireframe: homepage with new artist shops rail">
+          <div class="frame-bar"><div class="dots"><i></i><i></i><i></i></div><div class="urlbar">ztor.com/zh-hk/<b>home</b></div></div>
+          <div class="frame-body">
+            <div class="nav-mock"><div class="wf-line w-30"></div><div class="wf-row"><div class="wf-line thin" style="width:24px"></div><div class="wf-line thin" style="width:24px"></div></div></div>
+            <div class="wf-img" style="height:74px"></div>
+            <div class="wf-label">焦點 Spotlight</div>
+            <div class="wf-rail">
+              <div class="wf-card"><div class="wf-img" style="height:44px"></div><div class="wf-line thin w-70"></div></div>
+              <div class="wf-card"><div class="wf-img" style="height:44px"></div><div class="wf-line thin w-70"></div></div>
+              <div class="wf-card"><div class="wf-img" style="height:44px"></div><div class="wf-line thin w-70"></div></div>
+              <div class="wf-card"><div class="wf-img" style="height:44px"></div><div class="wf-line thin w-70"></div></div>
+            </div>
+            <div class="wf-hr"></div>
+            <div class="wf-row" style="justify-content:space-between">
+              <div class="wf-label">🛍 Artist Shops <span class="badge badge--new">New</span></div>
+              <div class="wf-line thin" style="width:30px"></div>
+            </div>
+            <div class="wf-rail">
+              <div class="wf-card"><div class="wf-avatar" style="margin:0 auto"></div><div class="wf-line thin w-70" style="margin:0 auto"></div><div class="wf-tag" style="align-self:center">12 items</div></div>
+              <div class="wf-card"><div class="wf-avatar" style="margin:0 auto"></div><div class="wf-line thin w-70" style="margin:0 auto"></div><div class="wf-tag" style="align-self:center">8 items</div></div>
+              <div class="wf-card"><div class="wf-avatar" style="margin:0 auto"></div><div class="wf-line thin w-70" style="margin:0 auto"></div><div class="wf-tag" style="align-self:center">5 items</div></div>
+              <div class="wf-card"><div class="wf-avatar" style="margin:0 auto"></div><div class="wf-line thin w-70" style="margin:0 auto"></div><div class="wf-tag" style="align-self:center">9 items</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="screen-caption">
+          <div class="screen-name">Home — Artist Shops rail<span class="path">/home</span></div>
+          <div class="sticky">
+            <strong>Reuses CMS Content Blocks</strong>
+            <ul><li>same grammar as movie rails · manual + conditional sort</li><li>only Published shops appear (CMS-gated)</li><li>card → shop landing · placement above fold TBC</li></ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Screen B: Creator profile ≡ Shop landing (combined) -->
+      <div class="screen">
+        <div class="frame" role="img" aria-label="Wireframe: creator profile doubling as shop landing — vanity URL opens the shop tab">
+          <div class="frame-bar"><div class="dots"><i></i><i></i><i></i></div><div class="urlbar">ztor.com/<b>shop/denise</b></div></div>
+          <div class="frame-body">
+            <div class="wf-img" style="height:56px"></div>
+            <div class="wf-row">
+              <div class="wf-avatar" style="width:44px;height:44px;margin-top:-22px;border:2px solid #fff"></div>
+              <div style="flex:1"><div class="wf-line w-55"></div><div class="wf-line thin w-40" style="margin-top:4px"></div></div>
+            </div>
+            <div class="wf-row"><span class="wf-tag wf-tag--on">✓ Creator</span><span class="wf-tag">1.2k followers</span></div>
+            <div class="wf-row">
+              <div class="wf-btn wf-btn--primary" style="flex:1">Follow</div>
+              <div class="wf-btn" style="flex:1">↗ Share</div>
+            </div>
+            <div class="wf-tabs">
+              <span class="wf-tag">貼文 Posts</span>
+              <span class="wf-tag wf-tag--on">🛍 Shop</span>
+              <span class="wf-tag">喜歡 Likes</span>
+            </div>
+            <div class="wf-row"><span class="wf-tag wf-tag--on">All</span><span class="wf-tag">Apparel</span><span class="wf-tag">Vinyl</span><span class="wf-tag">Digital</span></div>
+            <div class="wf-grid2">
+              <div class="wf-card"><div class="wf-img" style="height:52px"></div><div class="wf-line thin w-90"></div><span class="price">HK$180</span></div>
+              <div class="wf-card"><div class="wf-img" style="height:52px"></div><div class="wf-line thin w-90"></div><span class="price">HK$280</span></div>
+              <div class="wf-card"><div class="wf-img" style="height:52px"></div><div class="wf-line thin w-90"></div><span class="price">HK$120</span></div>
+              <div class="wf-card"><div class="wf-img" style="height:52px"></div><div class="wf-line thin w-90"></div><span class="price">HK$450</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="screen-caption">
+          <div class="screen-name">Creator Profile ≡ Shop landing — one page, two routes<span class="path">/shop/:handle → /social/member/u-:id · tab=shop</span></div>
+          <div class="sticky">
+            <strong>One page, one data source</strong>
+            <ul><li>vanity URL deep-links to profile with Shop tab active — no separate shop page to build</li><li>Social + Shop content share the same page</li><li>Movie DB person page stays separate → links here via button (not merged)</li><li>Shop tab + category chips render only when <code>has_shop</code></li><li>needs handle registry: unique, reserved words, rename policy</li></ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Screen D: Product detail -->
+      <div class="screen">
+        <div class="frame" role="img" aria-label="Wireframe: product detail with buy button">
+          <div class="frame-bar"><div class="dots"><i></i><i></i><i></i></div><div class="urlbar">ztor.com/shop/denise/<b>p-1042</b></div></div>
+          <div class="frame-body">
+            <div class="wf-img" style="height:110px"></div>
+            <div class="wf-line w-70"></div>
+            <div class="wf-row" style="justify-content:space-between"><span class="price" style="font-size:13px">US$36 · 🍿 360</span><span class="wf-tag">In stock</span></div>
+            <div class="wf-label">Size / Variant</div>
+            <div class="wf-row"><span class="wf-tag">S</span><span class="wf-tag wf-tag--on">M</span><span class="wf-tag">L</span><span class="wf-tag">XL</span></div>
+            <div class="wf-label">Pay with</div>
+            <div class="wf-row"><span class="wf-tag wf-tag--on">💳 Card (Stripe)</span><span class="wf-tag">🍿 POPCORN</span></div>
+            <div class="wf-btn wf-btn--accent" style="padding:9px">Buy now</div>
+            <div class="wf-hr"></div>
+            <div class="wf-row"><div class="wf-avatar" style="width:22px;height:22px"></div><div class="wf-line thin w-40"></div><div class="wf-line thin" style="width:14px;margin-left:auto"></div></div>
+            <div class="wf-line thin w-90"></div>
+            <div class="wf-line thin w-70"></div>
+          </div>
+        </div>
+        <div class="screen-caption">
+          <div class="screen-name">Product detail<span class="path">/shop/:handle/p-:id</span></div>
+          <div class="sticky">
+            <strong>Dual-currency checkout</strong>
+            <ul><li>Aug scope: Stripe only · Antom + local wallets longer-term</li><li>fiat + POPCORN both supported · platform-level on/off switch</li><li>dual price fields — cash base, POPCORN auto-converted, stored separately (no rounding drift)</li><li>POPCORN UX = USD-mapped amount, never "buying tokens"</li><li>no refunds in v1 · pickup via dynamic QR or offline shipping</li></ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Screen E: Feed product post -->
+      <div class="screen">
+        <div class="frame" role="img" aria-label="Wireframe: community feed post with attached product card">
+          <div class="frame-bar"><div class="dots"><i></i><i></i><i></i></div><div class="urlbar">ztor.com/zh-hk/<b>posts</b></div></div>
+          <div class="frame-body">
+            <div class="wf-row"><span class="wf-tag wf-tag--on">全部 All</span><span class="wf-tag">貼文</span><span class="wf-tag">片單</span><span class="wf-tag">活動</span></div>
+            <div class="wf-card">
+              <div class="wf-row"><div class="wf-avatar" style="width:26px;height:26px"></div><div class="wf-line thin w-40"></div><span class="wf-tag wf-tag--on" style="margin-left:auto">✓ Creator</span></div>
+              <div class="wf-line thin w-90"></div>
+              <div class="wf-line thin w-70"></div>
+              <div class="wf-card" style="background:var(--wf-fill)">
+                <div class="wf-row">
+                  <div class="wf-img" style="width:48px;height:48px;flex:none"></div>
+                  <div style="flex:1"><div class="wf-line thin w-70"></div><div class="price" style="margin-top:4px">HK$280</div></div>
+                  <div class="wf-btn wf-btn--primary" style="align-self:center">View</div>
+                </div>
+              </div>
+              <div class="wf-row"><div class="wf-line thin" style="width:20px"></div><div class="wf-line thin" style="width:20px"></div><div class="wf-line thin" style="width:20px"></div></div>
+            </div>
+            <div class="wf-card">
+              <div class="wf-row"><div class="wf-avatar" style="width:26px;height:26px"></div><div class="wf-line thin w-40"></div></div>
+              <div class="wf-line thin w-90"></div>
+            </div>
+          </div>
+        </div>
+        <div class="screen-caption">
+          <div class="screen-name">Feed — product drop post<span class="path">/posts</span></div>
+          <div class="sticky">
+            <strong>Authored, not auto-generated</strong>
+            <ul><li>new post type: product card attachment</li><li>artist writes the story, product card is the CTA</li><li>auto-posts read as spam → avoided</li></ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Screen F: Creator Studio — two permission POVs -->
+      <div style="grid-column: 1 / -1; display:flex; flex-direction:column; gap:16px;">
+        <div class="screen-name" style="text-align:left; font-size:13px">Creator Studio — two permission POVs<span class="path">internal tool · Beamco team · artist SSO = phase 2</span></div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(330px, 1fr)); gap:30px;">
+
+          <!-- POV 1 · Admin -->
+          <div style="display:flex; flex-direction:column; gap:10px; align-items:center;">
+            <div class="frame frame--wide" role="img" aria-label="Wireframe: Creator Studio Admin POV — sees Creators module, must select a creator to open scoped modules">
+              <div class="frame-bar"><div class="dots"><i></i><i></i><i></i></div><div class="urlbar">studio.ztor.com/<b>creators</b></div></div>
+              <div class="frame-body" style="flex-direction:row; gap:10px;">
+                <div style="width:124px; flex:none; display:flex; flex-direction:column; gap:6px; border-right:1px solid var(--wf-line); padding-right:10px;">
+                  <div class="wf-label" style="color:var(--ink)">🛡 Admin</div>
+                  <span class="wf-tag wf-tag--on">👤 Creators</span>
+                  <div class="wf-hr"></div>
+                  <span class="wf-tag" style="opacity:0.4">🔒 Products</span>
+                  <span class="wf-tag" style="opacity:0.4">🔒 Orders</span>
+                  <span class="wf-tag" style="opacity:0.4">🔒 Reports</span>
+                  <div class="wf-label" style="margin-top:2px">locked until a creator is picked</div>
+                </div>
+                <div style="flex:1; display:flex; flex-direction:column; gap:8px;">
+                  <div class="wf-row" style="justify-content:space-between">
+                    <div class="wf-line w-30"></div>
+                    <div class="wf-btn wf-btn--primary">+ Create creator</div>
+                  </div>
+                  <div class="wf-card">
+                    <div class="wf-row"><span class="wf-label" style="width:84px">Creator</span><span class="wf-label" style="width:96px">Handle</span><span class="wf-label" style="width:74px">Status</span><span class="wf-label" style="margin-left:auto">&nbsp;</span></div>
+                    <div class="wf-hr"></div>
+                    <div class="wf-row"><div class="wf-row" style="width:84px"><div class="wf-avatar" style="width:18px;height:18px"></div><div class="wf-line thin" style="width:44px"></div></div><span class="wf-tag" style="width:96px">/shop/denise</span><span class="wf-tag wf-tag--on" style="width:74px">Published</span><span class="wf-btn" style="margin-left:auto">Manage →</span></div>
+                    <div class="wf-row"><div class="wf-row" style="width:84px"><div class="wf-avatar" style="width:18px;height:18px"></div><div class="wf-line thin" style="width:44px"></div></div><span class="wf-tag" style="width:96px">/shop/aya</span><span class="wf-tag" style="width:74px">Draft</span><span class="wf-btn" style="margin-left:auto">Manage →</span></div>
+                    <div class="wf-row"><div class="wf-row" style="width:84px"><div class="wf-avatar" style="width:18px;height:18px"></div><div class="wf-line thin" style="width:44px"></div></div><span class="wf-tag" style="width:96px">/shop/kmt</span><span class="wf-tag" style="width:74px">Draft</span><span class="wf-btn" style="margin-left:auto">Manage →</span></div>
+                  </div>
+                  <div class="wf-label">select a creator → opens Product / Orders / Reports <b>as that artist's role</b> (POV 2)</div>
+                </div>
+              </div>
+            </div>
+            <div class="screen-caption" style="max-width:520px;">
+              <div class="screen-name">POV 1 · Admin permission<span class="path">studio.ztor.com/creators</span></div>
+              <div class="sticky" style="max-width:none;">
+                <strong>Creator Management is the only global module</strong>
+                <ul><li>sees the full creator list · creates creators (auto-generates the eShop)</li><li>Product / Orders / Reports are locked until a creator is selected</li><li>picking a creator drops admin into that artist's role-scoped view = POV 2</li></ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- POV 2 · Creator -->
+          <div style="display:flex; flex-direction:column; gap:10px; align-items:center;">
+            <div class="frame frame--wide" role="img" aria-label="Wireframe: Creator Studio Creator POV — only own-shop Product, Orders, Reports; no Creators module">
+              <div class="frame-bar"><div class="dots"><i></i><i></i><i></i></div><div class="urlbar">studio.ztor.com/<b>products</b></div></div>
+              <div class="frame-body" style="flex-direction:row; gap:10px;">
+                <div style="width:124px; flex:none; display:flex; flex-direction:column; gap:6px; border-right:1px solid var(--wf-line); padding-right:10px;">
+                  <div class="wf-row"><div class="wf-avatar" style="width:22px;height:22px"></div><div class="wf-line thin" style="width:48px"></div></div>
+                  <div class="wf-label">Creator · own shop</div>
+                  <div class="wf-hr"></div>
+                  <span class="wf-tag wf-tag--on">🛍 Products</span>
+                  <span class="wf-tag">Orders</span>
+                  <span class="wf-tag">Reports</span>
+                  <div class="wf-label" style="margin-top:2px">no Creators module</div>
+                </div>
+                <div style="flex:1; display:flex; flex-direction:column; gap:8px;">
+                  <div class="wf-row" style="justify-content:space-between">
+                    <div class="wf-line w-30"></div>
+                    <div class="wf-btn wf-btn--primary">+ Add product</div>
+                  </div>
+                  <div class="wf-card">
+                    <div class="wf-row"><span class="wf-label" style="width:96px">Product</span><span class="wf-label" style="width:66px">Price</span><span class="wf-label" style="width:54px">Stock</span><span class="wf-label">Status</span></div>
+                    <div class="wf-hr"></div>
+                    <div class="wf-row"><div class="wf-row" style="width:96px"><div class="wf-img" style="width:18px;height:18px;flex:none"></div><div class="wf-line thin" style="width:56px"></div></div><span class="price" style="width:66px">US$36</span><span class="wf-tag" style="width:54px">120</span><span class="wf-tag wf-tag--on">Live</span></div>
+                    <div class="wf-row"><div class="wf-row" style="width:96px"><div class="wf-img" style="width:18px;height:18px;flex:none"></div><div class="wf-line thin" style="width:56px"></div></div><span class="price" style="width:66px">US$18</span><span class="wf-tag" style="width:54px">0</span><span class="wf-tag">Draft</span></div>
+                    <div class="wf-row"><div class="wf-row" style="width:96px"><div class="wf-img" style="width:18px;height:18px;flex:none"></div><div class="wf-line thin" style="width:56px"></div></div><span class="price" style="width:66px">US$45</span><span class="wf-tag" style="width:54px">30</span><span class="wf-tag wf-tag--on">Live</span></div>
+                  </div>
+                  <div class="wf-label">scoped to own shop · same screens admin enters after picking this creator</div>
+                </div>
+              </div>
+            </div>
+            <div class="screen-caption" style="max-width:520px;">
+              <div class="screen-name">POV 2 · Creator permission<span class="path">studio.ztor.com/products · via SSO (phase 2)</span></div>
+              <div class="sticky" style="max-width:none;">
+                <strong>Own shop only — no creator switching</strong>
+                <ul><li>access limited to Product / Orders / Reports for their own shop</li><li>no Creators module · cannot see or switch to other artists</li><li>v1 = admin operates this on the artist's behalf · artist SSO self-serve is phase 2</li></ul>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div class="notes-row">
+          <div class="sticky sticky--note" style="max-width:none;">
+            <span class="tagline">Permission model</span>
+            <strong>Same modules, role decides the scope</strong>
+            <ul><li>Admin role: Creator Management (global) + role-assumption into any creator's scoped modules</li><li>Creator role: only their own Product / Orders / Reports</li><li>one codebase, one UI — the permission layer gates what each role can reach</li></ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================== 3 · ARCHITECTURE ============================== -->
+  <section class="board" aria-labelledby="arch-h">
+    <div class="board-title">
+      <h2 id="arch-h">3 · Architecture Sketch</h2>
+      <span class="sub">commerce microservice (Beamco team) · Ztor team owns its own client API gateway · dual-currency money path</span>
+    </div>
+    <div class="board-rule"></div>
+
+    <div class="arch">
+
+      <div class="arch-col">
+        <div class="arch-col-head">Clients</div>
+        <div class="node">
+          <h4>Ztor Web FE <span class="badge badge--exist">Eric team</span></h4>
+          <ul>
+            <li>Store FE as <b>Widget</b> — accelerates Jul 30 target (pending Eric confirm)</li>
+            <li>Home rail · Artist Shops <span class="badge badge--new">New</span></li>
+            <li>Creator profile + Shop tab · <span class="path">/shop/:handle</span> <span class="badge badge--new">New</span></li>
+            <li>Feed · product-card post type <span class="badge badge--new">New</span></li>
+          </ul>
+        </div>
+        <div class="node node--new">
+          <h4>Creator Studio <span class="badge badge--new">New · Beamco team</span></h4>
+          <ul>
+            <li>creator profile → eShop auto-generated</li>
+            <li>products · orders · reports · publish gating</li>
+            <li>role-scoped: Admin = creator mgmt + role-assumption · Creator = own shop only</li>
+            <li>internal tool v1 · artist SSO phase 2</li>
+          </ul>
+        </div>
+        <div class="node node--dashed">
+          <h4>Beamco clients <span class="badge badge--exist">Existing tenant</span></h4>
+          <ul>
+            <li>fans-web · star-web · console-web</li>
+            <li>keep consuming the same commerce module</li>
+            <li>artists white-glove onboarded → Ztor</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="arch-col">
+        <div class="arch-col-head">Platform core</div>
+        <div class="node">
+          <h4>User DB <span class="badge badge--exist">Existing</span></h4>
+          <ul><li>single identity · no separate artist accounts</li></ul>
+        </div>
+        <div class="arch-link">1 : 0..1</div>
+        <div class="node node--new">
+          <h4>creator_profile <span class="badge badge--new">New entity</span></h4>
+          <ul>
+            <li>keyed to <span class="path">user_id</span> · public handle registry</li>
+            <li>capability flags: <span class="path">has_shop</span> · <span class="path">can_crowdfund</span></li>
+            <li>identity bridge: Ztor user ↔ commerce tenant user</li>
+          </ul>
+        </div>
+        <div class="arch-link">tenant-scoped calls via</div>
+        <div class="node node--new">
+          <h4>Ztor client API gateway <span class="badge badge--new">New · Eric team</span></h4>
+          <ul>
+            <li>Ztor owns its own gateway — does NOT reuse Beamco fans-site gateway</li>
+            <li>maps Ztor session → commerce tenant context</li>
+            <li>Creator Studio has its own gateway — Beamco team</li>
+          </ul>
+        </div>
+        <div class="arch-link">calls</div>
+        <div class="node">
+          <h4>Beamco commerce module <span class="badge badge--exist">Existing · Beamco team</span></h4>
+          <ul>
+            <li>Shop · Product · Inventory · Order (+ <span class="path">base</span>: auth · tenants · payment)</li>
+            <li>multi-tenant by design — ZTor a named tenant in original arch</li>
+            <li>movie orders &amp; eShop orders stay in separate DBs</li>
+            <li>⚠ API spec undocumented · shop UAT bugs in flight</li>
+          </ul>
+        </div>
+        <div class="arch-link">product cards link into</div>
+        <div class="node">
+          <h4>Posts service <span class="badge badge--exist">Existing</span></h4>
+          <ul><li>+ product-card attachment type <span class="badge badge--new">New</span></li><li>authored drop posts → feed + profile</li></ul>
+        </div>
+      </div>
+
+      <div class="arch-col">
+        <div class="arch-col-head">Money &amp; Fulfillment</div>
+        <div class="node node--money">
+          <h4>Fiat rail · Stripe <span class="badge badge--new">New for Ztor</span></h4>
+          <ul><li>Ztor has only ever taken POPCORN — direct fiat is a net-new integration</li><li>cards · Apple/Google Pay · on-page, API-only · Aug = Stripe only</li><li>longer-term: Antom local wallets · PayPal · Alipay · WeChat Pay · LINE Pay · 街口 · 悠遊卡 (Jeff documenting)</li><li>no refunds in v1</li></ul>
+        </div>
+        <div class="node node--money">
+          <h4>POPCORN rail <span class="badge badge--exist">Existing Ztor flow</span></h4>
+          <ul><li>reuses Ztor's virtual-currency purchase — new part is POPCORN-for-merch</li><li>both rails toggle on/off at platform level</li><li>dual price fields: cash base + auto-converted POPCORN, stored separately</li><li>UX shows USD-mapped amount — never "buying tokens"</li></ul>
+        </div>
+        <div class="arch-link">settles into</div>
+        <div class="node node--money">
+          <h4>Artist wallet <span class="badge badge--exist">Existing · base module</span></h4>
+          <ul>
+            <li>income stays CASH only — POPCORN payouts deferred (legal / scale)</li>
+            <li>Stripe Connect direct-bank settlement — research open</li>
+            <li>Ztor platform cut TBD: 0% today vs 60/40 vision · Alex pushes full-POPCORN</li>
+          </ul>
+        </div>
+        <div class="node node--new">
+          <h4>Dynamic QR pickup <span class="badge badge--open">Blocker · scope TBD</span></h4>
+          <ul><li>only in-system fulfillment v1 · shipping handled offline</li><li>token/ID link, JS-generated · refresh 5–30s (anti-screenshot) · operator validates ID</li><li>needs solutioning · HK/TW logistics provider TBD</li></ul>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="notes-row">
+      <div class="sticky sticky--decision">
+        <span class="tagline">Decision D1 · proposed</span>
+        <strong>Creator = entity, not role</strong>
+        <ul><li>one primitive for eShop + Sept crowdfund merge</li><li>avoids role sprawl per feature</li></ul>
+      </div>
+      <div class="sticky sticky--decision">
+        <span class="tagline">Decision D2 · partial</span>
+        <strong>Dual-currency in, payouts cash</strong>
+        <ul><li>fiat + POPCORN checkout · platform-level toggle</li><li>income stays cash · POPCORN payouts deferred</li><li>still open: platform cut + Stripe Connect settlement</li></ul>
+      </div>
+      <div class="sticky sticky--assume">
+        <span class="tagline">Decision D3 · resolved</span>
+        <strong>Wrap commerce module as microservice</strong>
+        <ul><li>multi-tenant by design · ZTor a named tenant from day one</li><li>gateway split: Ztor team owns client gateway · Beamco owns Creator Studio gateway</li></ul>
+      </div>
+      <div class="sticky sticky--assume">
+        <span class="tagline">Decision D4 · resolved</span>
+        <strong>Physical goods + bundles only</strong>
+        <ul><li>excludes virtual goods · music · event tickets · membership cards</li><li>no refunds v1 · QR pickup + offline shipping</li></ul>
+      </div>
+      <div class="sticky sticky--assume">
+        <span class="tagline">Decision D5 · resolved</span>
+        <strong>Admin surface = Creator Studio</strong>
+        <ul><li>v1 admin-operated via Creator list layer</li><li>artist SSO self-serve = phase 2</li><li>internal-tool quality bar</li></ul>
+      </div>
+      <div class="sticky sticky--note">
+        <span class="tagline">Schedule</span>
+        <strong>Jul 30 internal · Aug wk-1 launch</strong>
+        <ul><li>Widget FE approach — pending Eric confirm</li><li>QR generator is an Asana blocker</li><li>no BRD or task breakdown yet</li></ul>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="canvas-footer">
+  Ztor eShop wireframe v0.4 · 2026-06-15 ·
+  companion to <code>aic-output/ztor/ztor-sitemap.html</code> (v1.15) ·
+  visual system: Ztor sitemap canvas style · lo-fi frames are layout intent, not visual design ·
+  D1 proposed · D2 partial · D3–D5 resolved · open: QR scope · registration approval · platform cut.
+</footer>
+
+</body>
+</html>

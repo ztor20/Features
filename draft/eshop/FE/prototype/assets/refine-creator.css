@@ -1,0 +1,302 @@
+/* ════════════════════════════════════════════════════════════════════════
+   refine-creator.css  ·  Ztor 2.0 — Creator Profile archetype rework
+   ────────────────────────────────────────────────────────────────────────
+   Mobbin-benchmarked rework of the 12×4 creator-profile pages.
+   Category pattern adopted (Spotify / Weverse / Patreon / Suno / Substack /
+   Record Club): COVER → identity (name · meta) → inline STAT ROW →
+   prominent FOLLOW CTA + icon actions → TAB SPINE → content / empty state.
+
+   Loaded AFTER components.css. Every rule scoped under `body.rf-creator`
+   so it is inert on any page that has not opted in. tokens.css and
+   components.css are NEVER edited — all deltas live here.
+
+   Strategy: maximise CSS-driven transformation of the EXISTING hero DOM
+   (no markup change needed for the header rework) + light, documented
+   HTML/JS additions on the 4 canonical pages for the Follow toggle and
+   empty states. transform/opacity only; honours prefers-reduced-motion.
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────────────────────────────────────
+   1 · HERO — identity block restyle (CSS-only over existing markup)
+   Existing DOM:  .creator-hero__copy
+                    ├ h1.creator-hero__name (#creatorName)
+                    ├ p.creator-hero__tagline (#creatorTagline)
+                    └ .creator-hero__row
+                        ├ .creator-hero__social  (YT/IG/TH chips)
+                        ├ .shop-head__desc  (#creatorFollowers — "role · N 追蹤")
+                        └ button.btn.btn--ghost.btn--sm  ("♡ 加入社群")
+   We promote the identity, turn the follower line into a real stat row,
+   and turn the ghost button into the category's anchor CTA — all via CSS.
+   ───────────────────────────────────────────────────────────────────────── */
+body.rf-creator .creator-hero {
+  min-height: 360px;
+}
+
+/* Deeper, cleaner cover wash so the identity reads at the bottom edge —
+   matches Spotify / Weverse cover treatment without touching the bg image. */
+body.rf-creator .creator-hero__bg::after {
+  background: linear-gradient(
+    to top,
+    var(--bg-primary) 0%,
+    rgba(10, 10, 10, 0.78) 28%,
+    rgba(10, 10, 10, 0.35) 62%,
+    rgba(10, 10, 10, 0.05) 100%
+  );
+}
+
+body.rf-creator .creator-hero__copy {
+  gap: 10px;
+  padding-bottom: 30px;
+}
+
+/* Name reads bigger / tighter — the category leads with identity. */
+body.rf-creator .creator-hero__name {
+  font-size: 48px;
+  line-height: 1.08;
+  letter-spacing: 0.01em;
+}
+
+body.rf-creator .creator-hero__tagline {
+  font-size: var(--fs-body);
+  color: var(--text-secondary);
+  max-width: 60ch;
+}
+
+/* The action row: stats sit left, CTA + icon actions pinned right.
+   Existing children are re-ordered with `order` so NO markup change is
+   needed. The follower line (#creatorFollowers) becomes a stat chip;
+   the social chips drop into a compact icon cluster beside the CTA. */
+body.rf-creator .creator-hero__row {
+  flex-wrap: wrap;
+  gap: 14px 18px;
+  margin-top: 8px;
+  width: 100%;
+}
+
+/* Follower line → primary stat. JS injects "role · N 追蹤" — we keep that
+   string but give it weight so it reads as a stat, not an aside. */
+body.rf-creator .creator-hero__row .shop-head__desc {
+  order: 1;
+  display: inline-flex;
+  align-items: center;
+  font-size: 14px;
+  color: var(--text-secondary);
+  letter-spacing: 0.01em;
+}
+body.rf-creator .creator-hero__row .shop-head__desc::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  margin-right: 9px;
+  border-radius: 50%;
+  background: var(--yellow-500);
+  box-shadow: 0 0 0 3px rgba(255, 163, 63, 0.18);
+}
+
+/* Push the CTA + social cluster to the far right of the row. */
+body.rf-creator .creator-hero__row .creator-hero__social {
+  order: 3;
+  margin-left: auto;
+}
+body.rf-creator .creator-hero__row .btn {
+  order: 4;
+}
+
+/* ── Follow CTA — the category's visual anchor (Spotify / Weverse / Patreon).
+   Reskins the existing .btn--ghost.btn--sm into a prominent pill. The
+   "Follow → Following" toggle is driven by [data-following] (tiny inline
+   script on the canonical pages); the default (unset) state is "Follow". */
+body.rf-creator .creator-hero__row .btn--ghost {
+  height: 44px;
+  padding: 0 26px;
+  border-radius: var(--radius-pill);
+  font-size: 15px;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.02em;
+  color: var(--neutral-900, #0a0a0a);
+  background: var(--yellow-500);
+  border: 1px solid var(--yellow-500);
+  transition: background 180ms var(--ease-out), color 180ms var(--ease-out),
+              border-color 180ms var(--ease-out), transform 180ms var(--ease-out);
+}
+body.rf-creator .creator-hero__row .btn--ghost:hover {
+  background: var(--yellow-400);
+  border-color: var(--yellow-400);
+  transform: translateY(-1px);
+}
+body.rf-creator .creator-hero__row .btn--ghost:active {
+  transform: translateY(0);
+}
+body.rf-creator .creator-hero__row .btn--ghost:focus-visible {
+  outline: 2px solid var(--yellow-400);
+  outline-offset: 3px;
+}
+/* The follow CTA is reskinned to a SOLID pill — suppress the base ghost glass
+   lens (::before frost + ::after spectral rim), which would otherwise paint over
+   the solid fill (a z-index:-1 pseudo renders above the element's own bg). */
+body.rf-creator .creator-hero__row .btn--ghost::before,
+body.rf-creator .creator-hero__row .btn--ghost::after { content: none; }
+
+/* Following state — quieter glass fill, the conventional "engaged" look.
+   Driven by JS swapping textContent + setting data-following on <body> or
+   the button; we target the button's own [data-following] for locality. */
+body.rf-creator .creator-hero__row .btn--ghost[data-following="true"] {
+  color: var(--text-primary);
+  background: var(--glass-bg-default);
+  border-color: var(--glass-stroke-default);
+}
+body.rf-creator .creator-hero__row .btn--ghost[data-following="true"]:hover {
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-stroke-default);
+}
+
+/* Social cluster — tighten into the action zone, slightly smaller. */
+body.rf-creator .creator-hero__social a {
+  width: 34px;
+  height: 34px;
+  transition: background 180ms var(--ease-out), transform 180ms var(--ease-out);
+}
+body.rf-creator .creator-hero__social a:hover {
+  transform: translateY(-1px);
+}
+body.rf-creator .creator-hero__social a:focus-visible {
+  outline: 2px solid var(--yellow-400);
+  outline-offset: 2px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   2 · TAB SPINE — make glass-tabs the clear content spine
+   Sticky under the header so the tabs stay reachable while the content
+   scrolls (Spotify / Substack / Base behaviour), with a subtle scrim.
+   ───────────────────────────────────────────────────────────────────────── */
+/* Removed 2026-06-23: page-keyed override of component spacing (anti-pattern) —
+   it set the tabs to 28px above on creator pages while leaderboard used 36px, a
+   split-brain. The base component now owns the rhythm; the section padding-top
+   owns the gap above the tabs. */
+
+/* Hairline rule under the tab row visually seats it as a spine, mirroring
+   the underline-tab category convention while keeping the pill skin. */
+body.rf-creator .section--flush-top .container--wide {
+  position: relative;
+}
+
+body.rf-creator .glass-tabs__item {
+  transition: background-color 160ms ease, color 160ms ease, transform 160ms ease;
+}
+body.rf-creator .glass-tabs__item:focus-visible {
+  outline: 2px solid var(--yellow-400);
+  outline-offset: 2px;
+  color: var(--text-primary);
+}
+/* Active pill gets a touch more presence than the base ghost glow. */
+body.rf-creator .glass-tabs__item--active,
+body.rf-creator .glass-tabs__item--active:hover {
+  box-shadow:
+    rgba(255, 163, 63, 0.95) 1.1px 2.2px 0.5px -1.8px inset,
+    rgba(255, 163, 63, 0.95) -1px -2.2px 0.5px -1.8px inset,
+    rgba(0, 0, 0, 0.12) 2px 3px 2px 0 inset;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   3 · CONTENT POLISH — gentle lifts that read "premium", not "templated"
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* Posts grid (貼文) — squarer radius + hover lift on cells. */
+body.rf-creator .ig-cell {
+  border-radius: 10px;
+  transition: transform 220ms var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  body.rf-creator .ig-cell:hover { transform: translateY(-2px); }
+}
+body.rf-creator .ig-cell__overlay { border-radius: 10px; }
+
+/* IG-style profile sub-head (貼文): stat numbers get the brand accent on
+   hover-free emphasis so the identity → stats rhythm repeats per tab. */
+body.rf-creator .ig-head__name { font-size: 22px; }
+
+/* Pickup slot (本月精選) — soften corners + lift the media to feel like a drop. */
+body.rf-creator .creator-pickup__media {
+  border-radius: 0;   /* featured item is sharp, matching the premium shop */
+  transition: transform 240ms var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  body.rf-creator .creator-pickup:hover .creator-pickup__media {
+    transform: translateY(-2px);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   4 · EMPTY STATES — first-class, per tab (zh-TW copy lives in the markup)
+   The renderer leaves grids blank when a creator has no data for a tab.
+   .rf-empty is a documented HTML block the canonical pages render via a
+   tiny init guard; styled here so it propagates by link.
+   ───────────────────────────────────────────────────────────────────────── */
+body.rf-creator .rf-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  text-align: center;
+  padding: 72px 24px;
+  margin-top: 28px;
+  border: 1px dashed var(--glass-stroke-default);
+  border-radius: 16px;
+  background: var(--white-alpha-4);
+}
+body.rf-creator .rf-empty__icon {
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: var(--yellow-500);
+  background: rgba(255, 163, 63, 0.12);
+}
+body.rf-creator .rf-empty__icon svg { width: 22px; height: 22px; }
+body.rf-creator .rf-empty__title {
+  font-family: var(--font-cjk-display);
+  font-size: 16px;
+  font-weight: var(--fw-bold);
+  color: var(--text-primary);
+}
+body.rf-creator .rf-empty__desc {
+  font-size: 13px;
+  color: var(--text-tertiary);
+  max-width: 34ch;
+  line-height: 1.7;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   5 · MOTION — hero identity rise on load (transform/opacity only).
+   Mirrors the site's reveal feel without adding a ScrollTrigger; the hero
+   is above the fold so it animates on load via a one-shot class added by
+   the canonical pages' inline guard (.rf-hero-in). Pure CSS keyframe.
+   ───────────────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  body.rf-creator.rf-hero-in .creator-hero__name,
+  body.rf-creator.rf-hero-in .creator-hero__tagline,
+  body.rf-creator.rf-hero-in .creator-hero__row {
+    animation: rf-rise 620ms var(--ease-out) both;
+  }
+  body.rf-creator.rf-hero-in .creator-hero__tagline { animation-delay: 70ms; }
+  body.rf-creator.rf-hero-in .creator-hero__row { animation-delay: 140ms; }
+
+  @keyframes rf-rise {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   6 · RESPONSIVE
+   ───────────────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  body.rf-creator .creator-hero { min-height: 300px; }
+  body.rf-creator .creator-hero__name { font-size: 32px; }
+  body.rf-creator .creator-hero__row .creator-hero__social { margin-left: 0; }
+  body.rf-creator .creator-hero__row .btn--ghost { width: 100%; order: 5; }
+  body.rf-creator .rf-empty { padding: 56px 20px; }
+}

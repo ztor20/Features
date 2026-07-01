@@ -1,0 +1,66 @@
+/* ════════════════════════════════════════════════════════════════
+   ds-toast.css — single global toast (window.DSToast). Bottom-centre,
+   glass material, slides up + fades. Reused by the PDP and checkout.
+   ════════════════════════════════════════════════════════════════ */
+.ds-toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(28px + env(safe-area-inset-bottom, 0px));
+  z-index: var(--z-modal);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  max-width: min(92vw, 440px);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--glass-fill);
+  -webkit-backdrop-filter: var(--glass-backdrop);
+          backdrop-filter: var(--glass-backdrop);
+  border: var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  color: var(--text-primary);
+  font-family: var(--font-cjk-text);
+  font-size: var(--fs-body-sm);
+  opacity: 0;
+  transform: translate(-50%, 14px);
+  pointer-events: none;
+  transition: opacity 220ms var(--ease-out), transform 220ms var(--ease-out);
+}
+.ds-toast.is-shown { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+.ds-toast__dot {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-pill);
+  background: var(--yellow-500);
+  color: var(--yellow-ink);
+}
+.ds-toast__dot svg { width: 13px; height: 13px; }
+.ds-toast__msg { min-width: 0; }
+.ds-toast__link {
+  flex: none;
+  margin-left: var(--space-1);
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--yellow-500);
+  font-family: var(--font-cjk-display);
+  font-size: var(--fs-body-sm);
+  font-weight: var(--fw-bold);
+  white-space: nowrap;
+}
+.ds-toast__link:hover { color: var(--yellow-400); }
+.ds-toast__link:focus-visible { outline: 2px solid var(--yellow-500); outline-offset: 2px; border-radius: var(--radius-xs); }
+
+@media (prefers-reduced-motion: reduce) {
+  .ds-toast { transition: opacity 180ms ease; transform: translate(-50%, 0); }
+}
+
+/* Phones: lift above the floating bottom-nav pill (43-bottom-nav.css) so the
+   toast never sits under it. Desktop/tablet hide the pill → keep the 28px rest. */
+@media (max-width: 767.98px) {
+  .ds-toast { bottom: var(--botnav-clearance); }
+}

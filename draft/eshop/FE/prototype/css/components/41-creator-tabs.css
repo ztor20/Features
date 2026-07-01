@@ -1,0 +1,144 @@
+/* ─────────────────────────────────────────
+   CREATOR STOREFRONT — tabs, posts, projects (additions)
+   Tab row: in-page anchors + one real link (排行榜). Sections carry
+   scroll-margin so anchors land below the sticky header.
+   ───────────────────────────────────────── */
+.creator-sec[id], .top-fans[id] { scroll-margin-top: 84px; }
+
+/* 貼文 — quiet feed rows */
+.creator-posts { margin-top: 4px; }
+.creator-post {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--border-subtle);
+  max-width: 720px;
+}
+.creator-post__date {
+  font-family: var(--font-latin);
+  font-size: 12px;
+  color: var(--text-tertiary);
+  font-variant-numeric: tabular-nums;
+}
+.creator-post__text {
+  font-size: var(--fs-body-sm);
+  line-height: 1.8;
+  color: var(--text-secondary);
+}
+.creator-post__likes {
+  font-family: var(--font-latin);
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+/* 項目 — co-creation rows with a quiet progress line */
+.creator-projects { margin-top: 4px; }
+.creator-project {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border-subtle);
+  max-width: 720px;
+}
+.creator-project__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+.creator-project__title {
+  font-family: var(--font-cjk-text);
+  font-size: 15px;
+  font-weight: var(--fw-bold);
+}
+.creator-project__status {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+}
+.creator-project__status--live { color: var(--yellow-500); }
+.creator-project__status--done { color: var(--success-500); }
+.creator-project__bar {
+  height: 3px;
+  background: var(--white-alpha-8);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+.creator-project__bar span {
+  display: block;
+  height: 100%;
+  background: var(--yellow-500);
+  border-radius: var(--radius-pill);
+}
+.creator-project__meta {
+  font-family: var(--font-latin);
+  font-size: 12px;
+  color: var(--text-tertiary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─────────────────────────────────────────
+   CREATOR TABS (posts + projects) — RESPONSIVE
+   ───────────────────────────────────────── */
+
+/* Tablet: reduce max-width so prose doesn't stretch too wide. */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .creator-post,
+  .creator-project {
+    max-width: 100%;
+  }
+}
+
+/* Phone ≤767.98px */
+@media (max-width: 767.98px) {
+  /* Posts: tighten row padding. */
+  .creator-post {
+    padding: var(--space-4) 0;
+    max-width: 100%;
+    gap: var(--space-2);
+  }
+
+  .creator-post__text {
+    font-size: var(--fs-caption);
+    line-height: 1.7;
+  }
+
+  /* Projects: project head can wrap if title is long. */
+  .creator-project {
+    padding: var(--space-4) 0;
+    max-width: 100%;
+    gap: var(--space-2);
+  }
+
+  .creator-project__head {
+    /* Let title wrap; status stays on its own line below if needed. */
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+
+  .creator-project__title {
+    font-size: var(--fs-body-sm);
+  }
+
+  .creator-project__status {
+    font-size: var(--fs-caption);
+  }
+
+  /* Scroll-margin accounts for sticky header on anchor navigation. */
+  .creator-sec[id],
+  .top-fans[id] {
+    scroll-margin-top: 70px;
+  }
+}
+
+/* Small phone ≤480px: minimal further tweaks. */
+@media (max-width: 480px) {
+  .creator-post__date,
+  .creator-post__likes,
+  .creator-project__meta {
+    font-size: 11px;
+  }
+}

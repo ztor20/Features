@@ -1,0 +1,195 @@
+/* ─────────────────────────────────────────
+   觀看歷史 DRAWER (logged-in)
+   Right-aligned slide-out below the header. V1-style
+   continue-watching list (poster + title + progress bar).
+   Trigger: header [data-watch-history-trigger]; footer 更多 → 我的片庫.
+   ───────────────────────────────────────── */
+
+/* Header trigger icon — white on hover like the notification bell. The
+   logged-in buttons group gaps 12px; add 12px so watch↔通知 reaches the
+   24px header__actions icon rhythm (mirrors .header__notification-btn). */
+.header__icon-btn--watch { margin-right: 12px; }
+.header__icon-btn--watch:hover { background-color: var(--neutral-white); }
+
+.watch-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-drawer);
+  pointer-events: none;
+  /* Clip the closed panel (translateX(100%)) — without this the parked
+     drawer extends scrollWidth and the page gains phantom horizontal
+     scroll on narrow windows. */
+  overflow: hidden;
+}
+.watch-drawer.is-open { pointer-events: auto; }
+
+/* Scrim starts below the header so the header stays clear (ref: 通知 drawer). */
+.watch-drawer__scrim {
+  position: absolute;
+  inset: var(--header-height) 0 0 0;
+  background: rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  transition: opacity 280ms ease;
+}
+.watch-drawer.is-open .watch-drawer__scrim { opacity: 1; }
+
+.watch-drawer__panel {
+  position: absolute;
+  top: var(--header-height);
+  right: 0;
+  /* Height hugs content (5 items + 更多); caps at viewport on short screens. */
+  max-height: calc(100vh - var(--header-height));
+  width: min(420px, 100%);
+  display: flex;
+  flex-direction: column;
+  background: rgba(19, 19, 19, 0.96);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-left: 1px solid var(--border-subtle);
+  /* Rounded bottom finish (panel floats above the viewport bottom). */
+  border-bottom-left-radius: var(--radius-lg);
+  border-bottom-right-radius: var(--radius-lg);
+  /* Shadow ONLY when open — the closed panel parks off-canvas (translateX(100%))
+     but a -24px/60px shadow still bleeds leftward into the viewport's right edge,
+     darkening whatever sits there (invisible on dark sections, a grey vignette on
+     the yellow zebra stripes). Gating it on .is-open keeps the closed drawer
+     shadow-free on every page. */
+  box-shadow: none;
+  transform: translateX(100%);
+  transition: transform 320ms cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 320ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.watch-drawer.is-open .watch-drawer__panel {
+  transform: translateX(0);
+  box-shadow: -24px 0 60px rgba(0, 0, 0, 0.5);
+}
+
+.watch-drawer__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 24px 16px;
+  flex-shrink: 0;
+}
+.watch-drawer__title {
+  font-family: var(--font-cjk-display);
+  font-weight: var(--fw-bold);
+  font-size: 22px;
+  line-height: 1.3;
+  color: var(--text-primary);
+  margin: 0;
+}
+/* Circular close button with a faint X (ref: mobile profile menu close). */
+.watch-drawer__close {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.08);
+  transition: background 200ms ease;
+}
+.watch-drawer__close:hover { background: rgba(255, 255, 255, 0.14); }
+.watch-drawer__close-icon {
+  width: 16px;
+  height: 16px;
+  background-color: var(--text-tertiary);
+  -webkit-mask: url('assets/icons/close.svg') center / contain no-repeat;
+          mask: url('assets/icons/close.svg') center / contain no-repeat;
+}
+
+.watch-drawer__list {
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 4px 24px 8px;
+  display: flex;
+  flex-direction: column;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.07) transparent;
+}
+.watch-drawer__list::-webkit-scrollbar { width: 6px; }
+.watch-drawer__list::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.07); border-radius: var(--radius-pill); }
+
+.watch-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 0;
+  text-decoration: none;
+  color: inherit;
+}
+.watch-item__cover {
+  flex: 0 0 auto;
+  width: 52px;
+  aspect-ratio: 2 / 3;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--bg-secondary);
+}
+.watch-item__cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.watch-item__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.watch-item__title {
+  font-family: var(--font-cjk-text);
+  font-weight: var(--fw-semibold);
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 200ms ease;
+}
+.watch-item:hover .watch-item__title { color: var(--yellow-500); }
+.watch-item__progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.watch-item__bar {
+  flex: 1;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.10);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+.watch-item__bar-fill {
+  display: block;
+  height: 100%;
+  /* 品牌黃 + 光暈，與募資卡進度條 (.cocreation-card__bar-fill) 一致 */
+  background: var(--yellow-500);
+  box-shadow: 0 0 8px rgba(255, 163, 63, 0.35);
+  border-radius: var(--radius-pill);
+}
+.watch-item__pct {
+  flex: 0 0 auto;
+  min-width: 34px;
+  text-align: right;
+  font-family: var(--font-cjk-text);
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+
+.watch-drawer__foot {
+  flex-shrink: 0;
+  padding: 16px 24px 24px;
+}
+/* Styling comes from .btn.btn--quiet.btn--md; only stretch to full width. */
+.watch-drawer__more { width: 100%; }
+.watch-drawer__more-arrow {
+  width: 16px;
+  height: 16px;
+  background-color: currentColor;
+  -webkit-mask: url('assets/icons/chevron_right.svg') center / 16px 16px no-repeat;
+          mask: url('assets/icons/chevron_right.svg') center / 16px 16px no-repeat;
+}

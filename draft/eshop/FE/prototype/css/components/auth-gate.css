@@ -1,0 +1,39 @@
+/* ─────────────────────────────────────────
+   AUTH-GATE — gated-control active states
+   ------------------------------------------------------------
+   Driven by the global auth gate (assets/auth.js), which sets
+   aria-pressed="true" (+ .is-active) on a follow / save / like
+   control after a successful (mock) sign-in, and mock-persists it.
+   Keyed to those universal signals so ANY gated icon button lights
+   up with no per-component class — mirroring the existing
+   .is-bookmarked convention (bookmark_regular → bookmark_active +
+   brand yellow). Follow buttons get their own active look from
+   [data-following="true"] in refine-creator.css.
+   ───────────────────────────────────────── */
+
+/* Save bookmark — filled + brand yellow when saved. */
+.post-card__bookmark[aria-pressed="true"] .post-card__bookmark-icon,
+.community-card__action[aria-pressed="true"] .community-card__action-icon--bookmark {
+  -webkit-mask: url('assets/icons/bookmark_active.svg') center / contain no-repeat;
+          mask: url('assets/icons/bookmark_active.svg') center / contain no-repeat;
+  background-color: var(--yellow-500);
+}
+
+/* Like (heart) — brand yellow when liked, on any gated heart icon. */
+.community-card__action[aria-pressed="true"] .community-card__action-icon--heart,
+.community-card__stat[aria-pressed="true"] .community-card__stat-icon--heart,
+.post-card__stat[aria-pressed="true"] .post-card__stat-icon--heart {
+  background-color: var(--yellow-500);
+}
+
+/* Press feedback on bare-icon gated actions — calm, quick, never bouncy
+   (these fire constantly). No transition declared so it can't clobber the
+   component's own color transition; the press snap reads as crisp, not stiff. */
+.post-card__bookmark:active,
+.post-card__stat:active,
+.community-card__action:active { transform: scale(0.92); }
+@media (prefers-reduced-motion: reduce) {
+  .post-card__bookmark:active,
+  .post-card__stat:active,
+  .community-card__action:active { transform: none; }
+}

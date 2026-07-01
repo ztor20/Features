@@ -1,0 +1,95 @@
+/* ─────────────────────────────────────────
+   CLASSICS — 片單推薦「忘不了的經典」
+   4-up quote cards (single composed image ported from V1) + title below.
+   Card image ratio ≈ 0.91:1 (1199×1312 source).
+   ───────────────────────────────────────── */
+.classics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-6);
+}
+.classic-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-decoration: none;
+  color: inherit;
+}
+.classic-card__img {
+  width: 100%;
+  aspect-ratio: 1199 / 1312;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  display: block;
+  transition: transform 250ms ease;
+}
+.classic-card:hover .classic-card__img { transform: translateY(-4px); }
+.classic-card__title {
+  font-family: var(--font-cjk-display);
+  font-weight: var(--fw-bold);
+  font-size: 18px;
+  line-height: 1.3;
+  color: var(--text-primary);
+  margin: 0;
+}
+@media (max-width: 900px) { .classics-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 520px) { .classics-grid { grid-template-columns: 1fr; } }
+
+/* ─────────────────────────────────────────
+   CLASSICS — RESPONSIVE
+   Phone  : max-width 767.98px
+   Tablet : 768px – 1023.98px
+   ───────────────────────────────────────── */
+
+/* ── Tablet (768px – 1023.98px) ─────────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  /* 2-up on tablet: cards are comfortable at ~half the container width */
+  .classics-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-5);
+  }
+
+  /* Slightly smaller title at this density */
+  .classic-card__title { font-size: var(--fs-body); }
+}
+
+/* ── Phone (≤767.98px) ──────────────────────────────────────────────────── */
+@media (max-width: 767.98px) {
+  /* Single column: one card per row, portrait image fills the width */
+  .classics-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+  }
+
+  .classic-card { gap: var(--space-3); }
+
+  /* Title: allow 2-line wrap for long CJK titles */
+  .classic-card__title {
+    font-size: var(--fs-body);
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Lift on touch: swap hover lift for :active feedback */
+  .classic-card:active .classic-card__img { transform: none; }
+}
+
+/* ── Small phone (≤479.98px) ────────────────────────────────────────────── */
+@media (max-width: 479.98px) {
+  .classics-grid { gap: var(--space-4); }
+  .classic-card__title { font-size: var(--fs-body-sm); }
+}
+
+/* ── Touch: remove hover-only lift transform ─────────────────────────────── */
+@media (hover: none) {
+  .classic-card .classic-card__img { transform: none; }
+}
+
+/* ── Reduced-motion ─────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .classic-card__img { transition: none; }
+}

@@ -1,0 +1,89 @@
+/* ─────────────────────────────────────────
+   HEADER CONTENT SWITCHER — ALL / Music / Films
+   Reference: Spotify Home's content-type chips (All/Music/Podcasts),
+   re-spoken in the house language: one pill container, a single yellow
+   thumb that slides between three equal segments (Animation Director
+   spec — transform-only, 200ms house ease, retargets cleanly).
+   Presentational in this static preview; selection is local state.
+   ───────────────────────────────────────── */
+.header-switch {
+  --seg: 0;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin-left: 20px;
+  padding: 3px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--white-alpha-8);
+}
+.header-switch__thumb {
+  position: absolute;
+  left: 3px;
+  top: 3px;
+  bottom: 3px;
+  width: 64px;
+  border-radius: var(--radius-pill);
+  background: var(--yellow-500);
+  transform: translateX(calc(var(--seg) * 100%));
+  transition: transform 200ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.header-switch__btn {
+  position: relative;
+  z-index: 1;
+  width: 64px;
+  height: 30px;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-latin);
+  font-size: 13px;
+  font-weight: var(--fw-medium);
+  color: rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+  transition: color 200ms cubic-bezier(0.23, 1, 0.32, 1),
+              transform 120ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+@media (hover: hover) and (pointer: fine) {
+  .header-switch__btn:not(.is-active):hover { color: rgba(255, 255, 255, 0.92); }
+}
+.header-switch__btn:active { transform: scale(0.97); }
+.header-switch__btn.is-active { color: var(--yellow-ink); }
+.header-switch__btn:focus-visible {
+  outline: 2px solid var(--yellow-500);
+  outline-offset: 2px;
+  transition: none;
+}
+/* Active-segment colour follows the content vertical (same --cat tokens as the
+   category pills): 全部 = brand yellow (default) · 音樂 = red · 影視 = orange.
+   Driven PURELY by which tab carries .is-active (the switch behaviour already
+   toggles it on every page), so the colour lives entirely in this shared
+   stylesheet — no per-page JS, no data-* hook. Buttons order: 全部 / 音樂 / 影視. */
+.header-switch:has(.header-switch__btn:nth-of-type(2).is-active) .header-switch__thumb { background: var(--cat-music); }  /* 音樂 */
+.header-switch:has(.header-switch__btn:nth-of-type(3).is-active) .header-switch__thumb { background: var(--cat-film); }   /* 影視 */
+/* On a coloured thumb the active label flips to white (dark ink only reads on yellow). */
+.header-switch:has(.header-switch__btn:nth-of-type(2).is-active) .header-switch__btn.is-active,
+.header-switch:has(.header-switch__btn:nth-of-type(3).is-active) .header-switch__btn.is-active { color: #fff; }
+
+@media (prefers-reduced-motion: reduce) {
+  .header-switch__thumb { transition-duration: 0.01ms; }
+  .header-switch__btn { transition: color 100ms ease; }
+  .header-switch__btn:active { transform: none; }
+}
+/* Narrowing ladder: the search compresses first (flex above), then the
+   switcher tightens its segments, then the plans pill steps aside.
+   The switcher itself never disappears — it's navigation-level state. */
+@media (max-width: 1240px) {
+  .header-switch { margin-left: 14px; }
+  .header-switch__btn { width: 54px; font-size: 12px; }
+  .header-switch__thumb { width: 54px; }
+}
+@media (max-width: 1080px) {
+  body.has-rail .header__buttons .popcorn-section { display: none; }
+}
+@media (max-width: 880px) {
+  body.has-rail .header__inner { gap: 12px; }
+  body.has-rail .header__logo,
+  body.has-rail .header__logo-img { height: 30px; }
+}

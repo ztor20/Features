@@ -1,0 +1,305 @@
+/* ─────────────────────────────────────────
+   STICKY FILTER PILL  (.tabstick)  +  MOBILE HEADER HIDE/SHOW
+   Behaviour: this file + assets/sticky-tabs.js. Each primary tab row is wrapped in
+   <div class="tabstick">. Spotlight (index) is excluded.
+
+   POSITION: NATIVE position:sticky. The nav moves WITH the scroll and holds at the pin
+   line — continuous, no teleport. (A relative→fixed swap is an INSTANT position change = a
+   hard JUMP that no animation can hide; that teleport survived many attempts. Sticky is
+   continuous AND behaves identically in Safari and Chrome → no "works in dev-tools, jumps on
+   iPhone" bug. It self-reserves its flow box → zero CLS, no spacer.)
+
+   THE STICKY HOST: a sticky element only sticks WITHIN its containing block (its parent). Some
+   rows sit in a too-short flex row (e.g. a "nav + button" .tabs-row only as tall as the nav) →
+   sticky has no room. So the controller picks a HOST per row at measure time — the .tabstick
+   itself when its parent is tall, else the parent (whose own containing block is the tall
+   section) — and marks it `.tabstick-host`. Everything positional keys off the host; the glass
+   pill is always the descendant .glass-tabs.
+
+   The controller only toggles a STYLE class (.is-pinned) as the host sticks; the glass material
+   MORPHS in via a CSS transition. The header-follow transform (--tabs-shift) rides the header
+   hide and lives ONLY on the stuck states.
+   ───────────────────────────────────────── */
+
+/* ── The sticky host (set by the controller). Natively sticky → no teleport, no spacer. */
+.tabstick-host {
+  position: -webkit-sticky;
+  position: sticky;
+  top: var(--header-height);
+  z-index: var(--z-sticky);
+}
+/* DESKTOP (≥768): the snapped nav stays LEFT-aligned with the content grid (centring below is
+   mobile-only — no horizontal shift on snap), and pins BELOW the full desktop header. That header
+   carries the search row, so its visible height exceeds --header-height; offset by the header height
+   + a small gap so it never covers the nav. Mobile keeps its top:var(--header-height) full-width pill. */
+@media (min-width: 768px) {
+  .tabstick-host { top: calc(var(--header-height) + var(--space-8)); }   /* header height + a small gap */
+}
+/* MOBILE ONLY — when the host IS the tabstick, centre the floating pill. */
+@media (max-width: 767.98px) {
+  .tabstick.tabstick-host { display: flex; justify-content: center; }
+}
+
+/* CONSISTENT CENTERING: when the host is a "nav + button" row (tabs-row / library-topbar /
+   popcorn-navrow) the pill-nav `.tabstick` would otherwise sit LEFT. Give it a full line and centre
+   the pill so EVERY snapped nav is centred (matches the centred bottom nav); the sibling button
+   wraps below (these rows are flex-wrap on mobile). Scoped to `:has(> .glass-tabs)` so it targets the
+   pill navs only — the shop category bar (.shop-filter) keeps its own stuck-centring + count-hide.
+   Same alignment at rest AND stuck → no horizontal jump on snap. */
+@media (max-width: 767.98px) {
+  .tabstick-host > .tabstick:has(> .glass-tabs) {
+    flex: 1 1 100%;
+    min-width: 0;
+    display: flex;
+    justify-content: center;
+  }
+}
+
+.tabstick > .glass-tabs { margin-bottom: 0; }
+.tabstick--filter { margin-bottom: var(--space-8); }
+@media (max-width: 767.98px) { .tabstick--filter { margin-bottom: var(--space-6); } }
+
+/* ── The PILL — same box in flow and stuck (no width/position jump). As the host sticks, ONLY
+   the glass MATERIAL resolves in, eased: backdrop-blur, depth shadow, border transition; the
+   fill+sheen+rim ride pseudo OPACITY so the gradients fade rather than pop. Descendant
+   selectors so it works whether the host is the .tabstick or the parent row. */
+.tabstick-host .glass-tabs {
+  position: relative;
+  isolation: isolate;
+  width: auto;                       /* hug → transparent sides (overrides phone width:100%) */
+  max-width: 100%;
+  margin-bottom: 0;
+  padding-inline: 10px;              /* clear the pill's rounded ends — first/last tab not jammed */
+  scroll-padding-inline: 10px;       /* same breathing room as a wide nav scrolls */
+  border-color: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: blur(0px) saturate(1);
+          backdrop-filter: blur(0px) saturate(1);
+  transition: box-shadow      var(--dur-nav-morph) var(--ease-out),
+              border-color    var(--dur-nav-morph) var(--ease-out),
+              border-radius   var(--dur-nav-morph) var(--ease-out),
+              -webkit-backdrop-filter var(--dur-nav-morph) var(--ease-out),
+                      backdrop-filter var(--dur-nav-morph) var(--ease-out);
+}
+/* SHARED glass FILL (::before) for BOTH the .glass-tabs pill AND the .shop-filter
+   pill — the white-5% lens that fades in on stick (the morph). NO sheen, NO spectral
+   rim — exactly 21st.dev's recipe (the ::after rim was removed). */
+.tabstick-host .glass-tabs::before,
+.tabstick-host .shop-filter::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: var(--glass-nav-tint); /* visible dark glass (a nav must be seen) */
+  opacity: 0;
+  transition: opacity var(--dur-nav-morph) var(--ease-out);
+}
+
+/* ── STUCK: the shared glass MATERIAL resolves in on BOTH pill types (.is-pinned = currently stuck;
+   .is-buried = replaced earlier row). Layout-specific bits (hug/scroll) stay per-component below. */
+.tabstick-host.is-pinned .glass-tabs,
+.tabstick-host.is-buried .glass-tabs,
+.tabstick-host.is-pinned .shop-filter,
+.tabstick-host.is-buried .shop-filter {
+  border-color: rgba(255, 255, 255, 0.10);   /* = --glass-border colour */
+  border-radius: var(--radius-pill);          /* always a PILL when snapped — some navs (e.g.
+                                                 .library-genres 探索/AI/…) have a square base radius */
+  box-shadow: var(--glass-shadow);
+  -webkit-backdrop-filter: var(--glass-nav-backdrop);
+          backdrop-filter: var(--glass-nav-backdrop);
+}
+.tabstick-host.is-pinned .glass-tabs::before,
+.tabstick-host.is-buried .glass-tabs::before,
+.tabstick-host.is-pinned .shop-filter::before,
+.tabstick-host.is-buried .shop-filter::before { opacity: 1; }
+.tabstick-host.is-pinned .glass-tabs::after,
+.tabstick-host.is-buried .glass-tabs::after,
+.tabstick-host.is-pinned .shop-filter::after,
+.tabstick-host.is-buried .shop-filter::after  { opacity: 0.30; }
+
+/* header-follow transform — ONLY when stuck (an in-flow host must not ride the header). */
+.tabstick-host.is-pinned,
+.tabstick-host.is-buried {
+  transform: translateY(var(--tabs-shift, 0px));
+}
+
+/* ── BURIED: the earlier row fades out as the later one sticks (sequential replace). */
+.tabstick-host.is-buried {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 360ms var(--ease-out);
+}
+
+/* ── 2nd-type nav (.shop-filter — the category bar). In flow it's the normal WRAPPING text filter;
+   when its host sticks it morphs (eased — same transition + SHARED glass material/pseudos as the
+   type-nav above) into a glass pill — single line, scrolls. Only the LAYOUT is per-component here;
+   the material is shared, so the two navs read as one component on the sequential handoff. */
+.tabstick-host .shop-filter {
+  position: relative;
+  isolation: isolate;
+  border: var(--glass-border);       /* 0.8px solid, colour transparent until stuck (mirrors .glass-tabs) */
+  border-color: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: blur(0px) saturate(1);
+          backdrop-filter: blur(0px) saturate(1);
+  transition: box-shadow      var(--dur-nav-morph) var(--ease-out),
+              border-color    var(--dur-nav-morph) var(--ease-out),
+              border-radius   var(--dur-nav-morph) var(--ease-out),
+              -webkit-backdrop-filter var(--dur-nav-morph) var(--ease-out),
+                      backdrop-filter var(--dur-nav-morph) var(--ease-out);
+}
+.tabstick-host.is-pinned .shop-filter,
+.tabstick-host.is-buried .shop-filter {
+  flex-wrap: nowrap;                 /* was wrap → single scrolling line when stuck */
+  width: auto;                       /* hug → floating pill */
+  max-width: 100%;
+  gap: 2px;
+  padding: 5px 8px;
+  overflow-x: auto;
+  border-radius: var(--radius-pill);
+}
+.tabstick-host.is-pinned .shop-filter .shop-filter__item,
+.tabstick-host.is-buried .shop-filter .shop-filter__item {
+  padding: 6px 12px;
+  white-space: nowrap;               /* don't let a label wrap inside the pill */
+  text-decoration: none;             /* drop the in-flow underline; active = pill highlight below */
+  border-radius: var(--radius-pill);
+}
+.tabstick-host.is-pinned .shop-filter .shop-filter__item--active,
+.tabstick-host.is-buried .shop-filter .shop-filter__item--active {
+  background: var(--white-alpha-10, rgba(255,255,255,0.10));
+  color: var(--neutral-white);
+}
+/* The host row is the whole .shop-toolbar (it carries the filter + a count, so a sticky element
+   can only be this row). MOBILE: when stuck, centre the pill, constrain it to the viewport (it
+   scrolls inside), drop the in-flow divider/spacing, and hide the count so only the floating pill
+   shows. DESKTOP keeps the toolbar's natural left-aligned layout (the pill stays at the grid's left
+   edge in both states — no horizontal shift on snap). */
+@media (max-width: 767.98px) {
+  .shop-toolbar.tabstick-host.is-pinned,
+  .shop-toolbar.tabstick-host.is-buried {
+    justify-content: center;
+    border-bottom-color: transparent;
+    margin-top: 0;
+    padding-bottom: 0;
+  }
+  .shop-toolbar.tabstick-host.is-pinned  > .tabstick,
+  .shop-toolbar.tabstick-host.is-buried  > .tabstick { min-width: 0; max-width: 100%; }
+  .shop-toolbar.tabstick-host.is-pinned  .shop-count,
+  .shop-toolbar.tabstick-host.is-buried  .shop-count { display: none; }
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   COLLAPSE-TO-DROPDOWN  (nav-collapse.js) — a SNAPPED nav wider than the screen becomes a compact
+   "[active] ⌄" trigger; tap drops the full list down as a glass panel. Only active when the module
+   adds .is-collapsed (snapped + overflowing), so this never affects fit navs or the rest state.
+   ════════════════════════════════════════════════════════════════════ */
+.nav-trigger { display: none; }                 /* only shown when collapsed */
+.tabstick.is-collapsed { position: relative; }  /* anchor the dropdown */
+.tabstick.is-collapsed > .glass-tabs,
+.tabstick.is-collapsed > .shop-filter { display: none; }   /* hide the chip row; trigger stands in */
+.tabstick.is-collapsed > .nav-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+  padding: 7px 14px;
+  border-radius: var(--radius-pill);
+  background: var(--glass-nav-tint);             /* visible dark glass (a nav must be seen) */
+  border: var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  -webkit-backdrop-filter: var(--glass-nav-backdrop);
+          backdrop-filter: var(--glass-nav-backdrop);
+  color: var(--neutral-white);
+  font-family: var(--font-cjk-text);
+  font-size: 14px;
+  line-height: 1.3;
+  cursor: pointer;
+}
+.nav-trigger__label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nav-trigger__chev {
+  width: 9px; height: 9px; flex: none; opacity: 0.7;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);     /* ⌄ */
+  transition: transform var(--dur-nav-show) var(--ease-out);
+}
+.tabstick.is-open > .nav-trigger .nav-trigger__chev { transform: translateY(1px) rotate(-135deg); }  /* ⌃ */
+
+/* OPEN: the real item list drops down below the trigger as a vertical glass panel (handlers intact). */
+.tabstick.is-collapsed.is-open > .glass-tabs,
+.tabstick.is-collapsed.is-open > .shop-filter {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: 88vw;
+  max-height: 60vh;
+  overflow-y: auto;
+  z-index: var(--z-nav-pop);
+  padding: 6px;
+  gap: 2px;
+  border-radius: 16px;
+}
+.tabstick.is-collapsed.is-open .glass-tabs__item,
+.tabstick.is-collapsed.is-open .shop-filter__item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 11px 16px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   MOBILE HEADER HIDE/SHOW  (<768)
+   ════════════════════════════════════════════════════════════════════ */
+@media (max-width: 767.98px) {
+  /* Header hide/show. CRITICAL: transform/will-change apply ONLY in the hidden state —
+     a permanent transform on the header promotes a layer that breaks its backdrop-filter. */
+  .header {
+    transition: transform var(--dur-nav-show) var(--ease-out),
+                opacity   var(--dur-nav-show) var(--ease-out);
+  }
+  body.header-hidden .header {
+    transform: translateY(-100%);
+    opacity: 0;
+    transition: transform var(--dur-nav-hide) var(--ease-emphasized),
+                opacity   var(--dur-nav-hide) var(--ease-emphasized);
+  }
+
+  /* The stuck host + community tab bar ride the header via --tabs-shift, same curve. */
+  body.header-hidden .tabstick-host.is-pinned,
+  body.header-hidden .tabstick-host.is-buried,
+  body.header-hidden .community-tabbar {
+    transition: transform var(--dur-nav-hide) var(--ease-emphasized);
+  }
+  .community-tabbar {
+    transform: translateY(var(--tabs-shift, 0px));
+    will-change: transform;
+    transition: transform var(--dur-nav-show) var(--ease-out);
+  }
+}
+
+/* ── Reduced motion / snap: the material resolves instantly, no eased morph, no drift. */
+@media (prefers-reduced-motion: reduce) {
+  .header,
+  .community-tabbar,
+  .tabstick-host .glass-tabs,
+  .tabstick-host .glass-tabs::before,
+  .tabstick-host .glass-tabs::after,
+  .tabstick-host.is-pinned,
+  .tabstick-host.is-buried { transition: none !important; }
+}
+body.motion-snap .header,
+body.motion-snap .community-tabbar,
+body.motion-snap .tabstick-host .glass-tabs,
+body.motion-snap .tabstick-host .glass-tabs::before,
+body.motion-snap .tabstick-host .glass-tabs::after,
+body.motion-snap .tabstick-host.is-pinned,
+body.motion-snap .tabstick-host.is-buried { transition: none !important; }

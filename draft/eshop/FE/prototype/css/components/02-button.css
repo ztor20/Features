@@ -1,0 +1,263 @@
+/* ─────────────────────────────────────────
+   BUTTON
+   variants: primary | ghost | yellow-ghost | destructive
+   sizes:    lg | md | sm
+   states:   default | :hover | :active | :disabled
+   ───────────────────────────────────────── */
+
+.btn {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border-radius: var(--radius-pill);
+  border: 1px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: box-shadow 150ms var(--ease-out),
+              background 150ms var(--ease-out),
+              border-color 150ms var(--ease-out),
+              color 150ms var(--ease-out),
+              transform 120ms var(--ease-out);
+}
+
+/* Physical press — the button meets the finger */
+.btn:active:not(:disabled) { transform: scale(0.97); }
+
+.btn:disabled { cursor: not-allowed; }
+.btn:focus-visible {
+  outline: 2px solid var(--yellow-500);
+  outline-offset: 2px;
+}
+
+/* ── Sizes ── */
+.btn--lg {
+  padding: var(--space-4) 36px;
+  font-family: var(--font-cjk-display);
+  font-size: var(--fs-h5);
+  line-height: var(--lh-body);
+  font-weight: var(--fw-bold);
+}
+
+.btn--md {
+  padding: var(--space-3) 28px;
+  font-family: var(--font-cjk-text);
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body-sm);
+  font-weight: var(--fw-medium);
+}
+
+.btn--sm {
+  padding: var(--space-2) var(--space-4);
+  font-family: var(--font-cjk-text);
+  font-size: var(--fs-caption);
+  line-height: var(--lh-caption);
+  font-weight: var(--fw-medium);
+}
+
+/* ── PRIMARY ──
+   Flat solid yellow (brand orange) — the loud, bright CTA. LG adds soft top
+   highlight (4px inner shadow). Hover: + outer yellow glow. Pressed: glow.
+*/
+.btn--primary {
+  background: var(--yellow-500);
+  color: var(--yellow-ink);
+  border-color: transparent;
+}
+
+.btn--primary.btn--lg {
+  box-shadow: inset 0 1px 4px rgba(255, 255, 255, 0.9);
+}
+
+.btn--primary:hover:not(:disabled) {
+  background: var(--yellow-400);
+  box-shadow: 0 6px 20px rgba(255, 163, 63, 0.20);
+}
+
+.btn--primary.btn--lg:hover:not(:disabled) {
+  background: var(--yellow-400);
+  box-shadow: inset 0 1px 4px rgba(255, 255, 255, 0.9),
+              0 6px 20px rgba(255, 163, 63, 0.20);
+}
+
+.btn--primary:active:not(:disabled) {
+  background: var(--yellow-600);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.18);
+}
+
+.btn--primary:disabled { opacity: 0.4; }
+
+/* ── GHOST — liquid glass: 1:1 with the 21st.dev ".btn-liquid" button ──
+   The SECONDARY action beside the solid-orange primary (探索片庫, 查看參賽作品…).
+   Their exact recipe (no sheen, no spectral rim — those were my additions, removed):
+     .btn-liquid       → button: transparent, white-95% label, text-shadow,
+                          hover scale(1.03) / active scale(0.96), 300ms ease-out.
+     .btn-liquid-lens  → ::before: white-5% fill + blur(8px) url(#liquid-glass)
+                          saturate(150%) [url() added in 52-…] + the 10-layer
+                          specular box-shadow (= --glass-shadow), 400ms transition. */
+.btn--ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--text-primary);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.30);
+  transition: transform 300ms var(--ease-out);
+}
+.btn--ghost::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--glass-fill);                 /* white 5% — no sheen */
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: var(--glass-backdrop);
+  -webkit-backdrop-filter: var(--glass-backdrop);
+  transition: background-color 400ms cubic-bezier(1, 0, 0.4, 1),
+              box-shadow        400ms cubic-bezier(1, 0, 0.4, 1);
+}
+
+.btn--ghost:hover:not(:disabled)  { transform: scale(1.03); }   /* their hover grow */
+.btn--ghost:active:not(:disabled) { transform: scale(0.96); }   /* their press */
+
+.btn--ghost:disabled {
+  color: var(--text-disabled);
+  text-shadow: none;
+}
+.btn--ghost:disabled::before {
+  background: var(--glass-bg-disabled);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* ── YELLOW-GHOST — orange liquid glass (the "Vote" CTA) ──
+   Same 21st.dev machinery as .btn--ghost (white-5% lens → here orange-tinted),
+   the 10-layer specular box-shadow, blur(8px) url(#liquid-glass) saturate(150%)
+   [url() added in 52-…], hover scale(1.03) / active scale(0.96). Orange comes
+   from the fill + the label; the specular highlights stay white = glass shine. */
+.btn--yellow-ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--yellow-500);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.30);
+  transition: transform 300ms var(--ease-out);
+}
+.btn--yellow-ghost::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--glass-fill-orange);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: var(--glass-backdrop);
+  -webkit-backdrop-filter: var(--glass-backdrop);
+  transition: background-color 400ms cubic-bezier(1, 0, 0.4, 1),
+              box-shadow        400ms cubic-bezier(1, 0, 0.4, 1);
+}
+
+.btn--yellow-ghost:hover:not(:disabled) { transform: scale(1.03); }
+.btn--yellow-ghost:hover:not(:disabled)::before { background: var(--glass-fill-orange-hover); }
+.btn--yellow-ghost:active:not(:disabled) { transform: scale(0.96); }
+
+.btn--yellow-ghost:disabled {
+  color: rgba(255, 163, 63, 0.4);
+  text-shadow: none;
+}
+.btn--yellow-ghost:disabled::before {
+  background: rgba(255, 163, 63, 0.04);
+  box-shadow: inset 0 0 0 1px rgba(255, 163, 63, 0.15);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* ── DESTRUCTIVE ──
+   default/hover: hollow red glass (Artlist-style)
+   pressed: solid red + ink text (state escalation)
+*/
+.btn--destructive {
+  background: linear-gradient(0deg,
+    rgba(239, 68, 68, 0) 0%,
+    rgba(239, 68, 68, 0.20) 2.45%,
+    rgba(239, 68, 68, 0) 126.14%);
+  border-color: transparent;
+  color: var(--error-500);
+  text-shadow: none;
+  box-shadow:
+    rgba(239, 68, 68, 0.9) 1.1px 2.2px 0.5px -1.8px inset,
+    rgba(239, 68, 68, 0.9) -1px -2.2px 0.5px -1.8px inset,
+    rgba(0, 0, 0, 0.10) 2px 3px 2px 0 inset;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+}
+
+.btn--destructive:hover:not(:disabled) {
+  background: linear-gradient(0deg,
+    rgba(239, 68, 68, 0) 0%,
+    rgba(239, 68, 68, 0.34) 2.45%,
+    rgba(239, 68, 68, 0) 126.14%);
+  text-shadow: rgba(239, 68, 68, 0.4) 0 0 10px;
+}
+
+.btn--destructive:active:not(:disabled) {
+  background: var(--error-500);
+  color: var(--error-ink);
+  text-shadow: none;
+  box-shadow:
+    rgba(255, 255, 255, 0.5) 1.1px 2.2px 0.5px -1.8px inset,
+    rgba(0, 0, 0, 0.3) 0 4px 12px;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.btn--destructive:disabled {
+  background: rgba(239, 68, 68, 0.05);
+  color: rgba(239, 68, 68, 0.4);
+  text-shadow: none;
+  box-shadow:
+    rgba(239, 68, 68, 0.3) 1.1px 2.2px 0.5px -1.8px inset,
+    rgba(239, 68, 68, 0.3) -1px -2.2px 0.5px -1.8px inset;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* ─── Quiet — glassmorphic low-key button.
+       Use for cancel / dismiss / tertiary actions inside modals,
+       dialogs, banners, or any surface where the action shouldn't
+       compete with the primary CTA.
+
+       Composition (3 properties together = the "glass" feel):
+       - Translucent black fill (10/16/22/5%) — depth without opacity
+       - Translucent white edge (24/32/32/10%) — defines the shape
+       - 4px backdrop-blur — frosts the layer behind it
+
+       Text shifts secondary→primary on hover/active so users feel
+       the interaction even though the surface change is subtle. */
+.btn--quiet {
+  background: rgba(0, 0, 0, 0.10);
+  border-color: rgba(255, 255, 255, 0.24);
+  color: var(--text-secondary);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.btn--quiet:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.16);
+  border-color: rgba(255, 255, 255, 0.32);
+  color: var(--text-primary);
+}
+
+.btn--quiet:active:not(:disabled) {
+  background: rgba(0, 0, 0, 0.22);
+  border-color: rgba(255, 255, 255, 0.32);
+  color: var(--text-primary);
+}
+
+.btn--quiet:disabled {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(255, 255, 255, 0.10);
+  color: var(--text-disabled);
+  cursor: not-allowed;
+}

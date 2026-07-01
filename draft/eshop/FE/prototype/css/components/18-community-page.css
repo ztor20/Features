@@ -1,0 +1,445 @@
+/* ─────────────────────────────────────────
+   COMMUNITY PAGE — 社群貼文流 (community.html)
+   V1 /posts structure in V2 dress: a single centred post feed (~720) under a
+   visual tab bar. Each post = author row → title → cover → body (更多 expand)
+   → action row (♥ 留言 分享 + 收藏). Reuses the community-card stat icons.
+   ───────────────────────────────────────── */
+
+/* Centred content column — narrow feed per L (long-form posts ~720). */
+.post-feed {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+/* Sticky tab bar — full-bleed dark/blur background that pins below the header
+   on scroll; the tabs themselves are centred to the feed width (720 + the
+   48px container gutter each side, so they line up with the post cards). */
+.community-tabbar {
+  position: sticky;
+  top: var(--header-height);
+  z-index: 20;
+  margin-bottom: var(--space-5);
+  background: rgba(10, 10, 10, 0.82);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border-subtle);
+}
+/* Tabs + feed share one centred rail. The rail owns the 720 width + gutters.
+   Logged-out it becomes a 2-col grid (feed + register aside) so the whole
+   pair shifts left (Threads-style) while the tabs stay aligned to the feed
+   column above the post cards. */
+.community-rail {
+  max-width: calc(720px + var(--container-padding-x) * 2);
+  margin: 0 auto;
+  padding: 0 var(--container-padding-x);
+}
+body[data-auth="logged-out"] .community-rail {
+  max-width: calc(720px + 32px + 320px + var(--container-padding-x) * 2);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: var(--space-8);
+  align-items: start;
+}
+
+
+
+/* Shop sub-nav panels (商品/套組/拍賣): the [hidden] attribute must hide the
+   grid, but .shop-grid's `display:grid` (author CSS) out-ranks the UA
+   `[hidden]{display:none}`. This wins it back so inactive panels stay hidden. */
+.shop-grid[hidden] { display: none !important; }
+
+
+/* SKELETON LOADER -> extracted to css/components/ds-skeleton.css (build inlines it). */
+
+/* ── Register aside — logged-out only. A low-key panel beside the feed that
+   nudges sign-up (Threads-style). Quiet surface + subtle border + ghost CTA
+   so it guides without competing with the feed. Sticky as you scroll. ── */
+.community-aside {
+  position: sticky;
+  top: calc(var(--header-height) + 84px);
+  align-self: start;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 28px var(--space-6);
+}
+.register-card__title {
+  font-family: var(--font-cjk-display);
+  font-size: 19px;
+  line-height: 1.4;
+  font-weight: var(--fw-bold);
+  color: var(--text-primary);
+  text-align: center;
+}
+.register-card__body {
+  margin-top: 10px;
+  font-family: var(--font-cjk-text);
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--text-secondary);
+}
+.register-card__cta {
+  margin-top: var(--space-5);
+  width: 100%;
+}
+.register-card__note {
+  margin-top: 14px;
+  font-family: var(--font-cjk-text);
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--text-tertiary);
+  text-align: center;
+}
+.register-card__note a {
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+.register-card__note a:hover { color: var(--text-primary); }
+
+/* Narrow viewports: drop back to single-column feed, hide the aside (it's a
+   nice-to-have guide, the feed is primary). */
+@media (max-width: 1100px) {
+  body[data-auth="logged-out"] .community-rail {
+    display: block;
+    max-width: calc(720px + var(--container-padding-x) * 2);
+  }
+  .community-aside { display: none !important; }
+}
+
+/* Post card — boxed feed item (V1-style): surface bg + subtle border + radius. */
+.post-card {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-6);
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+}
+
+/* Author row */
+.post-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: 14px;
+}
+.post-card__author {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: inherit;
+  min-width: 0;
+}
+.post-card__avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.post-card__author-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.post-card__author-name {
+  font-family: var(--font-cjk-text);
+  font-size: 14px;
+  font-weight: var(--fw-medium);
+  color: var(--text-primary);
+}
+.post-card__date {
+  font-family: var(--font-cjk-text);
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+.post-card__more {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  background: none;
+  border-radius: var(--radius-pill);
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: color 150ms ease, background-color 150ms ease;
+}
+.post-card__more:hover { color: var(--text-primary); background: var(--white-alpha-8); }
+
+/* Title */
+.post-card__title {
+  margin: 0 0 14px;
+  font-family: var(--font-cjk-display);
+  font-size: 24px;
+  line-height: 1.4;
+  font-weight: var(--fw-bold);
+  color: var(--text-primary);
+}
+
+/* Cover — fixed 16:9 frame (Figma Library v4: 618:348). Any aspect fits via
+   blur-fill: a blurred, zoomed copy of the image fills the frame behind a fully
+   contained foreground copy. So portrait posters / vertical video thumbs show
+   complete and centred, with their own colour bleeding to the edges. */
+/* Fixed-HEIGHT stage, never cropped: the sharp image drives the stage height
+   (capped at --cover-max), so a LANDSCAPE still fills the width at its own
+   height, and a PORTRAIT stands tall up to the cap — shrunk to fit, never over-
+   shrunk. The blurred copy behind fills whatever the sharp image leaves (the
+   side gaps on portraits, top/bottom on ultra-wides) with the photo's own light
+   — ambient bleed, no dead bars, no crop. */
+.post-card__cover {
+  position: relative;
+  width: 100%;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: #000;
+  line-height: 0;
+}
+.post-card__cover-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.15);          /* hide blur edge bleed */
+  filter: blur(28px) brightness(0.6);
+}
+.post-card__cover-img {
+  position: relative;              /* in flow → drives the stage height */
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: var(--cover-max, clamp(420px, 62vh, 600px));  /* portrait cap */
+  object-fit: contain;             /* whole image, never cropped */
+  margin-inline: auto;
+  transition: transform 300ms ease;
+}
+.post-card:hover .post-card__cover-img { transform: scale(1.02); }
+
+/* Video state (capability for Type=Video / Short Video): centred play button
+   over the cover. Add .post-card__cover--video on the cover to enable. */
+.post-card__cover--video::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 56px;
+  height: 56px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: rgba(10, 10, 10, 0.55)
+    url('assets/icons/media-play.svg') center / 22px no-repeat;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  pointer-events: none;
+}
+
+/* Body — 3 lines by default, then 更多 expands it with a calm animated height
+   (the JS sets the exact px target; this is the Animation Director's spec —
+   240–300ms ease-out, a single quiet reveal on a feed element). */
+.post-card__body {
+  margin: var(--space-4) 0 0;
+  font-family: var(--font-cjk-text);
+  font-size: 15px;
+  line-height: 1.8;                /* CJK long-form reading — denser glyphs need more leading than Latin */
+  letter-spacing: 0.01em;          /* a hair of tracking so the characters breathe */
+  color: var(--text-secondary);
+  max-height: calc(1.8em * 3);     /* 3-line clamp — kept in sync with the line-height */
+  overflow: hidden;
+  transition: max-height 160ms cubic-bezier(0.32, 0.72, 0, 1);   /* collapse — exit faster than entry */
+}
+.post-card.is-expanded .post-card__body {
+  max-height: 240em;               /* no-JS fallback ceiling; JS sets the exact height */
+  transition: max-height 240ms cubic-bezier(0.23, 1, 0.32, 1);   /* expand — calm ease-out entry */
+}
+/* Calm feed element — respect reduced motion: resize instantly, no grow. */
+@media (prefers-reduced-motion: reduce) {
+  .post-card__body { transition: none; }
+}
+
+/* 更多 / 收合 toggle — quiet text button, hidden when there's nothing to clip. */
+.post-card__expand {
+  align-self: flex-start;
+  margin-top: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: var(--font-cjk-text);
+  font-size: 14px;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: color 150ms ease;
+}
+.post-card__expand:hover { color: var(--text-primary); }
+.post-card__expand-chev {
+  width: 14px;
+  height: 14px;
+  background-color: currentColor;
+  -webkit-mask: url('assets/icons/chevron_right.svg') center / contain no-repeat;
+          mask: url('assets/icons/chevron_right.svg') center / contain no-repeat;
+  transform: rotate(90deg);
+  transition: transform 200ms ease;
+}
+.post-card.is-expanded .post-card__expand-chev { transform: rotate(-90deg); }
+
+/* Action row */
+.post-card__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 18px;
+}
+.post-card__stats {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-5);
+}
+.post-card__stat,
+.post-card__bookmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: var(--space-1);
+  margin: -4px;
+  border: none;
+  background: none;
+  font-family: var(--font-cjk-text);
+  font-size: 13px;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: color 150ms ease;
+}
+.post-card__stat:hover,
+.post-card__bookmark:hover { color: var(--text-secondary); }
+.post-card__stat-icon,
+.post-card__bookmark-icon {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  background-color: currentColor;
+  flex-shrink: 0;
+}
+.post-card__stat-icon--heart   { -webkit-mask: url('assets/icons/heart.svg')   center / contain no-repeat;
+                                          mask: url('assets/icons/heart.svg')   center / contain no-repeat; }
+.post-card__stat-icon--comment { -webkit-mask: url('assets/icons/comment.svg') center / contain no-repeat;
+                                          mask: url('assets/icons/comment.svg') center / contain no-repeat; }
+.post-card__stat-icon--share   { -webkit-mask: url('assets/icons/share.svg')   center / contain no-repeat;
+                                          mask: url('assets/icons/share.svg')   center / contain no-repeat; }
+.post-card__bookmark-icon      { -webkit-mask: url('assets/icons/bookmark_regular.svg') center / contain no-repeat;
+                                          mask: url('assets/icons/bookmark_regular.svg') center / contain no-repeat; }
+
+/* ─────────────────────────────────────────
+   RESPONSIVE — COMMUNITY PAGE / POST FEED
+   NOTE: Original @media (max-width: 768px) block replaced + expanded below.
+   ───────────────────────────────────────── */
+
+/* ── Phone (<768) ── */
+@media (max-width: 767.98px) {
+  /* Feed: full-width rail with tighter gap */
+  .post-feed {
+    max-width: 100%;
+    gap: var(--space-4);
+  }
+
+  /* Rail: collapse padding to standard container gutter */
+  .community-rail {
+    padding: 0 var(--space-4);
+  }
+
+  /* Post card: less padding on narrow screens */
+  .post-card {
+    padding: var(--space-4);
+    border-radius: var(--radius-md);
+  }
+
+  /* Author head: allow wrap if name is very long */
+  .post-card__head {
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+  }
+
+  /* Author name */
+  .post-card__author-name {
+    font-size: var(--fs-caption);
+  }
+
+  /* Title: was 24px → step to 18px */
+  .post-card__title {
+    font-size: 18px;
+    line-height: 1.4;
+    margin-bottom: var(--space-3);
+  }
+
+  /* Cover: allow max-height to breathe more on phone */
+  .post-card__cover-img {
+    max-height: clamp(200px, 62vw, 420px);
+  }
+
+  /* Body text: already 15px / 1.8 — keep but tighten clamp to 3 lines */
+  .post-card__body {
+    margin-top: var(--space-3);
+  }
+
+  /* Actions row: wrap when many stats won't fit on one line */
+  .post-card__actions {
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: var(--space-4);
+  }
+
+  /* Stats row: tighter gap */
+  .post-card__stats {
+    gap: var(--space-4);
+  }
+
+  /* Stat/bookmark: 44px touch targets */
+  .post-card__stat,
+  .post-card__bookmark {
+    padding: var(--space-3);
+    margin: calc(-1 * var(--space-3));
+    min-height: 44px;
+  }
+
+  /* Tab bar: tighten padding */
+  .feed-tab {
+    padding: 10px var(--space-3);
+    font-size: var(--fs-caption);
+  }
+
+  /* More (⋯) button: 44px touch target */
+  .post-card__more {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+/* ── Small phone (<480) ── */
+@media (max-width: 480px) {
+  .post-card {
+    padding: var(--space-3);
+  }
+
+  .community-rail {
+    padding: 0 var(--space-3);
+  }
+
+  /* Avatar slightly smaller on very narrow */
+  .post-card__avatar {
+    width: 34px;
+    height: 34px;
+  }
+}

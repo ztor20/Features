@@ -1,0 +1,84 @@
+/* ════════════════════════════════════════════════════════════════
+   51-page-transition.css — SEAMLESS INSTANT NAVIGATION (2026-06-26)
+
+   Two goals from L, which are NOT in conflict:
+     • No animation on navigation (no cross-fade, no slide, no blink).
+     • The nav — left side-rail, top header, bottom-nav — must stay DEAD
+       STILL across navigation. Its icons must NOT repaint / blink on click.
+
+   Why the cross-document View Transition is KEPT (not removed):
+     A plain MPA loads a fresh document on every click, so the side-rail
+     (whose icons are CSS-mask spans: background:currentColor + mask:url())
+     repaints from scratch — that repaint IS the icon blink. The
+     cross-document View Transitions API is the only thing that carries the
+     chrome across the swap and holds it still. Removing the VT entirely
+     brought the icon blink back. So we KEEP the VT but make it INSTANT —
+     zero perceptible animation — and name the chrome so it is held still.
+
+   Net effect: navigation looks like nothing moved, because nothing did, and
+   the nav icons never blink. The earlier 300ms cross-fade (the actual
+   animation L objected to) is gone.
+   ════════════════════════════════════════════════════════════════ */
+
+@view-transition { navigation: auto; }
+
+/* Name the persistent chrome so the VT carries each across the swap as a
+   single held element (no progressive repaint → icons never blink). Each name
+   must be unique per document; only the rendered header variant is named. */
+.side-rail { view-transition-name: ztor-rail; }
+.botnav    { view-transition-name: ztor-botnav; }
+body[data-auth="logged-in"]  .header[data-state="after-login"],
+body[data-auth="logged-out"] .header[data-state="before-login"] { view-transition-name: ztor-header; }
+
+/* Root CONTENT: instant swap (1ms ≈ sub-frame) — no white inter-document gap,
+   no visible cross-fade. */
+::view-transition-old(root),
+::view-transition-new(root) { animation-duration: 1ms; }
+
+/* Persistent CHROME: SNAP dead-still — do NOT cross-fade. Cross-fading the old
+   and new header/rail snapshots ghosts the two images and flickers the masked
+   icons inside them (the search icon, etc.). Instead hide the old snapshot and
+   show the new at full opacity instantly, with the group morph zeroed — so at
+   t=0 the destination chrome is simply there, held perfectly still. This is the
+   "Zara snap" and it's what keeps every nav/header icon from blinking. */
+::view-transition-group(ztor-rail),
+::view-transition-group(ztor-header),
+::view-transition-group(ztor-botnav) { animation-duration: 0s; }
+::view-transition-old(ztor-rail),
+::view-transition-old(ztor-header),
+::view-transition-old(ztor-botnav) { animation: none; opacity: 0; }
+::view-transition-new(ztor-rail),
+::view-transition-new(ztor-header),
+::view-transition-new(ztor-botnav) { animation: none; opacity: 1; }
+
+/* ── Scroll-reveal ENTRANCE neutralised for the nav / page-head region ──
+   The shared reveal.js AND the per-page inline reveal copies do
+   `gsap.set(target, {opacity:0, y:24})` then animate to y:0 — that is the
+   "nav bar sliding up." Forcing these static targets to their final state
+   (visible, untransformed) makes the slide a no-op. !important beats GSAP's
+   inline gsap.set, so it works for every reveal system with no per-page edit.
+   transform:none is applied only to static text/heading targets (no hover
+   transform), so card hover-lifts are preserved (see :not(:hover) below). */
+[data-reveal-section] .page-head__title,
+[data-reveal-section] .page-head__desc,
+[data-reveal-section] .page-head__info,
+[data-reveal-section] .glass-tabs,
+[data-reveal-section] .section-eyebrow,
+[data-reveal-section] .section-header__title,
+[data-reveal-section] .section-header__sub,
+[data-reveal-section] .section-link,
+[data-reveal-section] .popcorn-page__heading {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+[data-reveal-section] .popcorn-balance-card,
+[data-reveal-section] .popcorn-guide,
+[data-reveal-stack] > * {
+  opacity: 1 !important;
+}
+[data-reveal-section] .popcorn-balance-card:not(:hover),
+[data-reveal-section] .popcorn-guide:not(:hover),
+[data-reveal-stack] > *:not(:hover) {
+  transform: none !important;
+}

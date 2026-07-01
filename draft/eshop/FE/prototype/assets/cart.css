@@ -1,0 +1,700 @@
+/* ════════════════════════════════════════════════════════════════
+   Ztor 2.0 — Shopping Cart
+   A persistent header cart icon + right slide-over drawer (CART ↔
+   CHECKOUT ↔ CONFIRMATION). All tokens reused from tokens.css; nothing
+   redefined here. Scoped under .header__cart (icon) and .ztor-cart
+   (overlay + drawer + everything inside). Mobbin-benchmarked:
+   Hers (line-item rows + summary block), Instacart (sticky footer CTA
+   with live total, inline qty steppers), Apple (address form + radio
+   payment rows + "all set" confirmation), Walmart/Shop (collapsed
+   summary on checkout). Brand skin: dark canvas, orange accent, CJK
+   type, --ease-out, --radius-*, --space-*.
+   Perf: only transform/opacity animate; reduced-motion honored.
+   ════════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────
+   HEADER ICON  (.header__cart)
+   Matches .header__icon-btn rhythm (24×24 masked glyph) but carries a
+   count badge, so it's a positioned wrapper rather than a bare mask.
+   ───────────────────────────────────────── */
+.header__cart {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  color: var(--neutral-300);
+  transition: color 200ms ease;
+}
+.header__cart:hover { color: var(--neutral-white); }
+.header__cart:focus-visible {
+  outline: 2px solid var(--yellow-500);
+  outline-offset: 4px;
+  border-radius: var(--radius-sm);
+}
+
+.header__cart__glyph {
+  width: 24px;
+  height: 24px;
+  display: block;
+  color: inherit;
+}
+.header__cart__glyph svg { width: 100%; height: 100%; display: block; }
+
+/* Count badge — amber pill top-right, ringed in canvas so it lifts off
+   the icon. Hidden at zero (an empty badge reads as a bug). */
+.header__cart__badge {
+  position: absolute;
+  top: -7px;
+  right: -9px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-pill);
+  background: var(--yellow-500);
+  color: var(--yellow-ink);
+  font-family: var(--font-latin);
+  font-size: 11px;
+  font-weight: var(--fw-bold);
+  line-height: 1;
+  letter-spacing: 0;
+  box-shadow: 0 0 0 2px var(--neutral-900);
+}
+.header__cart.has-items .header__cart__badge { display: inline-flex; }
+
+/* Badge bump — a single transform pulse when an item lands. */
+.header__cart__badge.is-bumping { animation: ztor-cart-bump 360ms var(--ease-out); }
+@keyframes ztor-cart-bump {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.32); }
+  100% { transform: scale(1); }
+}
+
+/* ─────────────────────────────────────────
+   OVERLAY + PANEL  (.ztor-cart)
+   Full-height right slide-over (Shopify/Hers). z-index above the
+   header (header is < 300; watch/notif drawers are 300 — cart sits at
+   400 so its modal owns the screen during checkout).
+   ───────────────────────────────────────── */
+.ztor-cart {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  pointer-events: none;
+  visibility: hidden;
+}
+.ztor-cart.is-open { pointer-events: auto; visibility: visible; }
+
+.ztor-cart__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  transition: opacity 280ms var(--ease-out);
+}
+.ztor-cart.is-open .ztor-cart__overlay { opacity: 1; }
+
+.ztor-cart__panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: min(440px, 100%);
+  background: rgba(14, 14, 14, 0.98);
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  border-left: 1px solid var(--border-default);
+  box-shadow: -28px 0 70px rgba(0, 0, 0, 0.6);
+  transform: translateX(100%);
+  transition: transform 360ms var(--ease-out);
+  overflow: hidden;
+}
+.ztor-cart.is-open .ztor-cart__panel { transform: translateX(0); }
+
+/* ── View stage: CART and CHECKOUT live side by side, slid by transform.
+   Absolutely positioned to fill the panel (NOT a column-flex child — that
+   let the 200% width be shrunk by the flex algorithm, which mis-landed the
+   checkout view a panel-width off). As an out-of-flow box, width:200% is
+   honored against the panel, and translateX(-50%) = exactly one panel
+   width. Each view is 50% of the stage = 100% of the panel. */
+.ztor-cart__stage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  width: 200%;
+  transform: translateX(0);
+  transition: transform 360ms var(--ease-out);
+}
+.ztor-cart[data-view="checkout"] .ztor-cart__stage,
+.ztor-cart[data-view="confirm"]  .ztor-cart__stage { transform: translateX(-50%); }
+
+.ztor-cart__view {
+  flex: 0 0 50%;
+  width: 50%;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* ── Shared head ── */
+.ztor-cart__head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-6) var(--space-6) var(--space-4);
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.ztor-cart__back {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-secondary);
+  transition: background 200ms ease, color 200ms ease;
+}
+.ztor-cart__back:hover { background: rgba(255, 255, 255, 0.12); color: var(--text-primary); }
+.ztor-cart__back svg { width: 18px; height: 18px; }
+
+.ztor-cart__title {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-family: var(--font-cjk-display);
+  font-weight: var(--fw-bold);
+  font-size: 22px;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+.ztor-cart__title-count { color: var(--text-tertiary); font-weight: var(--fw-regular); }
+
+.ztor-cart__close {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.06);
+  transition: background 200ms ease;
+}
+.ztor-cart__close:hover { background: rgba(255, 255, 255, 0.14); }
+.ztor-cart__close:focus-visible,
+.ztor-cart__back:focus-visible {
+  outline: 2px solid var(--yellow-500);
+  outline-offset: 2px;
+}
+.ztor-cart__close-icon {
+  width: 16px;
+  height: 16px;
+  background-color: var(--text-tertiary);
+  -webkit-mask: url('icons/close.svg') center / contain no-repeat;
+          mask: url('icons/close.svg') center / contain no-repeat;
+}
+.ztor-cart__close:hover .ztor-cart__close-icon { background-color: var(--text-primary); }
+
+/* ── Scrollable body ── */
+.ztor-cart__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--space-2) var(--space-6) var(--space-4);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
+}
+.ztor-cart__body::-webkit-scrollbar { width: 6px; }
+.ztor-cart__body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-pill);
+}
+
+/* ─────────────────────────────────────────
+   LINE ITEMS  (Hers / Instacart row anatomy)
+   ───────────────────────────────────────── */
+.ztor-cart__items { display: flex; flex-direction: column; }
+
+.ztor-cart-line {
+  display: grid;
+  grid-template-columns: 64px 1fr auto;
+  gap: var(--space-4);
+  padding: var(--space-4) 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.ztor-cart-line__media {
+  width: 64px;
+  aspect-ratio: 2 / 3;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+}
+.ztor-cart-line__media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.ztor-cart-line__main {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.ztor-cart-line__title {
+  margin: 0;
+  font-family: var(--font-cjk-text);
+  font-size: var(--fs-body-sm);
+  font-weight: var(--fw-medium);
+  line-height: 1.45;
+  color: var(--text-primary);
+  /* clamp to two lines so a long zh title never blows out the row */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.ztor-cart-line__price {
+  font-family: var(--font-cjk-text);
+  font-size: var(--fs-body-sm);
+  font-weight: var(--fw-medium);
+  color: var(--text-secondary);
+}
+
+/* qty stepper  −  N  +  */
+.ztor-cart-line__stepper {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  margin-top: var(--space-1);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.02);
+}
+.ztor-cart-step {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  border-radius: var(--radius-pill);
+  transition: color 160ms ease, background 160ms ease;
+}
+.ztor-cart-step:hover { color: var(--text-primary); background: rgba(255, 255, 255, 0.06); }
+.ztor-cart-step:focus-visible { outline: 2px solid var(--yellow-500); outline-offset: -2px; }
+.ztor-cart-step svg { width: 14px; height: 14px; }
+.ztor-cart-line__qty {
+  min-width: 28px;
+  text-align: center;
+  font-family: var(--font-latin);
+  font-size: var(--fs-body-sm);
+  font-weight: var(--fw-semibold);
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* right column: unit/line price + remove × */
+.ztor-cart-line__aside {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+.ztor-cart-line__line-total {
+  font-family: var(--font-cjk-text);
+  font-size: var(--fs-body-sm);
+  font-weight: var(--fw-semibold);
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+.ztor-cart-line__remove {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--text-tertiary);
+  border-radius: var(--radius-pill);
+  transition: color 160ms ease, background 160ms ease;
+}
+.ztor-cart-line__remove:hover { color: var(--error-500); background: rgba(239, 68, 68, 0.1); }
+.ztor-cart-line__remove:focus-visible { outline: 2px solid var(--yellow-500); outline-offset: 0; }
+.ztor-cart-line__remove svg { width: 15px; height: 15px; }
+
+/* item enter / leave */
+.ztor-cart-line { animation: ztor-cart-line-in 320ms var(--ease-out); }
+@keyframes ztor-cart-line-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.ztor-cart-line.is-leaving {
+  animation: ztor-cart-line-out 240ms var(--ease-out) forwards;
+  pointer-events: none;
+}
+@keyframes ztor-cart-line-out {
+  to { opacity: 0; transform: translateX(16px); }
+}
+
+/* ─────────────────────────────────────────
+   EMPTY STATE
+   ───────────────────────────────────────── */
+.ztor-cart__empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: var(--space-4);
+  padding: var(--space-16) var(--space-6);
+}
+.ztor-cart__empty-icon {
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-tertiary);
+}
+.ztor-cart__empty-icon svg { width: 30px; height: 30px; }
+.ztor-cart__empty-title {
+  font-family: var(--font-cjk-display);
+  font-size: var(--fs-h4);
+  font-weight: var(--fw-bold);
+  color: var(--text-primary);
+}
+.ztor-cart__empty-desc {
+  font-family: var(--font-cjk-text);
+  font-size: var(--fs-body-sm);
+  color: var(--text-secondary);
+  line-height: var(--lh-body-sm);
+  max-width: 240px;
+}
+.ztor-cart__empty-cta {
+  margin-top: var(--space-2);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 44px;
+  padding: 0 var(--space-6);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--text-primary);
+  font-family: var(--font-cjk-display);
+  font-size: var(--fs-body-sm);
+  font-weight: var(--fw-bold);
+  cursor: pointer;
+  transition: border-color 200ms ease, background 200ms ease;
+}
+.ztor-cart__empty-cta:hover { border-color: var(--border-strong); background: rgba(255, 255, 255, 0.04); }
+
+/* ─────────────────────────────────────────
+   FOOTER  (summary + CTA, sticky — Instacart)
+   ───────────────────────────────────────── */
+.ztor-cart__foot {
+  flex-shrink: 0;
+  padding: var(--space-5) var(--space-6) max(var(--space-6), env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--border-default);
+  background: rgba(10, 10, 10, 0.6);
+}
+
+.ztor-cart__summary { display: flex; flex-direction: column; gap: var(--space-3); margin-bottom: var(--space-5); }
+.ztor-cart__sum-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-family: var(--font-cjk-text);
+  font-size: var(--fs-body-sm);
+  color: var(--text-secondary);
+}
+.ztor-cart__sum-row span:last-child {
+  font-family: var(--font-latin);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}
+.ztor-cart__sum-row--total {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-subtle);
+  font-size: var(--fs-body);
+  font-weight: var(--fw-semibold);
+  color: var(--text-primary);
+}
+.ztor-cart__sum-row--total span:last-child {
+  font-size: var(--fs-h4);
+  font-weight: var(--fw-bold);
+  color: var(--text-primary);
+}
+.ztor-cart__sum-free { color: var(--score-ink-high) !important; }
+
+/* primary amber CTA — the only filled button in the drawer */
+.ztor-cart__cta {
+  width: 100%;
+  height: 52px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--yellow-500);
+  color: var(--yellow-ink);
+  font-family: var(--font-cjk-display);
+  font-size: var(--fs-h5);
+  font-weight: var(--fw-bold);
+  cursor: pointer;
+  transition: transform 160ms var(--ease-out), background 200ms ease, box-shadow 200ms ease;
+}
+.ztor-cart__cta:hover { background: var(--yellow-400); box-shadow: 0 8px 28px rgba(255, 163, 63, 0.28); }
+.ztor-cart__cta:active { transform: scale(0.985); }
+.ztor-cart__cta:focus-visible { outline: 2px solid var(--neutral-white); outline-offset: 3px; }
+.ztor-cart__cta:disabled {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-disabled);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+.ztor-cart__cta svg { width: 18px; height: 18px; }
+
+.ztor-cart__foot-note {
+  margin-top: var(--space-3);
+  text-align: center;
+  font-family: var(--font-cjk-text);
+  font-size: var(--fs-caption);
+  color: var(--text-tertiary);
+}
+
+/* ─────────────────────────────────────────
+   CHECKOUT VIEW
+   ───────────────────────────────────────── */
+.ztor-cart__section { padding: var(--space-5) 0; border-bottom: 1px solid var(--border-subtle); }
+.ztor-cart__section:first-child { padding-top: var(--space-3); }
+.ztor-cart__section-title {
+  margin: 0 0 var(--space-4);
+  font-family: var(--font-cjk-display);
+  font-size: var(--fs-h5);
+  font-weight: var(--fw-bold);
+  color: var(--text-primary);
+}
+
+/* collapsed order summary (Walmart/Shop) — item thumbs + count, totals */
+.ztor-cart__co-items {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+.ztor-cart__co-thumbs { display: flex; }
+.ztor-cart__co-thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 2px solid var(--neutral-900);
+  background: var(--bg-secondary);
+  margin-left: -10px;
+}
+.ztor-cart__co-thumb:first-child { margin-left: 0; }
+.ztor-cart__co-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.ztor-cart__co-thumb--more {
+  display: grid;
+  place-items: center;
+  font-family: var(--font-latin);
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-semibold);
+  color: var(--text-secondary);
+  background: var(--bg-tertiary);
+}
+.ztor-cart__co-itemcount {
+  font-family: var(--font-cjk-text);
+  font-size: var(--fs-body-sm);
+  color: var(--text-secondary);
+}
+
+/* form fields */
+.ztor-cart__field { display: flex; flex-direction: column; gap: var(--space-2); margin-bottom: var(--space-4); }
+.ztor-cart__field-row { display: flex; gap: var(--space-3); }
+.ztor-cart__field-row .ztor-cart__field { flex: 1; }
+.ztor-cart__label {
+  font-family: var(--font-cjk-text);
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--ls-label);
+  color: var(--text-tertiary);
+}
+.ztor-cart__input {
+  width: 100%;
+  height: 46px;
+  padding: 0 var(--space-4);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-primary);
+  font-family: var(--font-cjk-text);
+  font-size: var(--fs-body-sm);
+  transition: border-color 180ms ease, background 180ms ease;
+}
+.ztor-cart__input::placeholder { color: var(--text-disabled); }
+.ztor-cart__input:focus {
+  outline: none;
+  border-color: var(--yellow-500);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* payment radio rows (Apple) */
+.ztor-cart__pay { display: flex; flex-direction: column; gap: var(--space-3); }
+.ztor-cart__pay-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.02);
+  cursor: pointer;
+  transition: border-color 180ms ease, background 180ms ease;
+}
+.ztor-cart__pay-row:hover { border-color: var(--border-strong); }
+.ztor-cart__pay-row.is-selected {
+  border-color: var(--yellow-500);
+  background: rgba(255, 163, 63, 0.06);
+}
+.ztor-cart__pay-radio {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  border-radius: var(--radius-pill);
+  border: 2px solid var(--border-strong);
+  display: grid;
+  place-items: center;
+  transition: border-color 180ms ease;
+}
+.ztor-cart__pay-row.is-selected .ztor-cart__pay-radio { border-color: var(--yellow-500); }
+.ztor-cart__pay-radio::after {
+  content: "";
+  width: 9px;
+  height: 9px;
+  border-radius: var(--radius-pill);
+  background: var(--yellow-500);
+  transform: scale(0);
+  transition: transform 180ms var(--ease-out);
+}
+.ztor-cart__pay-row.is-selected .ztor-cart__pay-radio::after { transform: scale(1); }
+.ztor-cart__pay-label {
+  flex: 1;
+  font-family: var(--font-cjk-text);
+  font-size: var(--fs-body-sm);
+  font-weight: var(--fw-medium);
+  color: var(--text-primary);
+}
+.ztor-cart__pay-hint {
+  font-family: var(--font-cjk-text);
+  font-size: var(--fs-caption);
+  color: var(--text-tertiary);
+}
+.ztor-cart__pay-mark { color: var(--text-secondary); display: grid; place-items: center; }
+.ztor-cart__pay-mark svg { width: 22px; height: 22px; }
+
+/* ─────────────────────────────────────────
+   CONFIRMATION VIEW
+   ───────────────────────────────────────── */
+.ztor-cart__confirm {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: var(--space-4);
+  padding: var(--space-12) var(--space-6);
+}
+.ztor-cart__confirm-mark {
+  width: 76px;
+  height: 76px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 163, 63, 0.12);
+  color: var(--yellow-500);
+  animation: ztor-cart-pop 420ms var(--ease-out);
+}
+@keyframes ztor-cart-pop {
+  0%   { transform: scale(0.4); opacity: 0; }
+  60%  { transform: scale(1.08); }
+  100% { transform: scale(1); opacity: 1; }
+}
+.ztor-cart__confirm-mark svg { width: 38px; height: 38px; }
+.ztor-cart__confirm-title {
+  font-family: var(--font-cjk-display);
+  font-size: var(--fs-h3);
+  font-weight: var(--fw-bold);
+  color: var(--text-primary);
+}
+.ztor-cart__confirm-desc {
+  font-family: var(--font-cjk-text);
+  font-size: var(--fs-body-sm);
+  color: var(--text-secondary);
+  line-height: var(--lh-body);
+  max-width: 280px;
+}
+.ztor-cart__confirm-order {
+  margin-top: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  border: 1px dashed var(--border-default);
+  border-radius: var(--radius-md);
+  font-family: var(--font-latin);
+  font-size: var(--fs-body-sm);
+  color: var(--text-primary);
+  letter-spacing: 0.04em;
+}
+.ztor-cart__confirm-order b { color: var(--yellow-500); font-weight: var(--fw-bold); }
+
+/* ─────────────────────────────────────────
+   RESPONSIVE  (site mobile breakpoint = 768px)
+   Full-bleed panel on phones.
+   ───────────────────────────────────────── */
+@media (max-width: 768px) {
+  .ztor-cart__panel { width: 100%; border-left: none; }
+}
+
+/* ─────────────────────────────────────────
+   REDUCED MOTION — kill transforms/animations, keep state changes.
+   ───────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .ztor-cart__overlay,
+  .ztor-cart__panel,
+  .ztor-cart__stage,
+  .ztor-cart__cta { transition: none; }
+  .ztor-cart__panel { transform: translateX(0); }
+  .ztor-cart:not(.is-open) .ztor-cart__panel { transform: translateX(100%); }
+  .header__cart__badge.is-bumping,
+  .ztor-cart-line,
+  .ztor-cart-line.is-leaving,
+  .ztor-cart__confirm-mark { animation: none; }
+  .ztor-cart-line.is-leaving { opacity: 0; }
+}

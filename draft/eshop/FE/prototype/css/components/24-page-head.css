@@ -1,0 +1,101 @@
+/* ─────────────────────────────────────────
+   MAIN-PAGE HEADER ROW  (.page-head)
+   Compact title row used by content index pages (cocreate / news /
+   activity): H3 title on the left + optional info link on the right.
+   Mirrors Figma "Title Combo" (97:517). Reusable — see [[cross-page
+   consistency]] memory.
+   ───────────────────────────────────────── */
+.page-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4) 0;
+}
+
+/* Left block — title + optional description, stacked. */
+.page-head__copy {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.page-head__title {
+  margin: 0;
+  font-family: var(--font-cjk-display);
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-page-title);   /* canonical page-header size (was --fs-h3) */
+  line-height: var(--lh-h4);
+  letter-spacing: 0.02em;            /* match the shop-head title */
+  color: var(--text-primary);
+}
+
+.page-head__desc {
+  margin: 6px 0 0;
+  font-family: var(--font-cjk-text);
+  font-size: var(--fs-page-desc);    /* canonical (was --fs-body) */
+  line-height: var(--lh-body-sm);
+  color: var(--text-secondary);
+}
+
+.page-head__info {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  flex-shrink: 0;
+  font-family: var(--font-cjk-text);
+  font-size: var(--fs-body-sm);
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+
+.page-head__info:hover { color: var(--text-primary); }
+
+.page-head__info-icon {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  background-color: currentColor;
+  -webkit-mask: url('assets/icons/info.svg') center / contain no-repeat;
+  mask: url('assets/icons/info.svg') center / contain no-repeat;
+}
+
+/* ─────────────────────────────────────────
+   PAGE-HEAD — RESPONSIVE
+   ───────────────────────────────────────── */
+
+/* Tablet: tighten vertical padding slightly. */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .page-head {
+    padding: var(--space-3) 0;
+  }
+}
+
+/* Phone: stack vertically; reduce padding; clamp title to comfortable size. */
+@media (max-width: 767.98px) {
+  .page-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+    padding: var(--space-3) 0;
+  }
+
+  .page-head__title {
+    font-size: var(--fs-page-title);   /* flat canonical size, matches shop-head on phone */
+    line-height: 1.35;
+  }
+
+  .page-head__desc {
+    font-size: var(--fs-page-desc);
+    line-height: var(--lh-body-sm);
+    margin-top: var(--space-1);
+  }
+
+  /* Info link moves inline below the copy; no longer floats right. */
+  .page-head__info {
+    margin-top: var(--space-1);
+  }
+}
+
+/* (≤480 title override removed — the canonical --fs-page-title is already a flat
+   20px on every breakpoint, matching the shop header.) */

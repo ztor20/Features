@@ -1,0 +1,43 @@
+/* ─────────────────────────────────────────
+   CO-CREATION GRID  (.cocreation-grid)
+   Owns the grid layout (base + all responsive) in one file so the cascade
+   is predictable. Card internals live in cocreation-card.css.
+   ───────────────────────────────────────── */
+
+/* Base — 3-up desktop grid */
+.cocreation-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-6);
+}
+
+/* ─────────────────────────────────────────
+   RESPONSIVE — CO-CREATION GRID
+   (card internals handled in cocreation-card.css)
+   ───────────────────────────────────────── */
+
+/* ── Tablet (768–1023) ── */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .cocreation-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-5);
+  }
+}
+
+/* ── Phone (<768): VERTICAL single-column stack (no horizontal scroll).
+   Per L's directive — horizontal scroll is reserved for the content-dense
+   Spotlight film rails; everything else stacks. Cards go full-width. ── */
+@media (max-width: 767.98px) {
+  .cocreation-grid {
+    grid-template-columns: 1fr;        /* one full-width card per row */
+    gap: var(--space-4);
+  }
+
+  /* Overlay variant: also a single column (was masonry columns) */
+  .cocreation-grid--overlay { column-count: initial; column-gap: 0; }
+}
+
+/* ── Small phone (<480): tighten the vertical rhythm ── */
+@media (max-width: 480px) {
+  .cocreation-grid { gap: var(--space-3); }
+}
