@@ -14273,3 +14273,20 @@ body[data-auth="logged-out"] .header[data-state="before-login"] { view-transitio
 a[href="news.html"],
 a[href$="/news.html"] { display: none !important; }
 
+
+/* ═══ eShop scope overrides (global — components.css loads on every page) ═══ */
+.glass-tabs__item[href="shop-popcorn.html"],
+.glass-tabs__item[href="shop-events.html"],
+.glass-tabs__item[href="shop-auction.html"],
+.glass-tabs__item[href*="-events.html"],
+.glass-tabs__item[href*="leaderboard"]{display:none !important;}
+.shop-filter__item[data-shop-tab="auction"]{display:none !important;}
+.side-rail__item:not([href="shop.html"]),
+.side-rail__post,
+.header__nav-link{display:none !important;}
+.pickup-qr{display:flex;gap:14px;align-items:center;text-align:left;margin:14px 0;padding:12px 14px;border:1px solid rgba(255,255,255,.12);border-radius:14px;background:rgba(255,255,255,.03);}
+.pickup-qr__svg,.pickup-qr .ticket-qr__svg{width:88px;height:88px;flex:none;background:#fff;border-radius:8px;padding:6px;fill:#111;}
+.pickup-qr--sm .pickup-qr__svg,.pickup-qr--sm .ticket-qr__svg{width:68px;height:68px;}
+.pickup-qr__title{font-weight:700;font-size:13.5px;margin-bottom:3px;}
+.pickup-qr__line{font-size:12px;color:rgba(255,255,255,.72);line-height:1.55;}
+.pickup-qr__note{font-size:11px;color:rgba(255,255,255,.5);margin-top:5px;line-height:1.5;}

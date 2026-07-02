@@ -26,7 +26,7 @@ Deployed in the master `Frontend` site (repo `ztor20/Frontend`, deploy `ztor-2-0
 
 The room page accepts URL params for every state: `?role=host|guest&state=lobby|sync|live|ended&mic=on|off` (`&roster=1` opens the attendee list, `&del=1` shows delete-message, `&settings=1` opens the host episode/volume sheet).
 
-**Realtime:** sync only, not streaming — each fan plays their own copy; **Ably** broadcasts host playback state, chat, and presence. Three channels: `playback-sync`, `chat`, `presence`. (Host camera PiP is a separate v3 add on Amazon IVS; FE prototype is mock.)
+**Realtime:** sync only, not streaming — each fan plays their own copy; **Ably** broadcasts host playback state, chat, and presence. Three channels: `playback-sync`, `chat`, `presence`. (Host camera PiP is a separate v3 add on **LiveKit** — decided 6-28; FE prototype is mock.)
 
 ## Reference (the earlier standalone build)
 https://ztor-watchparty.vercel.app · full BRD Frontend tab: https://ztor-watchparty.vercel.app/brd

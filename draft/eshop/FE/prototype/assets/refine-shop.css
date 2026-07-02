@@ -408,3 +408,34 @@ body.rf-shop .popcorn-history-link__chevron {
   transform: rotate(45deg);
   opacity: 0.7;
 }
+
+/* ── eShop scope override (end-of-Aug release) ─────────────────────
+   Out-of-scope shop tabs hidden: POPCORN store, Events, Auctions.
+   Delete this block to restore them when they re-enter scope. */
+.glass-tabs__item[href="shop-popcorn.html"],
+.glass-tabs__item[href="shop-events.html"],
+.glass-tabs__item[href="shop-auction.html"]{display:none !important;}
+
+/* ── eShop scope: QR-pickup detail panel in checkout ── */
+.checkout-pickup{margin-top:10px;padding:12px 14px;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(255,255,255,.03);}
+.checkout-pickup__row{display:flex;justify-content:space-between;gap:12px;font-size:13px;line-height:1.7;}
+.checkout-pickup__k{color:rgba(255,255,255,.55);flex:none;}
+.checkout-pickup__v{color:rgba(255,255,255,.9);text-align:right;}
+.checkout-pickup__note{margin-top:8px;font-size:12px;line-height:1.6;color:rgba(255,255,255,.5);}
+
+/* ── eShop scope · creator profile: hide events + leaderboard tabs ── */
+.glass-tabs__item[href*="-events.html"],
+.glass-tabs__item[href*="leaderboard"]{display:none !important;}
+/* ── eShop scope · creator shop sub-nav: hide auction (G5) ── */
+.shop-filter__item[data-shop-tab="auction"]{display:none !important;}
+/* ── eShop scope · main nav: keep only Shop ── */
+.side-rail__item:not([href="shop.html"]),
+.side-rail__post,
+.header__nav-link{display:none !important;}
+/* ── eShop scope · pickup QR block (checkout confirm + my orders) ── */
+.pickup-qr{display:flex;gap:14px;align-items:center;text-align:left;margin:14px 0;padding:12px 14px;border:1px solid rgba(255,255,255,.12);border-radius:14px;background:rgba(255,255,255,.03);}
+.pickup-qr__svg{width:88px;height:88px;flex:none;background:#fff;border-radius:8px;padding:6px;fill:#111;}
+.pickup-qr--sm .pickup-qr__svg{width:68px;height:68px;}
+.pickup-qr__title{font-weight:700;font-size:13.5px;margin-bottom:3px;}
+.pickup-qr__line{font-size:12px;color:rgba(255,255,255,.72);line-height:1.55;}
+.pickup-qr__note{font-size:11px;color:rgba(255,255,255,.5);margin-top:5px;line-height:1.5;}

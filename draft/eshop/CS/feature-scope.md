@@ -144,6 +144,7 @@ Fans CRM (`fans-crm.html`/`tier-settings.html`), IP Bank (`ip-market`/`my-ip`/`r
       - `p1` **O21** QR 领取（二维码 / 标记已领取） · QR pickup ✅
       - `next` **O22** 数位（下载） · Digital download — _digital goods deferred_ ✅⬆
     - `next` **O23** 退款与争议（部分 / 整单退款） · Refund & dispute 🟡 _buttons present but disabled (D041)_
+- `p1` **O24** QR 取货核销扫描器 · Pickup QR scanner (operator) — _Creator Studio feature: 掃描買家取貨 QR → 核销 → mark 已取货; designer to build (not in prototype)_
 
 ## E · 收入管理 Earnings / Income
 
@@ -188,8 +189,8 @@ Fans CRM (`fans-crm.html`/`tier-settings.html`), IP Bank (`ip-market`/`my-ip`/`r
 
 ---
 
-*Scope totals — `p1`: 82 · `next`: 11 · `tbd`: 14 · total 107 features. (updated 2026-06-29)*
+*Scope totals — `p1`: 83 · `next`: 11 · `tbd`: 14 · total 108 features. (updated 2026-07-02)*
 
-*By section — S Shop: p1 45 / next 2 / tbd 3 · O Orders: p1 17 / next 3 / tbd 3 · E Earnings: p1 12 / next 5 / tbd 7 · B Storefront: p1 8 / next 1 / tbd 1.*
+*By section — S Shop: p1 45 / next 2 / tbd 3 · O Orders: p1 18 / next 3 / tbd 3 · E Earnings: p1 12 / next 5 / tbd 7 · B Storefront: p1 8 / next 1 / tbd 1.*
 
-*Build status (2026-06-29) — Phase-1 gaps remaining: **4** (🟡 S13 sort · S30 POPCORN price · B06 pay-by-POPCORN · B09 goods pickup QR). All other `p1` features built. ~20 `next`/`tbd` features built ahead of scope (static UI, no backend).*
+*Build status (2026-07-02) — Phase-1 build items: **4 prototype gaps** (🟡 S13 sort · S30 POPCORN price · B06 pay-by-POPCORN · B09 goods pickup QR) **+ O24 QR pickup scanner** (Creator Studio, designer to build). All other `p1` features built. ~20 `next`/`tbd` features built ahead of scope (static UI, no backend).*

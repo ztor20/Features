@@ -35,7 +35,7 @@ Ztor 2.0 eShop — creator-merch commerce. This draft folder stages the **final 
 ## Supporting docs (`_docs/`)
 
 - `brd-v1.md` — Business Requirements v1.1
-- `decisions/` — 8 eShop ADRs (dual-currency, physical-goods-only, offline-QR pickup, storefront CMS reuse, tech division, three-gate, creation-merged, MVP1 scope)
+- *(eShop ADRs are kept in the personal `ztor-docs/decisions/` repo — not bundled into this company repo)*
 - `ingestion-brief.md` · `phase1-progress.md` · `shop-pay-integration.md`
 - `wireframe-v0.4.html`
 

@@ -249,7 +249,7 @@
     var root, panel, opener, scrollY = 0;
     var built = false;
 
-    function shippingFor(sub) { return sub >= FREE_SHIP_OVER || sub === 0 ? 0 : SHIPPING_FLAT; }
+    function shippingFor(sub) { return 0; /* QR pickup — no shipping fee (Phase 1) */ }
 
     function build() {
       if (built) return;
@@ -380,7 +380,7 @@
           '<div class="ztor-cart__sum-row ztor-cart__sum-row--total"><span>總計</span><span>' + money(cur, total) + '</span></div>' +
         '</div>' +
         '<button class="ztor-cart__cta" type="button" data-cart-checkout' + (items.length ? '' : ' disabled') + '>前往結帳</button>' +
-        '<p class="ztor-cart__foot-note">' + (ship === 0 ? '已達免運門檻' : '滿 NT$ ' + fmt(FREE_SHIP_OVER) + ' 免運') + '</p>';
+        '<p class="ztor-cart__foot-note">' + (ship === 0 ? '現場 QR 領取 · 免運' : '滿 NT$ ' + fmt(FREE_SHIP_OVER) + ' 免運') + '</p>';
     }
 
     /* ── CHECKOUT render ── */

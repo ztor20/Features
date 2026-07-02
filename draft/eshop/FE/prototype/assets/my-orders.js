@@ -14,7 +14,7 @@
   function pad(n) { return (n < 10 ? '0' : '') + n; }
   function dateStr(ts) { var d = new Date(ts); return d.getFullYear() + '/' + pad(d.getMonth() + 1) + '/' + pad(d.getDate()); }
 
-  var LABEL = { paid: '已付款', placed: '已下單', shipped: '已出貨', done: '已送達', valid: '有效', used: '已使用', refunded: '已退款', leading: '最高出價', outbid: '已被超越', won: '已得標', claimed: '已付款領取', active: '租借中', redeemed: '已兌換', expired: '已過期' };
+  var LABEL = { paid: '已付款', placed: '已下單', shipped: '可取貨', done: '已取貨', valid: '有效', used: '已使用', refunded: '已退款', leading: '最高出價', outbid: '已被超越', won: '已得標', claimed: '已付款領取', active: '租借中', redeemed: '已兌換', expired: '已過期' };
   var TAG = { paid: 'status-tag--green', valid: 'status-tag--green', leading: 'status-tag--green', won: 'status-tag--green', active: 'status-tag--green', redeemed: 'status-tag--green', claimed: 'status-tag--green', outbid: 'status-tag--yellow', shipped: 'status-tag--yellow', placed: 'status-tag--yellow', used: 'status-tag--ended', refunded: 'status-tag--ended', expired: 'status-tag--ended', done: 'status-tag--ended' };
   function tag(status) { return '<span class="status-tag ' + (TAG[status] || '') + '">' + esc(LABEL[status] || status) + '</span>'; }
 
@@ -39,7 +39,7 @@
   function orderCard(o) {
     var thumbs = (o.items || []).slice(0, 4).map(function (it) { return '<span class="orders-card__thumb">' + (it.image ? '<img src="' + esc(it.image) + '" alt="" loading="lazy">' : '') + '</span>'; }).join('');
     var qty = (o.items || []).reduce(function (s, it) { return s + (it.qty || 1); }, 0);
-    var nodes = ['已下單', '備貨中', '已出貨', '已送達'];
+    var nodes = ['已下單', '備貨中', '可取貨', '已取貨'];
     var idx = o.status === 'done' ? 3 : (o.status === 'shipped' ? 2 : (o.status === 'paid' ? 1 : 0));
     var track = '<div class="order-tracker order-tracker--mini">' + nodes.map(function (nm, i) {
       return '<div class="order-tracker__node' + (i <= idx ? ' is-done' : '') + (i === idx ? ' is-current' : '') + '"><span class="order-tracker__dot"></span><span class="order-tracker__label">' + nm + '</span></div>';
@@ -48,6 +48,14 @@
       '<div class="orders-card__head"><span class="orders-card__id">訂單 ' + esc(o.id) + '</span><span class="orders-card__date">' + dateStr(o.ts) + '</span></div>' +
       '<div class="orders-card__thumbs">' + thumbs + '<span class="orders-card__count">共 ' + qty + ' 件</span></div>' +
       track +
+      (o.status === 'done' ? '' :
+        '<div class="pickup-qr pickup-qr--sm">' + qrSvg('ZTOR-PICKUP-' + o.id) +
+          '<div class="pickup-qr__meta">' +
+            '<p class="pickup-qr__title">取貨 QR</p>' +
+            '<p class="pickup-qr__line">Ztor 門市 · 信義區松壽路 12 號 2F · 每日 12:00–21:00</p>' +
+            '<p class="pickup-qr__note">到店出示核銷領取</p>' +
+          '</div>' +
+        '</div>') +
       '<div class="orders-card__foot">' + tag(o.status) + '<span class="orders-card__total">' + money(o.currency, o.total) + '</span></div>' +
     '</article>';
   }

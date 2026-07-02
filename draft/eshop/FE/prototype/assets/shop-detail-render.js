@@ -236,9 +236,9 @@
     /* Compact single-line version */
     return '<div class="pdp-delivery">' +
       '<span class="pdp-delivery__icon" aria-hidden="true">' + SVG.truck + '</span>' +
-      '<span class="pdp-delivery__text">3–5 工作天 · 滿 NT$1,000 免運</span>' +
+      '<span class="pdp-delivery__text">現場 QR 領取 · 免運</span>' +
       '<span class="pdp-delivery__sep" aria-hidden="true">·</span>' +
-      '<span class="pdp-delivery__text">7 天退換</span>' +
+      '<span class="pdp-delivery__text">付款後 Email 寄送取貨 QR</span>' +
     '</div>';
   }
 
@@ -254,7 +254,7 @@
     var specs = item.specs && item.specs.length ? item.specs : fallbackSpecs(item);
 
     /* Shipping/returns text */
-    var shippingText = item.shipping || '下單後 3–5 個工作天內出貨；台灣本島滿 NT$1,000 免運，離島與海外運費另計。';
+    var shippingText = item.shipping || '現場 QR 領取：付款後將以 Email 寄送取貨 QR Code，並顯示於「我的訂單」；至 Ztor 門市（台北市信義區松壽路 12 號 2F，每日 12:00–21:00）出示由門市人員核銷領取。';
     var returnsText = item.returns || '收到商品 7 天內可申請退換，商品需保持吊牌完整、未經下水與配戴。';
 
     var leftCol = '<div class="pdp-details__left">' +
@@ -271,7 +271,7 @@
         }).join('') + '</dl>' +
       '</div>' : '') +
       '<div class="pdp-details__shipping-block">' +
-        '<h3 class="pdp-details__sub-heading">運送與退換</h3>' +
+        '<h3 class="pdp-details__sub-heading">取貨與退換</h3>' +
         '<p class="pdp-details__shipping-text">' + esc(shippingText) + '</p>' +
         '<p class="pdp-details__shipping-text">' + esc(returnsText) + '</p>' +
       '</div>' +

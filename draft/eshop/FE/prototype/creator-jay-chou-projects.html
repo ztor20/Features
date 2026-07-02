@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <!-- i18n no-FOUC guard: hide content pre-paint when English is saved; i18n.js reveals after applying -->
+  <script>(function(){try{if(localStorage.getItem('ztor-lang')==='en'){var d=document.documentElement;d.classList.add('ztor-en-pending');setTimeout(function(){d.classList.add('ztor-en-ready');},1200);var h=document.head,mk=function(o){var l=document.createElement('link');for(var k in o){if(k==='cross'){l.crossOrigin='';}else{l[k]=o[k];}}h.appendChild(l);};mk({rel:'preload',as:'font',type:'font/woff2',cross:1,href:'https://fonts.gstatic.com/s/afacad/v3/6NUX8FKMIQOGaw6agawK.woff2'});mk({rel:'stylesheet',id:'ztor-afacad',href:'https://fonts.googleapis.com/css2?family=Afacad:ital,wght@0,400..700;1,400..700&display=swap'});mk({rel:'stylesheet',id:'ztor-satoshi',href:'https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700,900&display=swap'});}}catch(e){}})();</script>
+  <style>html.ztor-en-pending body,html.ztor-en-pending body *{-webkit-text-fill-color:transparent}html.ztor-en-pending.ztor-en-ready body,html.ztor-en-pending.ztor-en-ready body *{-webkit-text-fill-color:currentColor}</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Ztor. 爆米花 — 購買 / 餘額 / 兌換">
+  <title>Ztor. Creator Projects</title>
+
+  <!-- Adobe Fonts (Proxima Nova) — render-blocking CSS embed so the font is
+       ready before first paint. Replaces the async JS loader whose per-page
+       re-application caused the nav baseline to shift ("jump") on navigation. -->
+
+  <!-- Preload the CJK display font (nav / headings) so it's ready before first
+       paint — kills the text reflow ("jump") on page navigation. -->
+  <link rel="preload" as="font" type="font/otf" href="assets/fonts/LineSeed/LINESeedTW_OTF_Rg.otf" crossorigin>
+  <link rel="preload" as="font" type="font/otf" href="assets/fonts/LineSeed/LINESeedTW_OTF_Bd.otf" crossorigin>
+
+  <!-- Google Fonts: Noto Sans TC + Inter fallback -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100;300;400;500;700;900&family=Inter:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+
+  <!-- Local fonts: LINE Seed TW -->
+  <style>
+    @font-face {
+      font-family: 'LINE Seed TW';
+      src: url('assets/fonts/LineSeed/LINESeedTW_OTF_Th.otf') format('opentype');
+      font-weight: 100;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'LINE Seed TW';
+      src: url('assets/fonts/LineSeed/LINESeedTW_OTF_Rg.otf') format('opentype');
+      font-weight: 400;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'LINE Seed TW';
+      src: url('assets/fonts/LineSeed/LINESeedTW_OTF_Bd.otf') format('opentype');
+      font-weight: 700;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'LINE Seed TW';
+      src: url('assets/fonts/LineSeed/LINESeedTW_OTF_Eb.otf') format('opentype');
+      font-weight: 800;
+      font-display: swap;
+    }
+  </style>
+
+  <!-- Design system -->
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="components.css">
+  <link rel="stylesheet" href="section-themes.css">
+  <link rel="stylesheet" href="assets/ds.css">
+  <link rel="stylesheet" href="assets/cart.css">
+  <link rel="stylesheet" href="assets/refine-creator.css">
+
+  <!-- GSAP + ScrollTrigger (scroll-reveal motion — matches index.html feel) -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+  <!-- Bilingual runtime (zh-Hant default · English via header toggle) -->
+  <script src="assets/i18n.js" defer></script>
+  <script src="assets/nav-speed.js" defer></script>
+  <script src="assets/liquid-glass.js" defer></script>
+  <script src="assets/sticky-tabs.js" defer></script>
+</head>
+
+<body data-auth="logged-out" class="has-rail rf-creator">
+<!-- Side rail: primary navigation (board variant). Header keeps utilities only. -->
+<aside class="side-rail" aria-label="主導覽">
+  <a class="side-rail__logo" href="index.html" aria-label="Ztor."><img src="assets/icons/ztor_logo.svg" alt="Ztor."></a>
+  <nav class="side-rail__nav">
+    <a class="side-rail__item" href="index.html">
+      <span class="side-rail__icon" style="--icon: url('assets/icons/spolight.svg')"></span>
+      <span class="side-rail__label">焦點</span>
+    </a>
+    <a class="side-rail__item" href="screening-room.html">
+      <span class="side-rail__icon" style="--icon: url('assets/icons/library.svg')"></span>
+      <span class="side-rail__label">片庫</span>
+    </a>
+    <a class="side-rail__item" data-tip="影視共創計畫" href="cocreate.html">
+      <span class="side-rail__icon" style="--icon: url('assets/icons/cocreate.svg')"></span>
+      <span class="side-rail__label">共創</span>
+    </a>
+    <a class="side-rail__item" data-tip="AI 原力創作計畫" href="zorigin.html">
+      <span class="side-rail__icon" style="--icon: url('assets/icons/zorigin.svg')"></span>
+      <span class="side-rail__label">比賽</span>
+    </a>
+    <a class="side-rail__item" href="community.html">
+      <span class="side-rail__icon" style="--icon: url('assets/icons/social.svg')"></span>
+      <span class="side-rail__label">社群</span>
+    </a>
+    <a class="side-rail__item" aria-current="page" href="shop.html">
+      <span class="side-rail__icon" style="--icon: url('assets/icons/rail-shop.svg')"></span>
+      <span class="side-rail__label">商店</span>
+    </a>
+    <a class="side-rail__item" href="news.html">
+      <span class="side-rail__icon" style="--icon: url('assets/icons/report.svg')"></span>
+      <span class="side-rail__label">新聞</span>
+    </a>
+    <a class="side-rail__item" href="events.html">
+      <span class="side-rail__icon" style="--icon: url('assets/icons/reddem.svg')"></span>
+      <span class="side-rail__label">活動</span>
+    </a>
+  </nav>
+  <div class="side-rail__foot">
+    <a class="side-rail__post btn btn--ghost" href="community.html" aria-label="發表貼文">
+      <span class="fab__icon" style="--icon: url('assets/icons/plus.svg');" aria-hidden="true"></span>
+    </a>
+  </div>
+</aside>
+
+<!-- ────────────────────────────────────────────
+     HEADER · State=Before Login
+     Mirrors index.html structure verbatim so header & dropdowns
+     stay consistent across pages.
+     ──────────────────────────────────────────── -->
+<header class="header" data-state="before-login">
+  <div class="header__inner">
+      <button class="header__burger" type="button" aria-label="選單" aria-expanded="false"><span class="header__burger-icon" aria-hidden="true"></span></button>
+    <div class="header__nav">
+      <a class="header__logo" href="index.html" aria-label="Ztor. 首頁">
+        <img class="header__logo-img" src="assets/icons/ztor_logo.svg" alt="Ztor.">
+      </a>
+      <div class="header-switch" role="tablist" aria-label="內容類型" data-switch>
+        <span class="header-switch__thumb" aria-hidden="true"></span>
+        <button class="header-switch__btn is-active" type="button" role="tab" aria-selected="true">全部</button>
+        <button class="header-switch__btn" type="button" role="tab" aria-selected="false">音樂</button>
+        <button class="header-switch__btn" type="button" role="tab" aria-selected="false">影視</button>
+      </div>
+
+      <nav class="header__nav-links">
+        <a class="header__nav-link" href="index.html">焦點</a>
+        <a class="header__nav-link" href="cocreate.html">影視共創計畫</a>
+        <a class="header__nav-link" href="zorigin.html">AI 原力創作計畫</a>
+        <a class="header__nav-link" href="screening-room.html">片庫</a>
+        <a class="header__nav-link" href="community.html">社群</a>
+        <a class="header__nav-link" href="news.html">新聞</a>
+        <a class="header__nav-link" href="events.html">活動</a>
+      </nav>
+    </div>
+
+    <form class="header-search" role="search" aria-label="站內搜尋">
+      <span class="header-search__icon" aria-hidden="true"></span>
+      <input class="header-search__input" type="search" placeholder="搜尋電影、創作者、計畫">
+    </form>
+    <div class="header__actions">
+      <button class="header__icon-btn" aria-label="搜尋"
+              style="--icon: url('data:image/svg+xml,%3Csvg%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20d%3D%22M11.44%204.6C7.66238%204.6%204.60001%207.66237%204.60001%2011.44C4.60001%2015.2176%207.66238%2018.28%2011.44%2018.28C13.3026%2018.28%2014.9913%2017.5355%2016.2248%2016.3279C16.2264%2016.3263%2016.2281%2016.3246%2016.2298%2016.323C17.4951%2015.0817%2018.28%2013.3525%2018.28%2011.44C18.28%207.66237%2015.2176%204.6%2011.44%204.6ZM18.3177%2016.9941C19.545%2015.4763%2020.28%2013.544%2020.28%2011.44C20.28%206.5578%2016.3222%202.6%2011.44%202.6C6.55781%202.6%202.60001%206.5578%202.60001%2011.44C2.60001%2016.3222%206.55781%2020.28%2011.44%2020.28C13.4974%2020.28%2015.3907%2019.5771%2016.8928%2018.3984L19.7047%2021.1187C20.1016%2021.5027%2020.7347%2021.4922%2021.1187%2021.0953C21.5027%2020.6984%2021.4922%2020.0653%2021.0953%2019.6813L18.3177%2016.9941Z%22%20fill%3D%22white%22%2F%3E%3C%2Fsvg%3E');"></button>
+      <div class="header__popover-anchor">
+        <button class="header__icon-btn" aria-label="語言"
+                style="--icon: url('data:image/svg+xml,%3Csvg%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M12%202C17.5078%202%2022%206.49219%2022%2012C22%2017.5469%2017.5078%2022%2012%2022C6.45312%2022%202%2017.5469%202%2012C2%206.49219%206.45312%202%2012%202ZM12%2020.125C12.2734%2020.125%2013.0156%2019.8516%2013.8359%2018.25C14.1875%2017.5469%2014.4609%2016.7266%2014.6953%2015.75H9.26562C9.5%2016.7266%209.77344%2017.5469%2010.125%2018.25C10.9453%2019.8516%2011.6875%2020.125%2012%2020.125ZM8.95312%2013.875H15.0078C15.0859%2013.2891%2015.125%2012.6641%2015.125%2012C15.125%2011.375%2015.0859%2010.75%2015.0078%2010.125H8.95312C8.875%2010.75%208.875%2011.375%208.875%2012C8.875%2012.6641%208.875%2013.2891%208.95312%2013.875ZM14.6953%208.25C14.4609%207.3125%2014.1875%206.49219%2013.8359%205.78906C13.0156%204.1875%2012.2734%203.875%2012%203.875C11.6875%203.875%2010.9453%204.1875%2010.125%205.78906C9.77344%206.49219%209.5%207.3125%209.26562%208.25H14.6953ZM16.8828%2010.125C16.9609%2010.75%2017%2011.375%2017%2012C17%2012.6641%2016.9609%2013.2891%2016.8828%2013.875H19.8906C20.0469%2013.2891%2020.125%2012.6641%2020.125%2012C20.125%2011.375%2020.0469%2010.75%2019.8906%2010.125H16.8828ZM15.3594%204.61719C15.9062%205.63281%2016.3359%206.88281%2016.6094%208.25H19.1875C18.3672%206.64844%2017%205.35938%2015.3594%204.61719ZM8.60156%204.61719C6.96094%205.35938%205.59375%206.64844%204.77344%208.25H7.35156C7.625%206.88281%208.05469%205.63281%208.60156%204.61719ZM3.875%2012C3.875%2012.6641%203.91406%2013.2891%204.07031%2013.875H7.07812C7%2013.2891%207%2012.6641%207%2012C7%2011.375%207%2010.75%207.07812%2010.125H4.07031C3.91406%2010.75%203.875%2011.375%203.875%2012ZM19.1875%2015.75H16.6094C16.3359%2017.1562%2015.9062%2018.4062%2015.3594%2019.4219C17%2018.6797%2018.3672%2017.3906%2019.1875%2015.75ZM7.35156%2015.75H4.77344C5.59375%2017.3906%206.96094%2018.6797%208.60156%2019.4219C8.05469%2018.4062%207.625%2017.1562%207.35156%2015.75Z%22%20fill%3D%22white%22%2F%3E%3C%2Fsvg%3E');"
+                data-dropdown-trigger="lang"
+                aria-haspopup="menu" aria-expanded="false"></button>
+        <div class="header-dropdown header-dropdown--lang" data-dropdown="lang" role="menu" aria-hidden="true">
+          <button class="lang-dropdown__item lang-dropdown__item--active" type="button" role="menuitem" data-lang="zh-Hant">
+            <span class="lang-dropdown__item-label">繁體中文</span>
+            <span class="lang-dropdown__check" aria-hidden="true">
+              <svg width="14" height="11" viewBox="0 0 14 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1 5.5L5 9.5L13 1.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+          </button>
+          <button class="lang-dropdown__item" type="button" role="menuitem" data-lang="en">
+            <span class="lang-dropdown__item-label" style="font-family: var(--font-latin);">English</span>
+          </button>
+        </div>
+      </div>
+
+      <button class="header__cart" type="button" aria-label="購物車" aria-haspopup="dialog" aria-expanded="false"><span class="header__cart__glyph" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2.5 3h2l2.2 12.3a1.5 1.5 0 0 0 1.5 1.2h8.2a1.5 1.5 0 0 0 1.5-1.2L21 7H6"/></svg></span><span class="header__cart__badge" aria-live="polite" aria-atomic="true"></span></button>
+      <div class="header__buttons">
+        <a class="popcorn-section" href="popcorn.html" aria-label="計畫與價格">
+          <span class="popcorn-section__balance">
+            <img class="popcorn-section__icon" src="assets/icons/popcorn-md.svg" alt="" aria-hidden="true">
+            <span class="popcorn-section__label">計畫與價格</span>
+          </span>
+          <img class="popcorn-section__chevron" src="assets/icons/chevron_right.svg" alt="" aria-hidden="true">
+        </a>
+        <button class="header__login-btn">登入・註冊</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- HEADER · State=After Login -->
+<header class="header" data-state="after-login">
+  <div class="header__inner">
+      <button class="header__burger" type="button" aria-label="選單" aria-expanded="false"><span class="header__burger-icon" aria-hidden="true"></span></button>
+    <div class="header__nav">
+      <a class="header__logo" href="index.html" aria-label="Ztor. 首頁">
+        <img class="header__logo-img" src="assets/icons/ztor_logo.svg" alt="Ztor.">
+      </a>
+      <div class="header-switch" role="tablist" aria-label="內容類型" data-switch>
+        <span class="header-switch__thumb" aria-hidden="true"></span>
+        <button class="header-switch__btn is-active" type="button" role="tab" aria-selected="true">全部</button>
+        <button class="header-switch__btn" type="button" role="tab" aria-selected="false">音樂</button>
+        <button class="header-switch__btn" type="button" role="tab" aria-selected="false">影視</button>
+      </div>
+
+      <nav class="header__nav-links">
+        <a class="header__nav-link" href="index.html">焦點</a>
+        <a class="header__nav-link" href="cocreate.html">影視共創計畫</a>
+        <a class="header__nav-link" href="zorigin.html">AI 原力創作計畫</a>
+        <a class="header__nav-link" href="screening-room.html">片庫</a>
+        <a class="header__nav-link" href="community.html">社群</a>
+        <a class="header__nav-link" href="news.html">新聞</a>
+        <a class="header__nav-link" href="events.html">活動</a>
+      </nav>
+    </div>
+
+    <form class="header-search" role="search" aria-label="站內搜尋">
+      <span class="header-search__icon" aria-hidden="true"></span>
+      <input class="header-search__input" type="search" placeholder="搜尋電影、創作者、計畫">
+    </form>
+    <div class="header__actions">
+      <button class="header__icon-btn" aria-label="搜尋"
+              style="--icon: url('data:image/svg+xml,%3Csvg%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20d%3D%22M11.44%204.6C7.66238%204.6%204.60001%207.66237%204.60001%2011.44C4.60001%2015.2176%207.66238%2018.28%2011.44%2018.28C13.3026%2018.28%2014.9913%2017.5355%2016.2248%2016.3279C16.2264%2016.3263%2016.2281%2016.3246%2016.2298%2016.323C17.4951%2015.0817%2018.28%2013.3525%2018.28%2011.44C18.28%207.66237%2015.2176%204.6%2011.44%204.6ZM18.3177%2016.9941C19.545%2015.4763%2020.28%2013.544%2020.28%2011.44C20.28%206.5578%2016.3222%202.6%2011.44%202.6C6.55781%202.6%202.60001%206.5578%202.60001%2011.44C2.60001%2016.3222%206.55781%2020.28%2011.44%2020.28C13.4974%2020.28%2015.3907%2019.5771%2016.8928%2018.3984L19.7047%2021.1187C20.1016%2021.5027%2020.7347%2021.4922%2021.1187%2021.0953C21.5027%2020.6984%2021.4922%2020.0653%2021.0953%2019.6813L18.3177%2016.9941Z%22%20fill%3D%22white%22%2F%3E%3C%2Fsvg%3E');"></button>
+      <div class="header__popover-anchor">
+        <button class="header__icon-btn" aria-label="語言"
+                style="--icon: url('data:image/svg+xml,%3Csvg%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M12%202C17.5078%202%2022%206.49219%2022%2012C22%2017.5469%2017.5078%2022%2012%2022C6.45312%2022%202%2017.5469%202%2012C2%206.49219%206.45312%202%2012%202ZM12%2020.125C12.2734%2020.125%2013.0156%2019.8516%2013.8359%2018.25C14.1875%2017.5469%2014.4609%2016.7266%2014.6953%2015.75H9.26562C9.5%2016.7266%209.77344%2017.5469%2010.125%2018.25C10.9453%2019.8516%2011.6875%2020.125%2012%2020.125ZM8.95312%2013.875H15.0078C15.0859%2013.2891%2015.125%2012.6641%2015.125%2012C15.125%2011.375%2015.0859%2010.75%2015.0078%2010.125H8.95312C8.875%2010.75%208.875%2011.375%208.875%2012C8.875%2012.6641%208.875%2013.2891%208.95312%2013.875ZM14.6953%208.25C14.4609%207.3125%2014.1875%206.49219%2013.8359%205.78906C13.0156%204.1875%2012.2734%203.875%2012%203.875C11.6875%203.875%2010.9453%204.1875%2010.125%205.78906C9.77344%206.49219%209.5%207.3125%209.26562%208.25H14.6953ZM16.8828%2010.125C16.9609%2010.75%2017%2011.375%2017%2012C17%2012.6641%2016.9609%2013.2891%2016.8828%2013.875H19.8906C20.0469%2013.2891%2020.125%2012.6641%2020.125%2012C20.125%2011.375%2020.0469%2010.75%2019.8906%2010.125H16.8828ZM15.3594%204.61719C15.9062%205.63281%2016.3359%206.88281%2016.6094%208.25H19.1875C18.3672%206.64844%2017%205.35938%2015.3594%204.61719ZM8.60156%204.61719C6.96094%205.35938%205.59375%206.64844%204.77344%208.25H7.35156C7.625%206.88281%208.05469%205.63281%208.60156%204.61719ZM3.875%2012C3.875%2012.6641%203.91406%2013.2891%204.07031%2013.875H7.07812C7%2013.2891%207%2012.6641%207%2012C7%2011.375%207%2010.75%207.07812%2010.125H4.07031C3.91406%2010.75%203.875%2011.375%203.875%2012ZM19.1875%2015.75H16.6094C16.3359%2017.1562%2015.9062%2018.4062%2015.3594%2019.4219C17%2018.6797%2018.3672%2017.3906%2019.1875%2015.75ZM7.35156%2015.75H4.77344C5.59375%2017.3906%206.96094%2018.6797%208.60156%2019.4219C8.05469%2018.4062%207.625%2017.1562%207.35156%2015.75Z%22%20fill%3D%22white%22%2F%3E%3C%2Fsvg%3E');"
+                data-dropdown-trigger="lang"
+                aria-haspopup="menu" aria-expanded="false"></button>
+        <div class="header-dropdown header-dropdown--lang" data-dropdown="lang" role="menu" aria-hidden="true">
+          <button class="lang-dropdown__item lang-dropdown__item--active" type="button" role="menuitem" data-lang="zh-Hant">
+            <span class="lang-dropdown__item-label">繁體中文</span>
+            <span class="lang-dropdown__check" aria-hidden="true">
+              <svg width="14" height="11" viewBox="0 0 14 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1 5.5L5 9.5L13 1.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+          </button>
+          <button class="lang-dropdown__item" type="button" role="menuitem" data-lang="en">
+            <span class="lang-dropdown__item-label" style="font-family: var(--font-latin);">English</span>
+          </button>
+        </div>
+      </div>
+
+      <button class="header__cart" type="button" aria-label="購物車" aria-haspopup="dialog" aria-expanded="false"><span class="header__cart__glyph" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2.5 3h2l2.2 12.3a1.5 1.5 0 0 0 1.5 1.2h8.2a1.5 1.5 0 0 0 1.5-1.2L21 7H6"/></svg></span><span class="header__cart__badge" aria-live="polite" aria-atomic="true"></span></button>
+      <div class="header__buttons header__buttons--logged-in">
+        <!-- 觀看歷史 — opens the right-aligned watch-history drawer
+             (continue-watching list). Sits between 語言 and 通知. -->
+        <button class="header__icon-btn header__icon-btn--watch" aria-label="觀看歷史"
+                style="--icon: url('assets/icons/history.svg');"
+                data-watch-history-trigger
+                aria-haspopup="dialog" aria-expanded="false"></button>
+
+        <button class="header__notification-btn" aria-label="通知（有未讀）">
+          <img src="assets/icons/notification_active.svg" alt="" aria-hidden="true">
+        </button>
+
+        <a class="popcorn-section popcorn-section--logged-in" href="popcorn.html" aria-label="爆米花餘額與儲值">
+          <span class="popcorn-section__balance">
+            <img class="popcorn-section__icon" src="assets/icons/popcorn-md.svg" alt="" aria-hidden="true">
+          </span>
+          <span class="popcorn-section__amount">100</span>
+          <span class="popcorn-section__deposit" aria-hidden="true"></span>
+        </a>
+
+        <div class="header__popover-anchor">
+          <button class="avatar" aria-label="個人選單"
+                  data-dropdown-trigger="profile"
+                  aria-haspopup="menu" aria-expanded="false">
+            <img class="avatar__img" src="assets/icons/avatar.svg" alt="">
+          </button>
+
+          <div class="header-dropdown header-dropdown--profile" data-dropdown="profile" role="menu" aria-hidden="true">
+            <div class="profile-menu__head">
+              <a class="profile-menu__head-row" href="profile.html" aria-label="我的頁面 — 電影雷達丹丹">
+                <div class="profile-menu__avatar">
+                  <img src="assets/icons/avatar.svg" alt="">
+                </div>
+                <div class="profile-menu__info">
+                  <div class="profile-menu__name">電影雷達丹丹</div>
+                  <div class="profile-menu__role">Creator</div>
+                </div>
+                <span class="profile-menu__head-chevron" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+                    <polyline points="9 18 15 12 9 6"/>
+                  </svg>
+                </span>
+              </a>
+              <div class="profile-menu__actions">
+                <button class="btn btn--quiet btn--sm" type="button">編輯個人檔案</button>
+                <button class="btn btn--quiet btn--sm" type="button">
+                  <span class="profile-menu__pill-icon" style="--icon: url('assets/icons/setting.svg');" aria-hidden="true"></span>
+                  設定
+                </button>
+              </div>
+            </div>
+
+            <div class="profile-menu__section">
+              <div class="profile-menu__section-title">常用功能</div>
+              <ul class="profile-menu__list">
+                <li><button class="profile-menu__list-item" type="button">
+                  <span class="profile-menu__list-item-inner">
+                    <span class="profile-menu__list-icon" style="--icon: url('assets/icons/library.svg');" aria-hidden="true"></span>
+                    我的片庫
+                  </span>
+                </button></li><li><a class="profile-menu__list-item" href="my-orders.html"><span class="profile-menu__list-item-inner"><span class="profile-menu__list-icon" style="--icon: url('assets/icons/orders.svg');" aria-hidden="true"></span>我的訂單</span></a></li>
+                <li><button class="profile-menu__list-item" type="button">
+                  <span class="profile-menu__list-item-inner">
+                    <span class="profile-menu__list-icon" style="--icon: url('assets/icons/watch.svg');" aria-hidden="true"></span>
+                    我的共創
+                  </span>
+                </button></li>
+                <li><a class="profile-menu__list-item" href="popcorn.html">
+                  <span class="profile-menu__list-item-inner">
+                    <span class="profile-menu__list-icon" style="--icon: url('assets/icons/reddem.svg');" aria-hidden="true"></span>
+                    兌換中心
+                  </span>
+                </a></li>
+              </ul>
+            </div>
+
+            <div class="profile-menu__section">
+              <div class="profile-menu__section-title">收益與績效</div>
+              <ul class="profile-menu__list">
+                <li><button class="profile-menu__list-item" type="button">
+                  <span class="profile-menu__list-item-inner">
+                    <span class="profile-menu__list-icon" style="--icon: url('assets/icons/bo-PnL.svg');" aria-hidden="true"></span>
+                    我的收益
+                  </span>
+                  <span class="profile-menu__list-value">NTD 1,350</span>
+                </button></li>
+                <li><button class="profile-menu__list-item" type="button">
+                  <span class="profile-menu__list-item-inner">
+                    <span class="profile-menu__list-icon" style="--icon: url('assets/icons/report.svg');" aria-hidden="true"></span>
+                    績效報告
+                  </span>
+                </button></li>
+              </ul>
+            </div>
+
+            <hr class="profile-menu__divider">
+
+            <button class="profile-menu__list-item" type="button" style="padding: 0;">
+              <span class="profile-menu__list-item-inner">
+                <span class="profile-menu__list-icon" style="--icon: url('assets/icons/logout.svg');" aria-hidden="true"></span>
+                登出
+              </span>
+            </button>
+
+            <div class="profile-menu__version">版本 2.6.8</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ─────────────────────────────────────────────────────────
+     觀看歷史 DRAWER (logged-in)
+     Right-aligned slide-out, opens below the header. V1-style
+     continue-watching list (poster + title + progress). The
+     footer "更多" links to 我的片庫 (placeholder # for now).
+     Toggled by the header [data-watch-history-trigger] icon.
+     ───────────────────────────────────────────────────────── -->
+<div class="watch-drawer" data-watch-drawer aria-hidden="true">
+  <div class="watch-drawer__scrim" data-watch-drawer-close></div>
+  <aside class="watch-drawer__panel" role="dialog" aria-modal="true" aria-label="觀看歷史">
+    <header class="watch-drawer__head">
+      <h2 class="watch-drawer__title">觀看歷史</h2>
+      <button class="watch-drawer__close" type="button" aria-label="關閉" data-watch-drawer-close>
+        <span class="watch-drawer__close-icon" aria-hidden="true"></span>
+      </button>
+    </header>
+
+    <div class="watch-drawer__list">
+      <a class="watch-item" href="#">
+        <span class="watch-item__cover"><img src="assets/images/posters/anyong-qingshi.webp" alt="暗湧情事" loading="lazy"></span>
+        <span class="watch-item__body">
+          <span class="watch-item__title">暗湧情事</span>
+          <span class="watch-item__progress">
+            <span class="watch-item__bar"><span class="watch-item__bar-fill" style="width:7%"></span></span>
+            <span class="watch-item__pct">7%</span>
+          </span>
+        </span>
+      </a>
+      <a class="watch-item" href="#">
+        <span class="watch-item__cover"><img src="assets/images/posters/shuangyan-zhijian.webp" alt="雙眼之間" loading="lazy"></span>
+        <span class="watch-item__body">
+          <span class="watch-item__title">雙眼之間</span>
+          <span class="watch-item__progress">
+            <span class="watch-item__bar"><span class="watch-item__bar-fill" style="width:34%"></span></span>
+            <span class="watch-item__pct">34%</span>
+          </span>
+        </span>
+      </a>
+      <a class="watch-item" href="#">
+        <span class="watch-item__cover"><img src="assets/images/posters/meigui-muqin.webp" alt="玫瑰母親封面" loading="lazy"></span>
+        <span class="watch-item__body">
+          <span class="watch-item__title">玫瑰母親</span>
+          <span class="watch-item__progress">
+            <span class="watch-item__bar"><span class="watch-item__bar-fill" style="width:10%"></span></span>
+            <span class="watch-item__pct">10%</span>
+          </span>
+        </span>
+      </a>
+      <a class="watch-item" href="#">
+        <span class="watch-item__cover"><img src="assets/images/posters/ruguo-wo-keyi-dongmian.webp" alt="如果我可以冬眠" loading="lazy"></span>
+        <span class="watch-item__body">
+          <span class="watch-item__title">如果我可以冬眠</span>
+          <span class="watch-item__progress">
+            <span class="watch-item__bar"><span class="watch-item__bar-fill" style="width:72%"></span></span>
+            <span class="watch-item__pct">72%</span>
+          </span>
+        </span>
+      </a>
+      <a class="watch-item" href="#">
+        <span class="watch-item__cover"><img src="assets/images/posters/yangtai-shang-de-huai-nuhai.webp" alt="陽台上的壞女孩" loading="lazy"></span>
+        <span class="watch-item__body">
+          <span class="watch-item__title">陽台上的壞女孩</span>
+          <span class="watch-item__progress">
+            <span class="watch-item__bar"><span class="watch-item__bar-fill" style="width:92%"></span></span>
+            <span class="watch-item__pct">92%</span>
+          </span>
+        </span>
+      </a>
+    </div>
+
+    <footer class="watch-drawer__foot">
+      <a class="btn btn--quiet btn--md watch-drawer__more" href="#">
+        更多
+        <span class="watch-drawer__more-arrow" aria-hidden="true"></span>
+      </a>
+    </footer>
+  </aside>
+</div>
+
+<!-- ─────────────────────────────────────────────────────────
+     通知 DRAWER (logged-in)
+     Right-aligned slide-out, full-height scrollable feed. Toggled by
+     the header 通知 bell (.header__notification-btn). 紅點=未讀.
+     ───────────────────────────────────────────────────────── -->
+<div class="notif-drawer" data-notif-drawer aria-hidden="true">
+  <div class="notif-drawer__scrim" data-notif-drawer-close></div>
+  <aside class="notif-drawer__panel" role="dialog" aria-modal="true" aria-label="通知">
+    <header class="notif-drawer__head">
+      <h2 class="notif-drawer__title">通知</h2>
+      <div class="notif-drawer__head-actions">
+        <button class="notif-drawer__mark-read" type="button" data-notif-mark-read>全部已讀</button>
+        <button class="notif-drawer__close" type="button" aria-label="關閉" data-notif-drawer-close>
+          <span class="notif-drawer__close-icon" aria-hidden="true"></span>
+        </button>
+      </div>
+    </header>
+
+    <div class="notif-drawer__list">
+      <a class="notif-item notif-item--unread" href="#">
+        <span class="notif-item__dot" aria-hidden="true"></span>
+        <span class="notif-item__thumb"><img src="assets/images/posters/shuangyan-zhijian.webp" alt="雙眼之間" loading="lazy"></span>
+        <span class="notif-item__body"><span class="notif-item__title">《暗湧情事》新上架，現在就能租借觀看。</span><span class="notif-item__time">18 分鐘</span></span>
+      </a>
+      <a class="notif-item notif-item--unread" href="#">
+        <span class="notif-item__dot" aria-hidden="true"></span>
+        <span class="notif-item__thumb"><img src="assets/images/avatars/chen.webp" alt="" loading="lazy"></span>
+        <span class="notif-item__body"><span class="notif-item__title">本週熱門影評出爐了，來看看大家在聊什麼。</span><span class="notif-item__time">1 小時</span></span>
+      </a>
+      <a class="notif-item notif-item--unread" href="#">
+        <span class="notif-item__dot" aria-hidden="true"></span>
+        <span class="notif-item__thumb"><img src="assets/images/posters/meigui-muqin.webp" alt="玫瑰母親封面" loading="lazy"></span>
+        <span class="notif-item__body"><span class="notif-item__title">《玫瑰母親》即將下架，把握最後觀看時間。</span><span class="notif-item__time">2 小時</span></span>
+      </a>
+      <a class="notif-item notif-item--unread" href="#">
+        <span class="notif-item__dot" aria-hidden="true"></span>
+        <span class="notif-item__thumb notif-item__thumb--brand"><span class="notif-item__brand-logo" aria-hidden="true"></span></span>
+        <span class="notif-item__body"><span class="notif-item__title">新功能發佈：AI 分鏡工具開放創作者試用。</span><span class="notif-item__time">3 小時</span></span>
+      </a>
+      <a class="notif-item" href="#">
+        <span class="notif-item__dot" aria-hidden="true"></span>
+        <span class="notif-item__thumb notif-item__thumb--brand"><span class="notif-item__brand-logo" aria-hidden="true"></span></span>
+        <span class="notif-item__body"><span class="notif-item__title">使用技巧：用爆米花租片，看完才扣點。</span><span class="notif-item__time">5 小時</span></span>
+      </a>
+      <a class="notif-item notif-item--unread" href="#">
+        <span class="notif-item__dot" aria-hidden="true"></span>
+        <span class="notif-item__thumb notif-item__thumb--user"><img src="assets/icons/avatar.svg" alt="" aria-hidden="true"></span>
+        <span class="notif-item__body"><span class="notif-item__title">你的爆米花將於 4 月 30 日到期，記得使用。</span><span class="notif-item__time">6 小時</span></span>
+      </a>
+      <a class="notif-item" href="#">
+        <span class="notif-item__dot" aria-hidden="true"></span>
+        <span class="notif-item__thumb"><img src="assets/images/posters/yangtai-shang-de-huai-nuhai.webp" alt="陽台上的壞女孩" loading="lazy"></span>
+        <span class="notif-item__body"><span class="notif-item__title">你支持的共創計畫《海上霸姬鄭一嫂》已達標。</span><span class="notif-item__time">8 小時</span></span>
+      </a>
+      <a class="notif-item" href="#">
+        <span class="notif-item__dot" aria-hidden="true"></span>
+        <span class="notif-item__thumb"><img src="assets/images/avatars/ken.webp" alt="" loading="lazy"></span>
+        <span class="notif-item__body"><span class="notif-item__title">恭喜！你獲得了「頭號影迷」徽章。</span><span class="notif-item__time">10 小時</span></span>
+      </a>
+    </div>
+  </aside>
+</div>
+
+<!-- DEV-ONLY auth-state toggle -->
+<button class="dev-toggle" id="devAuthToggle" type="button" data-dev-only>
+  <span id="devAuthLabel">未登入</span>
+</button>
+<!-- /DEV-ONLY -->
+
+<main>
+
+  <section class="creator-hero">
+    <div class="creator-hero__bg" id="creatorHeroBg"></div>
+    <div class="container container--wide creator-hero__copy">
+      <h1 class="creator-hero__name" id="creatorName"></h1>
+      <p class="creator-hero__tagline" id="creatorTagline"></p>
+      <div class="creator-hero__row">
+        <span class="creator-hero__social" aria-label="社群連結">
+          <a href="#" aria-label="YouTube"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></a>
+          <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.012-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg></a>
+          <a href="#" aria-label="Threads"><svg viewBox="0 0 192 192" fill="currentColor" aria-hidden="true"><path d="M141.537 88.988a66.667 66.667 0 0 0-2.518-1.143c-1.482-27.307-16.403-42.94-41.457-43.1h-.34c-14.986 0-27.449 6.396-35.12 18.036l13.779 9.452c5.73-8.695 14.724-10.548 21.348-10.548h.229c8.249.053 14.474 2.452 18.503 7.129 2.932 3.405 4.893 8.111 5.864 14.05-7.314-1.243-15.224-1.626-23.68-1.14-23.82 1.371-39.134 15.264-38.105 34.568.522 9.792 5.4 18.216 13.735 23.719 7.047 4.652 16.124 6.927 25.557 6.412 12.458-.683 22.231-5.436 29.049-14.127 5.178-6.6 8.453-15.153 9.899-25.93 5.937 3.583 10.337 8.298 12.767 13.966 4.132 9.635 4.373 25.468-8.546 38.376-11.319 11.308-24.925 16.2-45.488 16.351-22.809-.169-40.06-7.484-51.275-21.742C35.236 139.966 29.808 120.682 29.605 96v-.001c.203-23.683 5.631-42.967 16.133-57.317C56.954 24.425 74.204 17.11 97.013 16.94c22.975.17 40.526 7.52 52.171 21.847 5.71 7.026 10.015 15.86 12.853 26.162l16.147-4.308c-3.44-12.68-8.853-23.606-16.219-32.668C147.036 9.607 125.202.195 97.07 0h-.113C68.882.194 47.292 9.642 32.788 28.08 19.882 44.485 13.224 67.315 13.001 95.932v.137c.223 28.617 6.881 51.447 19.787 67.853 14.504 18.439 36.094 27.886 64.169 28.08h.113c24.96-.173 42.554-6.708 57.048-21.189 18.963-18.945 18.392-42.692 12.142-57.27-4.484-10.454-13.033-18.945-24.723-24.555Zm-43.953 41.39c-10.44.588-21.286-4.098-21.82-14.135-.397-7.442 5.296-15.746 22.461-16.735 1.966-.114 3.895-.169 5.79-.169 6.235 0 12.068.606 17.371 1.765-1.978 24.702-13.58 28.713-23.802 29.274Z"/></svg></a>
+          <a href="#" aria-label="小紅書" class="creator-hero__social-word"><img src="assets/icons/xiaohongshu.webp" alt="小紅書"></a>
+          <a href="#" aria-label="X"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg></a>
+        </span>
+        <span class="shop-head__desc" id="creatorFollowers"></span>
+        <button class="btn btn--ghost btn--sm" type="button" data-follow-toggle data-auth-action="follow" data-auth-id="jay-chou" data-on="✓ 已加入" data-off="＋ 加入社群" data-following="false">＋ 加入社群</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-bg-page section--flush-top" data-reveal-section>
+    <div class="container container--wide">
+
+      <div class="tabstick">
+<nav class="glass-tabs glass-tabs--push" aria-label="創作者頁導覽">
+        <a class="glass-tabs__item" href="creator-jay-chou.html">商店</a>
+        <a class="glass-tabs__item" href="creator-jay-chou-events.html">活動</a>
+        <a class="glass-tabs__item" href="leaderboard.html?creator=jay-chou">排行榜</a>
+        <a class="glass-tabs__item" href="creator-jay-chou-posts.html">貼文</a>
+        <a class="glass-tabs__item glass-tabs__item--active" href="creator-jay-chou-projects.html">項目</a>
+      </nav>
+</div>
+
+      <div class="shop-toolbar">
+        <div class="tabstick">
+<div class="shop-filter" id="registryFilter" role="group" aria-label="項目分類">
+          <button class="shop-filter__item shop-filter__item--active" type="button" data-cat="全部">全部</button>
+          <button class="shop-filter__item" type="button" data-cat="共創計畫">共創計畫</button>
+          <button class="shop-filter__item" type="button" data-cat="預售與限量">預售與限量</button>
+          <button class="shop-filter__item" type="button" data-cat="活動">活動</button>
+        </div>
+</div>
+        <span class="shop-count" id="creatorRegistryCount"></span>
+      </div>
+
+      <div class="cocreation-grid" id="creatorRegistry"></div>
+
+    </div>
+  </section>
+
+</main>
+
+<!-- ────────────────────────────────────────────
+     SCRIPTS — dev-toggle + header dropdowns only.
+     No GSAP / no carousel on this page.
+     ──────────────────────────────────────────── -->
+<script src="assets/dev-state.js"></script>
+
+<script>
+  /* Header dropdowns — language + profile (portaled to body to escape
+     header's stacking context). Mirrors index.html. */
+
+  /* 觀看歷史 drawer — open/close. Self-contained; clicking the trigger
+     (a non-dropdown button) also lets the dropdown handler close any open
+     header menu via its outside-click path. */
+  (function watchHistoryDrawer() {
+    var trigger = document.querySelector('[data-watch-history-trigger]');
+    var drawer = document.querySelector('[data-watch-drawer]');
+    if (!trigger || !drawer) return;
+
+    function setOpen(open) {
+      /* 互斥:開啟時關掉另一個靠右 drawer(通知),避免兩個重疊 */
+      if (open) { var other = document.querySelector('[data-notif-drawer]'); if (other) other.classList.remove('is-open'); }
+      drawer.classList.toggle('is-open', open);
+      drawer.setAttribute('aria-hidden', open ? 'false' : 'true');
+      trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+
+    trigger.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      setOpen(!drawer.classList.contains('is-open'));
+    });
+
+    drawer.querySelectorAll('[data-watch-drawer-close]').forEach(function (el) {
+      el.addEventListener('click', function () { setOpen(false); });
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && drawer.classList.contains('is-open')) setOpen(false);
+    });
+  })();
+
+  /* 通知 drawer — open/close (header 通知 bell). Same pattern as 觀看歷史. */
+  (function notificationDrawer() {
+    var trigger = document.querySelector('.header__notification-btn');
+    var drawer = document.querySelector('[data-notif-drawer]');
+    if (!trigger || !drawer) return;
+
+    function setOpen(open) {
+      /* 互斥:開啟時關掉另一個靠右 drawer(觀看歷史),避免兩個重疊 */
+      if (open) { var other = document.querySelector('[data-watch-drawer]'); if (other) other.classList.remove('is-open'); }
+      drawer.classList.toggle('is-open', open);
+      drawer.setAttribute('aria-hidden', open ? 'false' : 'true');
+      trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+
+    trigger.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      setOpen(!drawer.classList.contains('is-open'));
+    });
+
+    drawer.querySelectorAll('[data-notif-drawer-close]').forEach(function (el) {
+      el.addEventListener('click', function () { setOpen(false); });
+    });
+
+    /* 全部已讀 — 清掉所有未讀紅點 + 隱藏 bell 上的紅點 */
+    var markRead = drawer.querySelector('[data-notif-mark-read]');
+    if (markRead) markRead.addEventListener('click', function () {
+      drawer.querySelectorAll('.notif-item--unread').forEach(function (it) {
+        it.classList.remove('notif-item--unread');
+      });
+      trigger.classList.add('is-read');
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && drawer.classList.contains('is-open')) setOpen(false);
+    });
+  })();
+</script>
+
+<script>
+  /* Scroll-reveal — section headings + card grid stagger. Mirrors the
+     cocreate / news / activity feel. Runs synchronously before first paint
+     so the .js-reveal-ready FOUC guard hides targets without a flash. Safe
+     with package :hover — clearProps:'transform' removes the inline transform
+     on completion so CSS hover lifts aren't shadowed. Skips entirely on
+     reduced-motion / no GSAP. */
+  (function revealMotion() {
+    var REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (REDUCED || typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+    document.documentElement.classList.add('js-reveal-ready');
+    gsap.registerPlugin(ScrollTrigger);
+
+    var EASE_OUT = 'cubic-bezier(0.23, 1, 0.32, 1)';
+    var MOBILE = window.matchMedia('(max-width: 768px)').matches;
+    var STAGGER = MOBILE ? 0.035 : 0.06;
+
+    document.querySelectorAll('[data-reveal-section]').forEach(function (section) {
+      var targets = Array.prototype.slice.call(section.querySelectorAll(
+        '.page-head__title, .page-head__desc, .page-head__info, .glass-tabs, .section-eyebrow, .section-link, .popcorn-page__heading, .popcorn-balance-card, .popcorn-guide, .section-header__title, .section-header__sub'
+      ));
+      if (!targets.length) return;
+      gsap.set(targets, { opacity: 0, y: 24 });
+      ScrollTrigger.create({
+        trigger: section, start: 'top 85%', once: true,
+        onEnter: function () {
+          gsap.to(targets, { opacity: 1, y: 0, duration: 0.7, ease: EASE_OUT, stagger: 0.08, clearProps: 'transform' });
+        }
+      });
+    });
+
+    document.querySelectorAll('[data-reveal-stack]').forEach(function (grid) {
+      var cards = Array.prototype.slice.call(grid.children);
+      if (!cards.length) return;
+      gsap.set(cards, { opacity: 0, y: 28 });
+      ScrollTrigger.create({
+        trigger: grid, start: 'top 85%', once: true,
+        onEnter: function () {
+          gsap.to(cards, { opacity: 1, y: 0, duration: 0.65, ease: EASE_OUT, stagger: STAGGER, clearProps: 'transform' });
+        }
+      });
+    });
+  })();
+</script>
+
+<!-- ────────────────────────────────────────────
+     FOOTER TAGLINE LETTER STAGGER — ported from index.html (motion layer 8).
+     Splits the tagline into per-character spans and cascades them up
+     as the footer enters. Constants inlined from index.html.
+     ──────────────────────────────────────────── -->
+<style>
+  .site-footer__tagline { overflow: hidden; line-height: 1.3; }
+  .site-footer__tagline .tagline-char { display: inline-block; will-change: transform, opacity; }
+</style>
+<script>
+  (function taglineSplit() {
+    var tagline = document.querySelector('[data-tagline-split]');
+    if (!tagline || !window.gsap || !window.ScrollTrigger) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    var text = tagline.textContent;
+    tagline.textContent = '';
+    var spans = Array.from(text).map(function (ch) {
+      var s = document.createElement('span');
+      s.className = 'tagline-char';
+      s.textContent = ch === ' ' ? ' ' : ch;
+      tagline.appendChild(s);
+      return s;
+    });
+
+    gsap.set(spans, { y: 50, opacity: 0 });
+
+    ScrollTrigger.create({
+      trigger: tagline,
+      start: 'top 90%',
+      once: true,
+      onEnter: function () {
+        gsap.to(spans, {
+          y: 0, opacity: 1, duration: 0.6,
+          ease: 'cubic-bezier(0.23, 1, 0.32, 1)',
+          stagger: window.matchMedia('(max-width: 768px)').matches ? 0.025 : 0.04
+        });
+      }
+    });
+  })();
+</script>
+
+<script>
+  // Content switcher: local selection state (presentational in this preview)
+  document.querySelectorAll('[data-switch]').forEach(function (s) {
+    var btns = Array.prototype.slice.call(s.querySelectorAll('.header-switch__btn'));
+    btns.forEach(function (b, i) {
+      b.addEventListener('click', function () {
+        s.style.setProperty('--seg', i);
+        btns.forEach(function (x, j) {
+          x.classList.toggle('is-active', j === i);
+          x.setAttribute('aria-selected', j === i ? 'true' : 'false');
+        });
+      });
+    });
+  });
+</script>
+
+<!-- Shop data + render layer -->
+<script src="assets/shop-data-creators-a.js"></script>
+<script src="assets/shop-data-creators-b.js"></script>
+<script src="assets/shop-data-creators-c.js"></script>
+<script src="assets/shop-data-fans.js"></script>
+<script src="assets/shop-data-extra.js"></script>
+<script src="assets/shop-data-creator-events.js"></script>
+<script src="assets/shop-data-creator-posts.js"></script>
+<script src="assets/shop-data-imgmap.js"></script>
+<script src="assets/shop-render.js"></script>
+<script>
+  ZTOR_SHOP_RENDER.initCreatorRegistry('jay-chou');
+  if (window.ScrollTrigger) ScrollTrigger.refresh();
+</script>
+  <script src="assets/refine-creator.js"></script>
+  <script src="assets/ds.js"></script>
+  <script src="assets/auth.js"></script>
+  <script src="assets/cart.js"></script>
+  <script src="assets/ztor-ledger.js"></script>
+  <script src="assets/mock-pay.js"></script>
+  <script src="assets/checkout.js"></script>
+<!-- Mobile menu drawer (44-mobile-drawer.css + mobile-nav.js) -->
+<div class="mdrawer" data-mdrawer>
+  <div class="mdrawer__scrim" data-mdrawer-close></div>
+  <aside class="mdrawer__panel" role="dialog" aria-modal="true" aria-label="選單">
+    <div class="mdrawer__head">
+      <a class="mdrawer__logo" href="index.html" aria-label="Ztor."><img src="assets/icons/ztor_logo.svg" alt="Ztor."></a>
+      <button class="mdrawer__close" type="button" aria-label="關閉" data-mdrawer-close>&times;</button>
+    </div>
+    <nav class="mdrawer__nav" aria-label="選單">
+      <div class="mdrawer__group">
+        <p class="mdrawer__label">瀏覽</p>
+        <a class="mdrawer__link" href="screening-room.html">片庫</a>
+        <a class="mdrawer__link" href="news.html">新聞</a>
+        <a class="mdrawer__link" href="events.html">活動</a>
+        <a class="mdrawer__link" href="leaderboard.html">排行榜</a>
+      </div>
+      <div class="mdrawer__group">
+        <p class="mdrawer__label">帳號</p>
+        <a class="mdrawer__link" href="profile.html">個人檔案</a>
+        <a class="mdrawer__link" href="my-library.html">我的片庫</a>
+        <a class="mdrawer__link" href="popcorn.html">計畫與價格</a>
+      </div>
+      <div class="mdrawer__group">
+        <p class="mdrawer__label">語言</p>
+        <button class="mdrawer__link" type="button" data-lang="zh-Hant">繁體中文</button>
+        <button class="mdrawer__link" type="button" data-lang="en">English</button>
+      </div>
+      <div class="mdrawer__group">
+        <a class="mdrawer__link" href="#">說明與支援</a>
+        <a class="mdrawer__link" href="#">隱私政策</a>
+        <a class="mdrawer__link" href="#">條款與細則</a>
+      </div>
+    </nav>
+    <div class="mdrawer__foot">
+      <button class="btn btn--primary mdrawer__login" type="button">登入・註冊</button>
+    </div>
+  </aside>
+</div>
+<!-- Mobile floating bottom navigation (phone only · see 43-bottom-nav.css + mobile-nav.js) -->
+<nav class="botnav" aria-label="主導覽" data-botnav>
+  <ul class="botnav__list">
+    <li class="botnav__cell"><a class="botnav__item" href="index.html" data-nav="spotlight"><span class="botnav__icon" aria-hidden="true" style="--i:url('assets/icons/spolight.svg')"></span><span class="botnav__label">焦點</span></a></li>
+    <li class="botnav__cell"><a class="botnav__item" href="cocreate.html" data-nav="cocreate"><span class="botnav__icon" aria-hidden="true" style="--i:url('assets/icons/cocreate.svg')"></span><span class="botnav__label">共創</span></a></li>
+    <li class="botnav__cell"><a class="botnav__item" href="community.html" data-nav="community" data-community><span class="botnav__icon" aria-hidden="true" style="--i:url('assets/icons/social.svg')"></span><span class="botnav__label">社群</span></a></li>
+    <li class="botnav__cell"><a class="botnav__item" href="zorigin.html" data-nav="contest"><span class="botnav__icon" aria-hidden="true" style="--i:url('assets/icons/zorigin.svg')"></span><span class="botnav__label">比賽</span></a></li>
+    <li class="botnav__cell"><a class="botnav__item" href="shop.html" data-nav="shop"><span class="botnav__icon" aria-hidden="true" style="--i:url('assets/icons/rail-shop.svg')"></span><span class="botnav__label">商店</span></a></li>
+  </ul>
+</nav>
+<script src="assets/mobile-nav.js" defer></script>
+</body>
+</html>

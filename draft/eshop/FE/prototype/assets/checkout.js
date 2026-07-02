@@ -23,10 +23,26 @@
   function fmt(n) { return Number(n).toLocaleString('en-US'); }
   function money(cur, n) { return (cur || 'NT$') + ' ' + fmt(n); }
   function devOn(attr) { return document.body.dataset[attr] === 'true'; }
+  /* deterministic pseudo-QR placeholder (static, not a scannable code) */
+  function qrSvg(seed) {
+    var s = String(seed || ''), h = 0, i;
+    for (i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+    var n = 9, cells = '';
+    for (var y = 0; y < n; y++) for (var x = 0; x < n; x++) {
+      h = (h * 1103515245 + 12345) & 0x7fffffff;
+      var on = ((h >> 8) & 1) || (x < 3 && y < 3) || (x > n - 4 && y < 3) || (x < 3 && y > n - 4);
+      if (on) cells += '<rect x="' + x + '" y="' + y + '" width="1" height="1"/>';
+    }
+    return '<svg class="pickup-qr__svg" viewBox="0 0 ' + n + ' ' + n + '">' + cells + '</svg>';
+  }
 
   var SHIP_METHODS = [
-    { id: 'standard', label: '標準宅配', eta: '3–5 個工作天', fee: 120 },
-    { id: 'express',  label: '快遞急件', eta: '1–2 個工作天', fee: 220 }
+    { id: 'qr_pickup', label: '現場 QR 領取', eta: '免費 · 到店自取', fee: 0,
+      pickup: {
+        where: 'Ztor 門市 · 台北市信義區松壽路 12 號 2F',
+        when: '每日 12:00 – 21:00（例假日照常）',
+        note: '付款後將以 Email 寄送取貨 QR Code，並顯示於訂單詳情；到店出示由門市人員核銷領取。'
+      } }
   ];
   var FREE_SHIP_OVER = 3000;
   var TAX_RATE = 0.05;
@@ -115,18 +131,26 @@
       var s = state.shipping, p = state.payment;
 
       var addrBlock = s
-        ? rowSaved('收件', esc(s.name) + ' · ' + esc(s.phone) + '<br>' + esc(s.addr) + '（' + esc(s.zip) + '）', 'data-go="address"', '編輯')
-        : rowAdd('新增收件地址', 'data-go="address"');
+        ? rowSaved('取貨人', esc(s.name) + ' · ' + esc(s.phone), 'data-go="address"', '編輯')
+        : rowAdd('新增取貨聯絡人', 'data-go="address"');
 
-      var methods = '<div class="checkout-methods" role="radiogroup" aria-label="配送方式">' + SHIP_METHODS.map(function (m) {
+      var methods = '<div class="checkout-methods" role="radiogroup" aria-label="取貨方式">' + SHIP_METHODS.map(function (m) {
         var sel = m.id === state.method;
-        var fee = subtotal() >= FREE_SHIP_OVER ? '免運' : money(cur(), m.fee);
+        var fee = m.fee === 0 ? '免費' : (subtotal() >= FREE_SHIP_OVER ? '免運' : money(cur(), m.fee));
         return '<button class="checkout-method' + (sel ? ' is-selected' : '') + '" type="button" role="radio" aria-checked="' + (sel ? 'true' : 'false') + '" data-method="' + m.id + '">' +
           '<span class="checkout-method__radio" aria-hidden="true"></span>' +
           '<span class="checkout-method__main"><span class="checkout-method__label">' + esc(m.label) + '</span>' +
             '<span class="checkout-method__eta">' + esc(m.eta) + '</span></span>' +
           '<span class="checkout-method__fee">' + fee + '</span></button>';
       }).join('') + '</div>';
+      var selM = SHIP_METHODS.filter(function (x) { return x.id === state.method; })[0] || SHIP_METHODS[0];
+      if (selM.pickup) {
+        methods += '<div class="checkout-pickup">' +
+          '<div class="checkout-pickup__row"><span class="checkout-pickup__k">取貨地點</span><span class="checkout-pickup__v">' + esc(selM.pickup.where) + '</span></div>' +
+          '<div class="checkout-pickup__row"><span class="checkout-pickup__k">取貨時間</span><span class="checkout-pickup__v">' + esc(selM.pickup.when) + '</span></div>' +
+          '<p class="checkout-pickup__note">' + esc(selM.pickup.note) + '</p>' +
+        '</div>';
+      }
 
       var payBlock = p
         ? rowSaved('付款', esc(SAVED.card.brand) + ' •••• ' + esc(p.last4), 'data-go="payment"', '更換')
@@ -134,8 +158,8 @@
 
       body.innerHTML =
         '<div class="checkout-hub">' +
-          '<div class="checkout-hub__group"><p class="checkout-hub__label">收件資訊</p>' + addrBlock + '</div>' +
-          '<div class="checkout-hub__group"><p class="checkout-hub__label">配送方式</p>' + methods + '</div>' +
+          '<div class="checkout-hub__group"><p class="checkout-hub__label">取貨聯絡人</p>' + addrBlock + '</div>' +
+          '<div class="checkout-hub__group"><p class="checkout-hub__label">取貨方式</p>' + methods + '</div>' +
           '<div class="checkout-hub__group"><p class="checkout-hub__label">付款方式</p>' + payBlock + '</div>' +
           '<div class="checkout-hub__group"><p class="checkout-hub__label">折扣碼</p>' +
             '<div class="checkout-promo" data-promo><div class="checkout-promo__row">' +
@@ -148,7 +172,7 @@
         '</div>';
 
       foot.innerHTML =
-        (ready() ? '' : '<p class="checkout-foot__hint">' + (!state.shipping ? '請先新增收件地址' : '請先新增付款方式') + '</p>') +
+        (ready() ? '' : '<p class="checkout-foot__hint">' + (!state.shipping ? '請先新增取貨聯絡人' : '請先新增付款方式') + '</p>') +
         '<button class="btn btn--primary btn--lg checkout-cta" type="button" data-place' + (ready() ? '' : ' disabled') + '>下單 · ' + money(cur(), total()) + '</button>';
     }
 
@@ -159,19 +183,16 @@
         'placeholder="' + esc(ph) + '" value="' + esc(val || '') + '" data-req></label>';
     }
     function renderAddress() {
-      if (titleEl) titleEl.textContent = '收件資訊';
+      if (titleEl) titleEl.textContent = '取貨聯絡人';
       var a = state.shipping || {};
       body.innerHTML =
         '<form class="checkout-form" data-checkout-form novalidate>' +
-          field('name', '收件人', 'text', '王小明', a.name) +
-          '<div class="checkout-form__row">' +
-            field('phone', '手機', 'tel', '0912 345 678', a.phone, 'tel') +
-            field('zip', '郵遞區號', 'text', '100', a.zip, 'numeric') +
-          '</div>' +
-          field('addr', '配送地址', 'text', '台北市中正區忠孝東路一段 1 號', a.addr) +
+          '<p class="checkout-pickup__note">現場 QR 領取 — 取貨 QR 將寄至你的 Email，到店由本人出示核銷。</p>' +
+          field('name', '取貨人', 'text', '王小明', a.name) +
+          field('phone', '手機', 'tel', '0912 345 678', a.phone, 'tel') +
           '<p class="cc-pay__err" data-err hidden></p>' +
         '</form>';
-      foot.innerHTML = '<button class="btn btn--primary btn--lg checkout-cta" type="button" data-save-address>儲存收件資訊</button>';
+      foot.innerHTML = '<button class="btn btn--primary btn--lg checkout-cta" type="button" data-save-address>儲存取貨聯絡人</button>';
     }
 
     /* ── PAYMENT sub-sheet (ZtorPay captures the card; charge is at 下單) ── */
@@ -200,10 +221,18 @@
         '<div class="cc-success checkout-confirm">' +
           '<span class="cc-success__check ds-success-tick" aria-hidden="true"><svg class="ds-success-tick__svg" viewBox="0 0 36 36"><path class="ds-success-tick__check" fill="none" pathLength="1" d="M10 18.5 l5 5 l11 -12"/></svg></span>' +
           '<h2 class="cc-success__title">訂單已成立 · 感謝你的支持</h2>' +
-          '<p class="cc-success__msg">確認信將寄送到你的信箱。你支持的每一筆，都是台灣電影的養分。</p>' +
+          '<p class="cc-success__msg">取貨 QR Code 已寄至你的信箱，也會顯示於「我的訂單」；到店出示由門市人員核銷即可領取。</p>' +
           '<div class="checkout-confirm__order">訂單編號 <b>' + esc(order.id) + '</b></div>' +
+          '<div class="pickup-qr">' + qrSvg('ZTOR-PICKUP-' + order.id) +
+            '<div class="pickup-qr__meta">' +
+              '<p class="pickup-qr__title">取貨 QR Code</p>' +
+              '<p class="pickup-qr__line">Ztor 門市 · 台北市信義區松壽路 12 號 2F</p>' +
+              '<p class="pickup-qr__line">每日 12:00 – 21:00</p>' +
+              '<p class="pickup-qr__note">到店出示此 QR 由門市人員核銷領取。</p>' +
+            '</div>' +
+          '</div>' +
           '<div class="order-tracker order-tracker--mini">' +
-            ['已下單', '備貨中', '已出貨', '已送達'].map(function (n, i) {
+            ['已下單', '備貨中', '可取貨', '已取貨'].map(function (n, i) {
               return '<div class="order-tracker__node' + (i === 0 ? ' is-current' : '') + '"><span class="order-tracker__dot"></span><span class="order-tracker__label">' + n + '</span></div>';
             }).join('') +
           '</div>' +

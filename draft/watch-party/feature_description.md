@@ -1,7 +1,9 @@
 # Watch Party
 
 > Migrated into `Features/` following the handbook convention (2026-06-26). Full hosted BRD: https://ztor-watchparty.vercel.app/brd
-> **The full clickable prototype + the complete BRD now live in [`prototype/`](./prototype/)** (Next.js source, mirrored from the personal repo). BRD markdown: [`prototype/_docs/BRD/watch-party/`](./prototype/_docs/BRD/watch-party/) — dev BRD, the lean **business overview** (`Biz.md`), bilingual **email templates**, BO + Frontend surfaces, shared contract.
+> **Two prototypes, one per surface:**
+> • **Back Office** (built by us) → source in [`BO/prototype/`](./BO/prototype/) (Next.js, mirrored from the personal repo `NukeGozilla/ztor-watchparty`, live at https://ztor-watchparty.vercel.app/bo). It also renders the complete BRD at [`BO/prototype/_docs/BRD/watch-party/`](./BO/prototype/_docs/BRD/watch-party/) — dev BRD, lean **business overview** (`Biz.md`), bilingual **email templates**, BO + Frontend surfaces, shared contract.
+> • **Frontend** (built by the **design team**) → **reference links only** in [`FE/`](./FE/) → https://ztor-2-0-f2e.vercel.app/ . No FE source is kept here.
 
 **Surface(s):** Frontend + Back Office (multi-surface)
 **Status:** draft (v4) — BO built & deployed; **FE now owned by the design team** (see 6-28 update)

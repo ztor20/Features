@@ -155,7 +155,7 @@ https://aic-output.vercel.app/ztor/ztor-eshop-wireframe-2026-06-11.html (Board 1
 - **Measurability:** Every successful payment yields exactly one order record with correct line items and status; creator earnings post in cash currency.
 
 **BR-09: Dynamic QR pickup**
-- **Description:** The system SHALL issue a rotating-token pickup code (refresh 5–30s) per eligible order, verifiable by an operator via token/ID lookup without storing the QR image, to fulfill local pickup. ⚠️ OPEN: full scope of the QR generator is an Asana blocker.
+- **Description:** The system SHALL issue a pickup QR code per eligible order (delivered by email + shown in order detail), verifiable by an operator to fulfill local pickup. Operator-side validation runs in a **Creator Studio pickup QR scanner** — store staff scan (or key in) the buyer's pickup code → 核銷 → mark the order 已取貨 (Completed). ⚠️ OPEN: exact QR generator/rotation scope is an Asana blocker; the scanner screen is built by the design lead.
 - **Priority:** 🔴 Must-Have
 - **User Group(s):** Buyer, Commerce Microservice, Dynamic QR Service
 - **Measurability:** A presented code validates only within its refresh window; a screenshotted/expired code is rejected; operator validation marks the order Completed.
@@ -228,6 +228,7 @@ Module → BR mapping: **Ztor client gateway** (BR-01) · **Creator Studio** (BR
 - ✅ **AC-09a:** WHEN a code is presented within its refresh window, THEN it validates; outside the window it is rejected.
 - ✅ **AC-09b:** WHEN an operator validates a code, THEN the order is marked Completed.
 - ✅ **AC-09c:** System SHALL NOT accept a re-used/expired (screenshotted) code.
+- ✅ **AC-09d:** GIVEN the Creator Studio **pickup QR scanner**, WHEN an operator scans or keys in a valid order's pickup code, THEN the order is found and can be 核銷'd → marked 已取貨 (Completed); an invalid, used, or expired code is rejected.
 
 **BR-10: Homepage rail**
 - ✅ **AC-10a:** Only Published shops appear in the rail.
@@ -327,7 +328,7 @@ BR-05 → AC-05a, AC-05b, AC-05c
 BR-06 → AC-06a, AC-06b
 BR-07 → AC-07a, AC-07b, AC-07c
 BR-08 → AC-08a, AC-08b
-BR-09 → AC-09a, AC-09b, AC-09c
+BR-09 → AC-09a, AC-09b, AC-09c, AC-09d
 BR-10 → AC-10a, AC-10b
 BR-11 → AC-11a, AC-11b
 BR-12 → AC-12a, AC-12b
@@ -483,7 +484,8 @@ user_groups: Buyer, Commerce Microservice, Dynamic QR Service
 phase: PH-02
 depends_on: BR-08
 blocked_by: DEP-06
-acceptance_criteria: AC-09a, AC-09b, AC-09c
+acceptance_criteria: AC-09a, AC-09b, AC-09c, AC-09d
+scanner_surface: Creator Studio (operator) — designer to build
 user_stories: US-02
 
 [BR-10]
