@@ -7,7 +7,7 @@
 
 > **New in v3 (from the 2026-06-25 discussion).** The biz team wants the **host to broadcast their camera** alongside the movie. It's a **host-only** face-cam (fans never go on camera), shown as a **picture-in-picture** tile. Technically it rides a **separate live-video layer** — the realtime sync/chat engine (Ably) is untouched and never carries the video. See decision 7 and BR-24–26.
 
-> **Refined 2026-06-29 (IT meeting).** Capacity is a **site-wide maximum** creators can't exceed; ops can assign **moderators** (extra accounts besides the host) to a host's rooms; kicked users go on a **session blacklist**; the reminder email is **24 h before**; tickets are **bound to the buyer's account**; paid joins need a **terms checkbox**; analytics adds an **attendance rate**. Co-host, per-creator caps, and pinned messages are **nice-to-have / later**. 2.0 design is now **frozen** for the Aug 4 launch.
+> **Refined 2026-06-29 (IT meeting).** Capacity is a **site-wide maximum** creators can't exceed; ops can assign **moderators** (extra accounts besides the host) to a host's rooms; kicked users go on a **session blacklist**; the reminder email is **24 h before**; tickets are **bound to the buyer's account**; paid joins need a **terms checkbox**; a fan can set a **private temporary chat name** (real account stays ops-only); analytics adds an **attendance rate**. Co-host, per-creator caps, and pinned messages are **nice-to-have / later**. 2.0 design is now **frozen** for the Aug 4 launch.
 
 **Why now.** Today there's no way for ops to control **who** hosts or **what** they stream — open self-serve hosting would leak licensed content. There's also no monitor or analytics for live rooms. This feature adds those controls.
 
@@ -58,7 +58,7 @@ flowchart TD
   B --> C["Confirmation email<br/>+ 24h reminder"]
   C --> D{"Eligible at join?<br/>own ticket · within cap · geo/age · not blacklisted"}
   D -- no --> X["Blocked<br/>room full / not eligible"]
-  D -- yes --> E["Watch in sync + live chat<br/>+ host cam in PiP (if host is on camera)"]
+  D -- yes --> E["Watch in sync + live chat<br/>temp chat name · host cam PiP"]
   E --> F["Room ends<br/>no replay · chat not kept"]
 ```
 
@@ -102,6 +102,7 @@ Master list. Surface: **BO** = back office · **FE** = front end · **System** =
 | BR-28 | A kicked user is added to the room's **session blacklist** and can't rejoin that session; the host or ops can lift it. A **site-wide** blacklist is a later phase. | FE · BO |
 | BR-29 | A watch-party ticket is **bound to the buyer's account** — it can't be shared with a non-paying friend. | FE · System |
 | BR-30 | Before a **paid** join, the fan must accept a **terms & conditions** checkbox. | FE |
+| BR-31 | A fan can set a **temporary chat name** for a room — what other viewers see, keeping their real account private. The system **stores the chat-name → account mapping** (ops-only in the BO) so a user can be **traced** if needed. | FE · BO · System |
 | **Host camera (live broadcast)** | | |
 | BR-24 | The host can broadcast their **own camera** (host-only) alongside the movie; fans see it as a **picture-in-picture** tile. It is **opt-in** — off by default, the host toggles it on/off **in-room**. | FE |
 | BR-25 | The camera is a **separate live stream** (**LiveKit**, real-time WebRTC), **not** carried by the sync bus and independent of the movie's playback sync; it is **not recorded or replayed**. Viewers' PiP appears/disappears on the host's on/off signal. | FE · System |

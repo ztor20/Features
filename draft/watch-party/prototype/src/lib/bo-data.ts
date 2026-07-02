@@ -252,17 +252,24 @@ export function hostName(userId: string) {
 }
 
 // ---- Orders / attendees (Order kind=watch_party_ticket) --------------------
+// `buyerName` = the real Ztor account (ops-only). `chatAlias` = the temporary
+// name the user set for THIS chat room — what other viewers see; keeps their
+// real identity private. The BO stores the alias→account mapping so ops can
+// trace a user if they need to (6-29 chat-privacy requirement).
 export type Order = {
   id: string;
   watchPartyId: string;
   userId: string;
-  buyerName: string;
+  buyerName: string; // real account display name (ops-only)
+  chatAlias: string; // temporary in-room chat name (public to viewers)
   amountPopcorn: number;
   status: OrderStatus;
   createdAt: string; // ISO
 };
 
 const FIRST = ["Avery", "Blair", "Cleo", "Devon", "Esme", "Flynn", "Gia", "Hari", "Indi", "Juno", "Kai", "Lux", "Marlo", "Nico", "Onyx", "Remy"];
+// Temporary chat-room aliases people pick to stay private — mix of CJK + handles.
+const ALIASES = ["小花", "追劇仔", "PopcornPanda", "夜貓子", "GaryFan88", "匿名觀眾", "SpeedRacer", "貓奴", "MoonWatcher", "阿明", "QuietViewer", "衝線衝衝衝", "K.", "路人甲", "StarGazer", "小雨"];
 // Deterministic pseudo-attendees per party (no Math.random — must be stable across renders/SSR).
 export function ordersForParty(p: WatchParty): Order[] {
   const n = Math.min(p.ticketsSold, 14);
@@ -274,6 +281,7 @@ export function ordersForParty(p: WatchParty): Order[] {
       watchPartyId: p.id,
       userId: `u_att_${p.id}_${i}`,
       buyerName: `${FIRST[i % FIRST.length]} ${String.fromCharCode(65 + (i % 26))}.`,
+      chatAlias: ALIASES[(i * 7 + p.id.length) % ALIASES.length],
       amountPopcorn: p.ticketPricePopcorn,
       status: refunded ? "refunded" : "confirmed",
       createdAt: p.scheduledStartAt,

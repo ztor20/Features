@@ -37,6 +37,7 @@
 - `SiteConfig.siteMaxCapacity` **(6-29)** — **persisted integer**, one site-wide **maximum** room capacity. `WatchParty.capacity ≤ siteMaxCapacity` is enforced at create/edit; a creator can never exceed it.
 - `WatchParty` { `id`: string, `hostId`: string→User.id, `name`: string, `titleId`: string→Title.id, `episodeId`: string→Episode.id|null, `status`: enum, `scheduledStartAt`: ts(UTC), `capacity`: integer (host-set, **≤ `siteMaxCapacity`**; 6-28 dropped `advertisedCapacity`), `isPrivate`: boolean, `joinPassword`: string|null (**6-29**; set when `isPrivate`), `ticketPricePopcorn`: integer(≥0), `isFree`: boolean, `ticketsSold`: integer, `hostCameraAllowed`: boolean (default true), `createdAt`: ts }
 - `SessionBlacklistEntry` **(6-29)** — **runtime / per-session**, not a site ban. `{ watchPartyId, userId }` — a kicked user cannot rejoin **that session**; the host or a moderator/ops can lift it. A **site-wide** blacklist is a later phase.
+- `RoomChatIdentity` **(6-29)** { `id`: string, `watchPartyId`: string→WatchParty.id, `userId`: string→User.id, `chatAlias`: string, `createdAt`: ts } — the **temporary chat name** a fan sets for a room to keep their real identity private. `chatAlias` is **public** (shown to other viewers + in chat/presence); the `userId` link is **ops-only**. **Persisted** so the BO can map an alias back to the real account for moderation / traceability. Per-room (a user may use different aliases in different rooms).
 - `WatchPartyTicket` — modelled as an `Order` with `kind = watch_party_ticket`, `refId = WatchParty.id`, `amountPopcorn = WatchParty.ticketPricePopcorn`. No separate entity; reuses shared `Order`.
 - `EmailNotification` { `id`: string, `type`: enum, `toUserId`: string→User.id, `watchPartyId`: string→WatchParty.id, `sentAt`: ts }
 - `RoomOccupancy` — **runtime only** (Ably presence); not persisted. `occupancy` = live count of present clients.
@@ -90,6 +91,7 @@ Layered on the 6-22/6-25/6-28 spec; source ADR `decisions/2026-06-28-watch-party
 - **Moderators.** `ModeratorGrant{hostId, moderatorId}` — ops assigns extra accounts who may enter the host's rooms to manage chat + kick (same powers as host, no playback control). FE self-serve = later.
 - **Session blacklist.** `SessionBlacklistEntry{watchPartyId,userId}` on kick → no rejoin *that session*; host/mod/ops can lift. Site-wide blacklist = later.
 - **Ticket bound to buyer.** A `watch_party_ticket` Order is tied to `userId`; join requires the joiner == the ticket's `userId` (not shareable).
+- **Temporary chat name (privacy).** A fan can set a `RoomChatIdentity.chatAlias` for a room — what other viewers see, keeping their real account private. The alias→account link is **stored + ops-only** in the BO so a user can be traced if needed. *(FE = designer's build; BO shows the mapping in party detail.)*
 - **Paid-join T&C.** A paid join must record acceptance of a terms checkbox before admission.
 - **Private rooms.** `WatchParty.isPrivate` + `joinPassword` — private rooms require the password at the waiting room.
 - **Preshow warm-up = 15 min.** Host may enter 15 min before `scheduledStartAt` (within `preshow`).

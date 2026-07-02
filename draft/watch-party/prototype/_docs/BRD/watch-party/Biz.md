@@ -43,7 +43,7 @@ flowchart TD
   B --> C["Confirmation email<br/>+ 24h reminder"]
   C --> D{"Eligible at join?<br/>own ticket · within cap · region/age · not blacklisted"}
   D -- no --> X["Blocked<br/>room full / not eligible"]
-  D -- yes --> E["Watch in sync + live chat<br/>+ host cam in PiP (if host is on camera)"]
+  D -- yes --> E["Watch in sync + live chat<br/>private temp chat name · host cam PiP"]
   E --> F["Room ends<br/>no replay · chat not kept"]
 ```
 
@@ -90,6 +90,7 @@ Plain-language requirement list. **Who** = the side that experiences it: **Ops**
 | BR-28 | A kicked user goes on the room's **session blacklist** and can't rejoin that session (host or ops can lift it). A site-wide blacklist is later. | Host / Ops |
 | BR-29 | A ticket is **tied to the buyer's account** — it can't be passed to a non-paying friend. | Fan |
 | BR-30 | A **paid** join requires accepting a **terms & conditions** checkbox first. | Fan |
+| BR-31 | A fan can pick a **temporary chat name** so their real account stays private in the room. Ops can still see the **real account behind a chat name** in the back office, to trace a user if needed. | Fan / Ops |
 
 ## Email notifications
 Three automatic emails. Short English copy below; the full **bilingual (EN + 繁中)** versions with all placeholder tokens are in the dev BRD's email-templates tab (heading to the content team).

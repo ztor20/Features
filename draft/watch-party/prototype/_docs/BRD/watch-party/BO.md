@@ -10,7 +10,7 @@ on the Frontend — BO only reads those.
 
 ## Contract reference
 Shared nouns → `_docs/BRD/_shared-contract.md`. Feature-local → `_feature.md#shared-data-contract`.
-- **reads:** `WatchParty.*`, `Order` (watch_party_ticket), `RoomOccupancy`, `HostCameraState`, `User.displayName`, `Title`, `Episode`, `EmailNotification`
+- **reads:** `WatchParty.*`, `Order` (watch_party_ticket), `RoomOccupancy`, `HostCameraState`, `RoomChatIdentity` (alias→account, ops-only), `User.displayName`, `Title`, `Episode`, `EmailNotification`
 - **writes:** `HostGrant.*`, `ContentGrant.*`, `ModeratorGrant.*` (6-29), `siteMaxCapacity` (site-wide ceiling), `WatchParty.hostCameraAllowed`, `WatchParty.status` (end/cancel only), `Order.status` (→ `refunded`), `AuditLog.*` (system, on every write here)
 
 ## Scenarios
@@ -21,6 +21,7 @@ Shared nouns → `_docs/BRD/_shared-contract.md`. Feature-local → `_feature.md
 - **Given** a fan disputes a charge, **When** ops opens the room's orders and clicks **Mark refunded** on that order (confirm), **Then** `Order.status = refunded`, the ticket's **POPCORN is credited back to the buyer internally** (never cash/Stripe), and an `AuditLog{action:'order.refund'}` row is written.
 - **Given** the Aug-4 campaign, **When** ops opens **Settings**, **Then** they set the **site-wide maximum capacity = 1000**; creators may size each room up to that ceiling but never above it (6-29).
 - **Given** a host who needs help moderating, **When** ops opens **Hosts → Moderators** for that host and adds another registered account, **Then** a `ModeratorGrant` is written (audited) and that account may enter the host's rooms to manage chat and kick users (6-29).
+- **Given** a report about a user by their **chat name**, **When** ops opens the room's party detail, **Then** the attendee table shows that **chat alias → real account** so ops can identify and act on the user (chat name is public to viewers; the account is ops-only) (6-29).
 - **Given** a non-ops user, **When** they hit a `/bo` URL, **Then** they get a permission-denied screen (no data).
 
 ## Functional requirements
@@ -36,6 +37,7 @@ Shared nouns → `_docs/BRD/_shared-contract.md`. Feature-local → `_feature.md
 - **FR-09** Ticket **price is read-only** in BO (host sets it on the Frontend).
 - **FR-10** The ops admin can assign **moderators** to a host — extra accounts (besides the host) who may enter that host's rooms to **manage chat and kick** users; searchable over the registered directory (6-29). FE self-serve assignment is a later phase.
 - **FR-11** The host or ops can **lift a session blacklist** (a kicked user is barred from that session; ops can re-admit). A **site-wide** blacklist is a later phase.
+- **FR-12** The party detail shows each attendee's **temporary chat name → real account** mapping (chat name public, account **ops-only**), so ops can **trace a user** from the name they used in chat (6-29 chat-privacy).
 
 ## Edge / empty / loading / error states
 | State | Behaviour |
@@ -66,7 +68,7 @@ Shared nouns → `_docs/BRD/_shared-contract.md`. Feature-local → `_feature.md
 ## Information architecture (prototype)
 Admin shell (dedicated, bypasses the consumer chrome) with left nav:
 1. **Overview** `/bo` — headline metrics (parties live now, tickets sold, watch-party orders, attendees) + a list of parties with status chips.
-2. **Watch Parties** `/bo/parties` — the monitor: filterable list (Scheduled / Live / Ended; live rows show a **🎥 cam-live** badge) → **detail** `/bo/parties/[id]` (occupancy vs cap, attendee list, orders + POPCORN refund, **host-camera card with allow toggle + Live/Off/Disabled status**, end/cancel, host-away banner, no-replay note).
+2. **Watch Parties** `/bo/parties` — the monitor: filterable list (Scheduled / Live / Ended; live rows show a **🎥 cam-live** badge) → **detail** `/bo/parties/[id]` (occupancy vs cap, attendee list with **chat-name → real-account** mapping (ops-only), orders + POPCORN refund, **host-camera card with allow toggle + Live/Off/Disabled status**, end/cancel, host-away banner, no-replay note).
 3. **Hosts** `/bo/hosts` — accounts with grant/revoke toggle → per-host **Content** assignment (title cards + episode-level ticks) **and per-host Moderators** (searchable picker; chips of assigned moderator accounts) (6-29).
 4. **Analytics** `/bo/analytics` — watch-party orders, attendees, **attendance rate**, chat activity, avg watch time + **Export**.
 5. **Settings** `/bo/settings` — **site-wide maximum capacity** (hard ceiling), policy notes (no-replay, POPCORN refund), email notifications incl. the **24 h** reminder (templates in [`email-templates.md`](./email-templates.md)), and the **rev-share future-phase** banner (NEEDS-POLICY-OWNER: Susan).

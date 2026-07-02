@@ -44,6 +44,7 @@ Shared nouns → `_docs/BRD/_shared-contract.md`. Feature-local → `_feature.md
 - **FR-11** An ops-assigned **moderator** (extra account besides the host) can enter the host's rooms to **manage chat and kick** — same moderation powers as the host, no playback control (6-29).
 - **FR-12** The **geoblock notice** shows on the movie page **and again at the watch-party entry** — a user who obtains a shared link is still blocked at join if ineligible (6-29).
 - **FR-13** The room shows a **system-requirements notice** (from LiveKit — supported browser/camera/mic/network) to both **host and guest** before joining (6-29).
+- **FR-14** A fan can set a **temporary chat name** for the room (default = a suggested handle, editable) — this is what other viewers see in chat/presence, keeping their **real account private**. The alias is stored server-side as `RoomChatIdentity` (mapped to the account for ops traceability). (6-29; FE build owned by the design team.)
 
 ## Edge / empty / loading / error states
 | State | Behaviour |

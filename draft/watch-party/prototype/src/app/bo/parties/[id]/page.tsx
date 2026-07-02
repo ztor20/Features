@@ -180,15 +180,20 @@ function PartyView({ partyId }: { partyId: string }) {
       </div>
 
       {/* Orders / attendees */}
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex items-center justify-between mb-1.5">
         <h2 className="text-sm font-semibold uppercase tracking-widest text-muted">Attendees &amp; orders</h2>
         <span className="text-xs text-muted">showing {orders.length} of {base.ticketsSold.toLocaleString()}</span>
       </div>
+      <p className="text-xs text-muted mb-3">
+        <strong className="text-text">Chat name</strong> is the temporary name the user set for this room (what other viewers see).
+        Their real <strong className="text-text">account</strong> is ops-only here — so a user can be traced from their chat name if needed.
+      </p>
       <Card className="overflow-hidden">
         <table className="w-full text-sm">
           <thead>
             <tr className="text-left text-[11px] uppercase tracking-wider text-muted bg-surface2/50">
-              <th className="px-4 py-2.5 font-medium">Buyer</th>
+              <th className="px-4 py-2.5 font-medium">Chat name <span className="text-muted/60 normal-case tracking-normal">(public)</span></th>
+              <th className="px-4 py-2.5 font-medium">Account <span className="text-muted/60 normal-case tracking-normal">(ops-only)</span></th>
               <th className="px-4 py-2.5 font-medium">Order</th>
               <th className="px-4 py-2.5 font-medium">Paid</th>
               <th className="px-4 py-2.5 font-medium">Status</th>
@@ -198,7 +203,13 @@ function PartyView({ partyId }: { partyId: string }) {
           <tbody>
             {orders.map((o) => (
               <tr key={o.id} className="border-t border-line/70">
-                <td className="px-4 py-2.5">{o.buyerName}</td>
+                <td className="px-4 py-2.5">
+                  <span className="inline-flex items-center gap-1.5">
+                    <span aria-hidden className="text-muted">💬</span>
+                    <span className="text-text">{o.chatAlias}</span>
+                  </span>
+                </td>
+                <td className="px-4 py-2.5 text-muted">{o.buyerName}</td>
                 <td className="px-4 py-2.5 font-mono text-[11px] text-muted">{o.id}</td>
                 <td className="px-4 py-2.5 tabular-nums">{o.amountPopcorn === 0 ? "Free" : `${o.amountPopcorn}🍿`}</td>
                 <td className="px-4 py-2.5"><OrderStatusChip status={o.status} /></td>
