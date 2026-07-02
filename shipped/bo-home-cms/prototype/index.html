@@ -314,7 +314,7 @@
         <div class="styletag">背景 <span style="color:var(--faint)">— 從樣式中選一個</span></div>
         <div class="dslink" id="cBgField"><span class="cbgswatch" id="cBgSwatch" style="display:none"></span><span class="ph" id="cBgText" style="flex:1">點擊選擇背景…</span><span style="color:var(--faint)">▾</span></div>
         <div class="bupgrid" style="margin-top:12px">
-          <div class="bupbox"><div class="imgbox"><div class="plus">＋</div></div><div class="buplab">圖片 (image)</div><div class="bupspec">jpg / png / webp · 建議 ≤ 1 MB</div></div>
+          <div class="bupbox"><div class="imgbox"><div class="plus">＋</div></div><div class="buplab">圖片 (image)</div><div class="bupspec">jpg / webp · 1200×675 · webp≤250KB · jpg≤350KB</div></div>
         </div>
         <div class="sectitle" style="margin-top:16px">CTA <span style="color:var(--faint);font-weight:400;font-size:12px">— 最多 1 個 · 中文名稱 + 英文名稱 + 單一 URL</span></div>
         <div id="cctas"></div>
@@ -684,10 +684,10 @@ document.getElementById('mSave').addEventListener('click',saveModal);
    Per-type fields / upload specs / masks / countdown all follow the FE spec — not re-specced here. */
 /* upload specs (format / @2x size / file-size cap) shown on each upload box so ops know the limit — FE §3.3 */
 const UPLOAD_SPEC={
-  bg:     {label:'背景圖（全幅）',       spec:'jpg / webp · 2880×1120 (@2x) · jpg ≤500KB · webp ≤350KB'},
-  main:   {label:'右側主圖（去背主體）', spec:'png / webp / mp4 · 960×1120 (@2x) · png ≤600KB · webp ≤350KB · mp4 ≤15MB'},
-  mainOpt:{label:'右側主圖（選填）',     spec:'png / webp / mp4 · 960×1120 (@2x) · png ≤600KB · webp ≤350KB · mp4 ≤15MB'},
-  title:  {label:'片名圖（選填）',       spec:'png / gif · 530×200 (@2x) · ≤150KB'},
+  bg:     {label:'背景圖（全幅）',       spec:'jpg / webp · 桌機 2880×960 (jpg≤500·webp≤350) · 手機 1290×1720 (jpg≤400·webp≤280)'},
+  main:   {label:'右側主圖（去背主體）', spec:'png / webp / mp4 · 桌機 960×1120 (png≤600·webp≤350) · 手機 960×900 (png≤400·webp≤250) · mp4 ≤15MB'},
+  mainOpt:{label:'右側主圖（選填）',     spec:'png / webp / mp4 · 桌機 960×1120 (png≤600·webp≤350) · 手機 960×900 (png≤400·webp≤250) · mp4 ≤15MB'},
+  title:  {label:'片名圖（選填）',       spec:'png / gif · 636×240 (桌機/手機共用) · ≤150KB'},
   media:  {label:'上傳圖片或影片',       spec:'圖片 jpg/png/webp ≤ 2 MB · mp4 ≤ 15MB'},
 };
 const BTYPE={
